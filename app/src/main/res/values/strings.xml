@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">LBNLInventoryManagement</string>
+    <string name="forgetPassword">Forgot Password?</string>
+    <string name="supportEmail">support@safetystratus.com</string>
+    <string name="header_name">
+<![CDATA[
+<p>Safety<b>Stratus</b></p>
+]]>
+</string>
+</resources>
