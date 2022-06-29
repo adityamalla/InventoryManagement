@@ -28,6 +28,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -58,6 +59,7 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -290,17 +292,61 @@ public class LoginActivity extends AppCompatActivity {
                                                 String siteNamesArray[] = site_names.split(",");
                                                 String userIdsArray[] = uid.split(",");
                                                 String res = response.toString();
-                                                Intent myIntent = new Intent(LoginActivity.this,
-                                                        HomeActivity.class);
-                                                myIntent.putExtra("username", username);
-                                                myIntent.putExtra("site_id", siteIds);
-                                                myIntent.putExtra("md5pwd", md5pwd);
-                                                myIntent.putExtra("sso", "false");
-                                                myIntent.putExtra("selectedUserId", uid);
-                                                myIntent.putExtra("site_name", site_names);
-                                                myIntent.putExtra("fromLogin", "1");
-                                                progress.dismiss();
-                                                startActivity(myIntent);
+                                                if (siteIdsArray.length > 1 && siteNamesArray.length > 1) {
+                                                    username = username.split(",")[0];
+                                                    ArrayList<SiteInfo> siteInfo = new ArrayList<>();
+                                                    for (int i = 0; i < siteIdsArray.length; i++) {
+                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i]);
+                                                        siteInfo.add(obj);
+                                                    }
+                                                    if (siteInfo.size() >= 1) {
+                                                        final Dialog dialog = new Dialog(LoginActivity.this);
+                                                        dialog.setContentView(R.layout.site_ids_listview);
+                                                        dialog.setTitle(response.getString("Message"));
+                                                        sites = (ListView) dialog.findViewById(R.id.siteIdsList);
+                                                        ArrayAdapter<SiteInfo> adapter = new ArrayAdapter<SiteInfo>(LoginActivity.this, R.layout.siteids_textview, R.id.rowSiteIdsTextView,
+                                                                siteInfo);
+                                                        adapter.sort(new Comparator<SiteInfo>() {
+                                                            @Override
+                                                            public int compare(SiteInfo lhs, SiteInfo rhs) {
+                                                                return lhs.getSiteName().compareTo(rhs.getSiteName());
+                                                            }
+                                                        });
+                                                        sites.setAdapter(adapter);
+                                                        progress.dismiss();
+                                                        dialog.show();
+                                                        final String finalUsername = username;
+                                                        sites.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                                Object o = sites.getItemAtPosition(position);
+                                                                SiteInfo str = (SiteInfo) o; //As you are using Default String Adapter
+                                                                    Intent myIntent = new Intent(LoginActivity.this,
+                                                                            HomeActivity.class);
+                                                                    myIntent.putExtra("username", finalUsername);
+                                                                    myIntent.putExtra("site_id", str.getSiteId());
+                                                                    myIntent.putExtra("site_name", str.getSiteName());
+                                                                    myIntent.putExtra("md5pwd", md5pwd);
+                                                                    myIntent.putExtra("sso", "false");
+                                                                    myIntent.putExtra("selectedUserId", str.getUserId());
+                                                                    myIntent.putExtra("fromLogin", "1");
+                                                                    startActivity(myIntent);
+                                                            }
+                                                        });
+                                                    }
+                                                }
+                                                else {
+                                                    Intent myIntent = new Intent(LoginActivity.this,
+                                                            HomeActivity.class);
+                                                    myIntent.putExtra("username", username);
+                                                    myIntent.putExtra("site_id", siteIds);
+                                                    myIntent.putExtra("md5pwd", md5pwd);
+                                                    myIntent.putExtra("sso", "false");
+                                                    myIntent.putExtra("selectedUserId", uid);
+                                                    myIntent.putExtra("site_name", site_names);
+                                                    myIntent.putExtra("fromLogin", "1");
+                                                    progress.dismiss();
+                                                    startActivity(myIntent);
+                                                }
 
                                             } else {
                                                 errorText.setVisibility(View.VISIBLE);

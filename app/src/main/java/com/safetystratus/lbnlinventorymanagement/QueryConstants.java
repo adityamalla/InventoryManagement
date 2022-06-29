@@ -8,9 +8,70 @@ public class QueryConstants {
     public static final String TABLE_NAME_FI_FACILITIES = "fi_facilities";
     public static final String TABLE_NAME_OT_ORGANIZATION = "ot_organization";
     public static final String TABLE_NAME_OT_DEPARTMENT = "ot_department";
+    public static final String TABLE_NAME_FI_ROOM_ROSTER = "fi_room_roster";
+    public static final String TABLE_NAME_CHEMICAL_INVENTORY = "chemical_inventory";
+    public static final String TABLE_NAME_LABELS = "labels";
+    public static final String TABLE_NAME_SETTINGS = "settings";
+    public static final String TABLE_NAME_MENU_CATEGORIES = "menu_categories";
+    public static final String TABLE_NAME_MENU_ITEMS = "menu_items";
 
-
-
+    public static String SQL_CREATE_CHEMICAL_INVENTORY = "CREATE TABLE IF NOT EXISTS chemical_inventory\n" +
+            "(id integer PRIMARY KEY NOT NULL,\n" +
+            "        code text ,\n" +
+            "    \tsec_code text,\n" +
+            "    \topened_date timestamp DEFAULT CURRENT_TIMESTAMP,\n" +
+            "    \treceipt_date timestamp DEFAULT CURRENT_TIMESTAMP,\n" +
+            "    \tcreate_date timestamp DEFAULT CURRENT_TIMESTAMP,\n" +
+            "    \tobject_id integer,\n" +
+            "        object_table text ,\n" +
+            "    \tmodified_user_id numeric,\n" +
+            "        modified_date timestamp DEFAULT CURRENT_TIMESTAMP,\n" +
+            "        lot text ,\n" +
+            "    \tlast_test_date timestamp,\n" +
+            "    \tcreate_user_id integer NOT NULL,\n" +
+            "    \texpiration_date timestamp)";
+    public static String SQL_CREATE_SETTINGS = "CREATE TABLE IF NOT EXISTS settings\n" +
+            "(\n" +
+            "    setting character varying(32) PRIMARY KEY NOT NULL,\n" +
+            "    value text NOT NULL\n" +
+            ")";
+    public static String SQL_CREATE_MENU_CATEGORIES = "CREATE TABLE IF NOT EXISTS menu_categories\n" +
+            "(\n" +
+            "    id integer PRIMARY KEY NOT NULL,\n" +
+            "    name character varying(64),\n" +
+            "    sort integer DEFAULT 0\n" +
+            ")";
+    public static String SQL_CREATE_TABLE_MENU_ITEMS = "CREATE TABLE IF NOT EXISTS menu_items\n" +
+            "(\n" +
+            "    id integer primary key NOT NULL,\n" +
+            "    name character varying(64),\n" +
+            "    descr character varying(256),\n" +
+            "    m_cat_id integer,\n" +
+            "    sort integer DEFAULT 0\n" +
+            ")";
+    public static String SQL_CREATE_LABELS = "CREATE TABLE IF NOT EXISTS labels\n" +
+            "(\n" +
+            "    label character varying(32) NOT NULL,\n" +
+            "    value character varying(32) NOT NULL,\n" +
+            "    last_updated timestamp DEFAULT CURRENT_TIMESTAMP\n" +
+            ")";
+    public static String SQL_CREATE_FI_ROOM_ROSTER = "CREATE TABLE IF NOT EXISTS fi_room_roster    \n" +
+            "             (    \n" +
+            "                 room_id integer NOT NULL,    \n" +
+            "                 user_id integer NOT NULL,    \n" +
+            "                 type character varying(32),    \n" +
+            "                 latch integer NOT NULL,    \n" +
+            "                 roster_type_id integer NOT NULL,\n" +
+            "\t\t\t\t CONSTRAINT fi_room_roster_pkey PRIMARY KEY (room_id, user_id, roster_type_id),\n" +
+            "\t\t\t\t CONSTRAINT fi_room_roster_room_id_fkey FOREIGN KEY (room_id)\n" +
+            "\t\t\t\t REFERENCES fi_facil_rooms (id) MATCH SIMPLE\n" +
+            "\t\t\t\t ON UPDATE NO ACTION\n" +
+            "\t\t\t\t ON DELETE NO ACTION,\n" +
+            "\t\t\t\t CONSTRAINT fi_room_roster_user_id_fkey FOREIGN KEY (user_id)\n" +
+            "\t\t\t\t REFERENCES site_users (user_id) MATCH SIMPLE\n" +
+            "\t\t\t\t ON UPDATE NO ACTION\n" +
+            "\t\t\t\t ON DELETE NO ACTION\n" +
+            "             )";
     public static String SQL_CREATE_TABLE_OT_DEPARTMENTS = "CREATE TABLE IF NOT EXISTS ot_department    \n" +
             "             (    \n" +
             "                 id integer PRIMARY KEY NOT NULL,    \n" +
