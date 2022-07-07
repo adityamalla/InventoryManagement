@@ -2,6 +2,7 @@ package com.safetystratus.inventorymanagement;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.util.Log;
 
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
@@ -89,6 +90,60 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         return hm;
+    }
+    @SuppressLint("Range")
+    public String getUserEmployeeUsername(SQLiteDatabase sqLiteDatabase, String val) {
+        Cursor cursor = null;
+        String name = "";
+        Log.e("name0>>>",val+"**");
+        try{
+            cursor = sqLiteDatabase.rawQuery(String.format("select username from site_users " +
+                    "where user_id = " + val), null);
+            if (cursor.moveToFirst()) {
+                name = cursor.getString(cursor.getColumnIndex("username"));
+            }
+            Log.e("name1>>>",name+"**");
+            cursor.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return name;
+    }
+
+    @SuppressLint("Range")
+    public ArrayList<MyObject> getBuildingList(SQLiteDatabase sqLiteDatabase){
+        ArrayList<MyObject> facil = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT name,id  \n" +
+                "FROM    fi_facilities where status = 'active'"), null);
+
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                facil.add(
+                        new MyObject(cursor.getString(cursor.getColumnIndex("name")),
+                                cursor.getString(cursor.getColumnIndex("id"))));
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return facil;
+    }
+    @SuppressLint("Range")
+    public ArrayList<MyObject> getRoomList(SQLiteDatabase sqLiteDatabase,String facil_id){
+        ArrayList<MyObject> rooms = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT room,id  \n" +
+                "FROM fi_facil_rooms where status = 'active' and facil_id="+facil_id), null);
+
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                rooms.add(
+                        new MyObject(cursor.getString(cursor.getColumnIndex("room")),
+                                cursor.getString(cursor.getColumnIndex("id"))));
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return rooms;
     }
 
 }

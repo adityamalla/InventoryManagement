@@ -14,6 +14,8 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -30,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity {
@@ -40,13 +43,19 @@ public class HomeActivity extends AppCompatActivity {
     String md5Pwd = "";
     String selectedUserId = "";
     String selectedSearchValue = "";
-    String lastCompletedInspectionSiteInfo = "";
     String sso = "";
     String site_name = "";
     String request_token="";
     final String[] site_id = {""};
     final String[] user_id = {""};
     final String[] token = {""};
+    EditText employeeId;
+    EditText building;
+    EditText room;
+    String selectedFacilName = "";
+    String selectedFacil = "";
+    String selectedRoomName = "";
+    String selectedRoom = "";
     ProgressDialog progressSynStart = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,53 +90,123 @@ public class HomeActivity extends AppCompatActivity {
         loggedinUsername = intent.getStringExtra("username");
         selectedUserId = intent.getStringExtra("selectedUserId");
         loggedinUserSiteId = intent.getStringExtra("site_id");
-        lastCompletedInspectionSiteInfo = loggedinUserSiteId;
         md5Pwd = intent.getStringExtra("md5pwd");
         if (intent.getStringExtra("selectedSearchValue") != null) {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
-        if (connected) {
-            //Log.e("under page null>>", "**"+sso);
-            progressSynStart = new ProgressDialog(HomeActivity.this);
-            progressSynStart.setTitle("");
-            progressSynStart.setMessage("Synchronizing..");
-            progressSynStart.setCancelable(false);
-            progressSynStart. show();
-            progressSynStart.getWindow().setLayout(800, 300);
-            if (sso.equals("false")) {
-                //Log.e("under page null1>>", "**"+sso);
-               /* getAccessToken(new CallBackInterface() {
-                    @Override
-                    public void data(String msg) throws JSONException {
-                        JSONObject jsonObj = new JSONObject(msg);
-                        site_id[0] = jsonObj.get("site_id").toString();
-                        user_id[0] = jsonObj.get("user_id").toString();
-                        token[0] = jsonObj.get("access_token").toString();
-                        insertDbData(site_id[0], user_id[0], token[0]);
-                    }
-                });*/
-                getAccessToken();
-            } else {
-                site_id[0] = lastCompletedInspectionSiteInfo;
-                user_id[0] = selectedUserId;
-                token[0] = request_token;
-                /*if(my_first_run_key_exists.equals("0"))
-                    insertDbData(site_id[0], user_id[0], token[0]);
-                else
-                    insertDbDataDelta(site_id[0], user_id[0], token[0]);*/
-            }
-        } else {
-            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(HomeActivity.this);
-            dlgAlert.setTitle("Not getting connection");
-            dlgAlert.setMessage("Please check your wifi or mobile data!!");
-            dlgAlert.setPositiveButton("Ok",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            return;
-                        }
-                    });
-            dlgAlert.create().show();
+        if (intent.getStringExtra("selectedFacilName") != null) {
+            selectedFacilName = intent.getStringExtra("selectedFacilName");
         }
+        if (intent.getStringExtra("selectedFacil") != null) {
+            selectedFacil = intent.getStringExtra("selectedFacil");
+        }
+        if (intent.getStringExtra("selectedRoom") != null) {
+            selectedRoom = intent.getStringExtra("selectedRoom");
+        }
+        if (intent.getStringExtra("selectedRoomName") != null) {
+            selectedRoomName = intent.getStringExtra("selectedRoomName");
+        }
+        employeeId = (EditText)findViewById(R.id.employeeId);
+        building = (EditText)findViewById(R.id.building);
+        room = (EditText)findViewById(R.id.room);
+        if (intent.getStringExtra("pageLoadTemp") == null ) {
+            if (connected) {
+                progressSynStart = new ProgressDialog(HomeActivity.this);
+                progressSynStart.setTitle("");
+                progressSynStart.setMessage("Synchronizing..");
+                progressSynStart.setCancelable(false);
+                progressSynStart.show();
+                progressSynStart.getWindow().setLayout(800, 300);
+                if (sso.equals("false")) {
+                    getAccessToken();
+                } else {
+                    site_id[0] = loggedinUserSiteId;
+                    user_id[0] = selectedUserId;
+                    token[0] = request_token;
+                }
+            } else {
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(HomeActivity.this);
+                dlgAlert.setTitle("Not getting connection");
+                dlgAlert.setMessage("Please check your wifi or mobile data!!");
+                dlgAlert.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        });
+                dlgAlert.create().show();
+            }
+        }
+        else{
+            site_id[0] = loggedinUserSiteId;
+            user_id[0] = selectedUserId;
+            token[0] = request_token;
+        }
+        employeeId.setText(loggedinUsername);
+        employeeId.setEnabled(false);
+        if(selectedFacilName.trim().length()>0){
+            building.setText(selectedFacilName);
+        }else{
+            building.setText("None");
+        }
+        if(selectedRoomName.trim().length()>0){
+            room.setText(selectedRoomName);
+        }else{
+            room.setText("None");
+        }
+        building.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
+                final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+                ArrayList<MyObject> facillist = databaseHandler.getBuildingList(databaseHandler.getWritableDatabase(PASS_PHRASE));
+                    final Intent myIntent = new Intent(HomeActivity.this,
+                            BuildingList.class);
+                    myIntent.putExtra("user_id", user_id);
+                    myIntent.putExtra("site_id", site_id);
+                    myIntent.putExtra("token", token);
+                    myIntent.putExtra("sso", sso);
+                    myIntent.putExtra("md5pwd", md5Pwd);
+                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                    myIntent.putExtra("site_name", site_name);
+                    myIntent.putExtra("facillist",facillist);
+                    myIntent.putExtra("selectedFacilName", selectedFacilName);
+                    myIntent.putExtra("selectedFacil", selectedFacil+"");
+                    myIntent.putExtra("selectedRoomName", selectedRoomName);
+                    myIntent.putExtra("selectedRoom", selectedRoom+"");
+                    startActivity(myIntent);
+            }
+        });
+        room.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
+                final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+                ArrayList<MyObject> roomlist = databaseHandler.getRoomList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedFacil);
+                final Intent myIntent = new Intent(HomeActivity.this,
+                        RoomList.class);
+                myIntent.putExtra("user_id", user_id);
+                myIntent.putExtra("site_id", site_id);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("roomlist",roomlist);
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                startActivity(myIntent);
+            }
+        });
+    }
+    @Override
+    public void onBackPressed() {
     }
     public void getAccessToken() {
         try {
@@ -179,7 +258,6 @@ public class HomeActivity extends AppCompatActivity {
                         dlgAlert.create().show();
                         if (error.networkResponse != null && error.networkResponse.data != null) {
                             String jsonError = new String(error.networkResponse.data);
-                            Log.e("error res***", jsonError);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -206,7 +284,6 @@ public class HomeActivity extends AppCompatActivity {
                     progressSynStart.dismiss();
                     progressSynStart = null;
                 }
-                Log.e("respomseDB>>",response.toString());
                 SyncDbDialogs sdb = new SyncDbDialogs();
                 sdb.execute(response.toString());
             }
@@ -268,7 +345,6 @@ public class HomeActivity extends AppCompatActivity {
                 JSONArray jsonArrayMenuCategories = obj.getJSONArray("menu_categories");
                 JSONArray jsonArrayOtOrganization = obj.getJSONArray("ot_organization");
                 JSONArray jsonArrayChemicalInventory = obj.getJSONArray("chemical_inventory");
-               // Log.e("TESRRR11>>",jsonArrayChemicalInventory.toString()+"**");
                // JSONArray jsonArrayFiRoomRoster = obj.getJSONArray("fi_room_roster");
                 db.delete(QueryConstants.TABLE_NAME_SITE_USERS, null, null);
                 db.delete(QueryConstants.TABLE_NAME_OT_ORGANIZATION, null, null);
@@ -485,6 +561,14 @@ public class HomeActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             } finally {
+                try {
+                    String employeeUsername = databaseHandler.getUserEmployeeUsername(db, String.valueOf(selectedUserId));
+                    loggedinUsername = employeeUsername;
+                    employeeId.setText(employeeUsername);
+                    employeeId.setEnabled(false);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 db.endTransaction();
                 // progress.dismiss();
                 db.close();

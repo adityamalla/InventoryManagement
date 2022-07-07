@@ -6,10 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity">
 
-    <androidx.core.widget.NestedScrollView
+    <ScrollView
+        android:id="@+id/scrollViewLoginContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:background="#FFFFFF"
+        android:scrollbars="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -184,5 +186,5 @@
                 app:layout_constraintStart_toStartOf="@+id/forgetPassword"
                 app:layout_constraintTop_toBottomOf="@+id/forgetPassword" />
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -7,7 +7,7 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.safetystratus.lbnlinventorymanagement"
+        applicationId "com.safetystratus.inventorymanagement"
         minSdkVersion 16
         targetSdkVersion 31
         versionCode 1
