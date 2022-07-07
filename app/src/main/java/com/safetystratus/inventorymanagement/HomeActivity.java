@@ -149,7 +149,12 @@ public class HomeActivity extends AppCompatActivity {
         }else{
             building.setText("None");
         }
-        if(selectedRoomName.trim().length()>0){
+        if(selectedFacil.trim().length()>0 && intent.getStringExtra("fromFacil")!=null){
+            ArrayList<MyObject> roomlist = databaseHandler.getRoomList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedFacil);
+            room.setText(roomlist.get(0).getObjectName());
+            selectedRoomName = roomlist.get(0).getObjectName();
+            selectedRoom = roomlist.get(0).getObjectId();
+        }else if(selectedRoomName.trim().length()>0){
             room.setText(selectedRoomName);
         }else{
             room.setText("None");
