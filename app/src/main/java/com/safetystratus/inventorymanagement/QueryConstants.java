@@ -1,4 +1,4 @@
-package com.safetystratus.lbnlinventorymanagement;
+package com.safetystratus.inventorymanagement;
 public class QueryConstants {
     public static final String TABLE_NAME_SITE_USERS = "site_users";
     public static final String TABLE_NAME_FI_LOCATIONS = "fi_locations";

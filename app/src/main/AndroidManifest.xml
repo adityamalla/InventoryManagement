@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.safetystratus.lbnlinventorymanagement">
+    package="com.safetystratus.inventorymanagement">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -16,9 +16,9 @@
         android:roundIcon="@mipmap/ss_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.LBNLInventoryManagement">
-        <activity android:name=".HomeActivity" android:screenOrientation="portrait" ></activity>
+        <activity android:name="com.safetystratus.inventorymanagement.HomeActivity" android:screenOrientation="portrait" ></activity>
         <activity
-            android:name=".LoginActivity"
+            android:name="com.safetystratus.inventorymanagement.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".WebViewActivity"
+            android:name="com.safetystratus.inventorymanagement.WebViewActivity"
             android:screenOrientation="portrait" />
         <uses-library android:name="org.apache.http.legacy" android:required="false" />
     </application>

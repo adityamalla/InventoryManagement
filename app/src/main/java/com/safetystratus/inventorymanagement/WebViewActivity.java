@@ -1,4 +1,4 @@
-package com.safetystratus.lbnlinventorymanagement;
+package com.safetystratus.inventorymanagement;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;

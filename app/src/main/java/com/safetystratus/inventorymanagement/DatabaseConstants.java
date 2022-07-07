@@ -1,4 +1,4 @@
-package com.safetystratus.lbnlinventorymanagement;
+package com.safetystratus.inventorymanagement;
 
 public class DatabaseConstants {
     public static final int DATABASE_VERSION = 3;

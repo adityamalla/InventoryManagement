@@ -1,4 +1,4 @@
-package com.safetystratus.lbnlinventorymanagement;
+package com.safetystratus.inventorymanagement;
 
 import android.os.Parcel;
 import android.os.Parcelable;

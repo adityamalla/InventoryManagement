@@ -1,4 +1,4 @@
-package com.safetystratus.lbnlinventorymanagement;
+package com.safetystratus.inventorymanagement;
 
 public class ApiConstants {
     public static final String signInUrl = "https://devservices.labcliq.com/rest/19/sync/login";
