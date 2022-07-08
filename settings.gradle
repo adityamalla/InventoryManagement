@@ -1,2 +1,3 @@
 rootProject.name = "InventoryManagement"
 include ':app'
+include ':RFIDAPI3Library'

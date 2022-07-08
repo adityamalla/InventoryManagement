@@ -17,7 +17,8 @@
         android:roundIcon="@mipmap/ss_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.InventoryManagement">
-        <activity android:name=".RoomList"></activity>
+        <activity android:name=".RFIDScannerActivity"></activity>
+        <activity android:name=".RoomList" />
         <activity android:name=".BuildingList" />
         <activity
             android:name=".HomeActivity"
