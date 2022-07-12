@@ -571,19 +571,21 @@ public class HomeActivity extends AppCompatActivity {
                 }
                 for (int i = 0, size = jsonArraySiteUsers.length(); i < size; i++) {
                     JSONObject objectInArray = jsonArraySiteUsers.getJSONObject(i);
-                    String user_id = objectInArray.getString("user_id");
-                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_SITE_USERS, "user_id", user_id) == 0) {
-                        values.put("phone", objectInArray.getString("phone"));
-                        values.put("firstname", objectInArray.getString("firstname"));
-                        values.put("user_id", user_id);
-                        values.put("primary_group", objectInArray.getString("primary_group"));
-                        values.put("username", objectInArray.getString("username"));
-                        values.put("active", objectInArray.getString("active"));
-                        values.put("email_address", objectInArray.getString("email_address"));
-                        values.put("lastname", objectInArray.getString("lastname"));
-                        db.insert(QueryConstants.TABLE_NAME_SITE_USERS, null, values);
-                        Log.e("checkValues11>>",values.toString()+"**");
-                        values.clear();
+                    String id = objectInArray.getString("user_id");
+                    if(id.equalsIgnoreCase(selectedUserId)) {
+                        if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_SITE_USERS, "user_id", id) == 0) {
+                            values.put("phone", objectInArray.getString("phone"));
+                            values.put("firstname", objectInArray.getString("firstname"));
+                            values.put("user_id", id);
+                            values.put("primary_group", objectInArray.getString("primary_group"));
+                            values.put("username", objectInArray.getString("username"));
+                            values.put("active", objectInArray.getString("active"));
+                            values.put("email_address", objectInArray.getString("email_address"));
+                            values.put("lastname", objectInArray.getString("lastname"));
+                            db.insert(QueryConstants.TABLE_NAME_SITE_USERS, null, values);
+                            Log.e("checkValues11>>", values.toString() + "**");
+                            values.clear();
+                        }
                     }
                 }
                 for (int i = 0, size = jsonArrayFiLocations.length(); i < size; i++) {

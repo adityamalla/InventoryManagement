@@ -50,7 +50,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         // application context
         context = activity;
         // Status UI
-        //textView = activity.statusTextViewRFID;
+        textView = activity.statusTextViewRFID;
         // SDK
         InitSDK();
     }
