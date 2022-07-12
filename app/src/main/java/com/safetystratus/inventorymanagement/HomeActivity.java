@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -52,6 +53,7 @@ public class HomeActivity extends AppCompatActivity {
     EditText employeeId;
     EditText building;
     EditText room;
+    Button scanRFID;
     String selectedFacilName = "";
     String selectedFacil = "";
     String selectedRoomName = "";
@@ -109,6 +111,7 @@ public class HomeActivity extends AppCompatActivity {
         employeeId = (EditText)findViewById(R.id.employeeId);
         building = (EditText)findViewById(R.id.building);
         room = (EditText)findViewById(R.id.room);
+        scanRFID = (Button)findViewById(R.id.scanRFID);
         if (intent.getStringExtra("pageLoadTemp") == null ) {
             if (connected) {
                 progressSynStart = new ProgressDialog(HomeActivity.this);
@@ -209,6 +212,27 @@ public class HomeActivity extends AppCompatActivity {
                 startActivity(myIntent);
             }
         });
+        scanRFID.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent myIntent = new Intent(HomeActivity.this,
+                        RFIDScannerActivity.class);
+                myIntent.putExtra("user_id", user_id);
+                myIntent.putExtra("site_id", site_id);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                startActivity(myIntent);
+            }});
     }
     @Override
     public void onBackPressed() {
@@ -234,6 +258,7 @@ public class HomeActivity extends AppCompatActivity {
                             //Process os success response
                             try {
                                 String res = response.toString();
+                                Log.e("Success>>",response.toString()+"**");
                                 if(res.contains("Success:")){
                                     JSONObject jsonObj = new JSONObject(res);
                                     String site_id = jsonObj.get("site_id").toString();
@@ -289,6 +314,7 @@ public class HomeActivity extends AppCompatActivity {
                     progressSynStart.dismiss();
                     progressSynStart = null;
                 }
+                Log.e("response>>",response.toString()+"**");
                 SyncDbDialogs sdb = new SyncDbDialogs();
                 sdb.execute(response.toString());
             }
@@ -384,6 +410,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("object_id", objectInArray.getString("object_id"));
                         values.put("receipt_date", objectInArray.getString("receipt_date"));
                         db.insert(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, values);
+                        Log.e("checkValues0>>",values.toString()+"**");
                         values.clear();
                     }
                 }
@@ -398,6 +425,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("short_name", objectInArray.getString("short_name"));
                         values.put("status", objectInArray.getString("status"));
                         db.insert(QueryConstants.TABLE_NAME_OT_ORGANIZATION, null, values);
+                        Log.e("checkValues1>>",values.toString()+"**");
                         values.clear();
                     }
                 }
@@ -409,6 +437,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("name", objectInArray.getString("name"));
                         values.put("sort", objectInArray.getString("sort"));
                         db.insert(QueryConstants.TABLE_NAME_MENU_CATEGORIES, null, values);
+                        Log.e("checkValues2>>",values.toString()+"**");
                         values.clear();
                     }
                 }
@@ -422,6 +451,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("short_name", objectInArray.getString("short_name"));
                         values.put("status", objectInArray.getString("status"));
                         db.insert(QueryConstants.TABLE_NAME_FI_FACILITIES, null, values);
+                        Log.e("checkValues3>>",values.toString()+"**");
                         values.clear();
                     }
                 }
@@ -433,6 +463,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("last_updated", objectInArray.getString("last_updated"));
                     }
                     db.insert(QueryConstants.TABLE_NAME_LABELS, null, values);
+                    Log.e("checkValues4>>",values.toString()+"**");
                     values.clear();
                 }
                 for (int i = 0, size = jsonArraySettings.length(); i < size; i++) {
@@ -442,6 +473,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("setting", setting);
                         values.put("value", objectInArray.getString("value"));
                         db.insert(QueryConstants.TABLE_NAME_SETTINGS, null, values);
+                        Log.e("checkValues5>>",values.toString()+"**");
                         values.clear();
                     }
                 }
@@ -473,6 +505,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("type", objectInArray.getString("type"));
                         values.put("cycle_buffer", objectInArray.getString("cycle_buffer"));
                         db.insert(QueryConstants.TABLE_NAME_FI_ROOM_TYPES, null, values);
+                        Log.e("checkValues6>>",values.toString()+"**");
                         values.clear();
                     }
                 }
@@ -486,6 +519,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("dept_id", dept_id);
                         values.put("room_id", room_id);
                         db.insert(QueryConstants.TABLE_NAME_FI_ROOM_DEPT, null, values);
+                        Log.e("checkValues7>>",values.toString()+"**");
                         values.clear();
                     }
                 }
@@ -502,6 +536,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("notes", objectInArray.getString("notes"));
                         values.put("facil_id", objectInArray.getString("facil_id"));
                         db.insert(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, values);
+                        Log.e("checkValues8>>",values.toString()+"**");
                         values.clear();
                     }
                 }
@@ -515,6 +550,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("m_cat_id", objectInArray.getString("m_cat_id"));
                         values.put("descr", objectInArray.getString("descr"));
                         db.insert(QueryConstants.TABLE_NAME_MENU_ITEMS, null, values);
+                        Log.e("checkValues9>>",values.toString()+"**");
                         values.clear();
                     }
                 }
@@ -529,6 +565,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("status", objectInArray.getString("status"));
                         values.put("org_id", objectInArray.getString("org_id"));
                         db.insert(QueryConstants.TABLE_NAME_OT_DEPARTMENT, null, values);
+                        Log.e("checkValues10>>",values.toString()+"**");
                         values.clear();
                     }
                 }
@@ -545,6 +582,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("email_address", objectInArray.getString("email_address"));
                         values.put("lastname", objectInArray.getString("lastname"));
                         db.insert(QueryConstants.TABLE_NAME_SITE_USERS, null, values);
+                        Log.e("checkValues11>>",values.toString()+"**");
                         values.clear();
                     }
                 }
@@ -558,9 +596,12 @@ public class HomeActivity extends AppCompatActivity {
                         values.put("short_name", objectInArray.getString("short_name"));
                         values.put("status", objectInArray.getString("status"));
                         db.insert(QueryConstants.TABLE_NAME_FI_LOCATIONS, null, values);
+                        Log.e("checkValues12>>",values.toString()+"**");
+                        Log.e("checCount***",databaseHandler.checkCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE))+"**");
                         values.clear();
                     }
                 }
+
                 db.setTransactionSuccessful();
 
             } catch (JSONException e) {

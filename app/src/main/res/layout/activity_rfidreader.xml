@@ -4,6 +4,65 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/rfidLayout"
     tools:context=".RFIDScannerActivity">
+
+    <TextView
+        android:id="@+id/rfidStatus"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="RFID Status:"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/rfidStatusText"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:drawablePadding="10dp"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text=""
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#59A869"
+        app:layout_constraintStart_toStartOf="@+id/rfidStatus"
+        app:layout_constraintTop_toBottomOf="@+id/rfidStatus" />
+
+    <TextView
+        android:id="@+id/tagData"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/tag_border_header"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="RFID Tag"
+        android:textAlignment="viewStart"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/rfidStatusText"
+        app:layout_constraintTop_toBottomOf="@+id/rfidStatusText"
+        tools:ignore="RtlCompat" />
+
+    <ListView
+        android:id="@+id/tags_list"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        app:layout_constraintEnd_toEndOf="@+id/tagData"
+        app:layout_constraintStart_toStartOf="@+id/tagData"
+        app:layout_constraintTop_toBottomOf="@+id/tagData"></ListView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -146,5 +146,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return rooms;
     }
 
+    @SuppressLint("Range")
+    public int checkCount(SQLiteDatabase sqLiteDatabase){
+        int count = 0;
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT count(*) as count  \n" +
+                "FROM chemical_inventory"), null);
+
+        if (cursor.moveToFirst()) {
+
+                count = cursor.getInt(cursor.getColumnIndex("count"));
+        }
+        cursor.close();
+        return count;
+    }
+
 }
 
