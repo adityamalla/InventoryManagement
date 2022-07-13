@@ -17,15 +17,15 @@
         android:roundIcon="@mipmap/ss_icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.InventoryManagement">
-        <activity android:name=".RFIDScannerActivity"></activity>
-        <activity android:name=".RoomList" />
-        <activity android:name=".BuildingList" />
+        <activity android:name=".RFIDScannerActivity" android:screenOrientation="portrait"></activity>
+        <activity android:name=".RoomList" android:screenOrientation="portrait"/>
+        <activity android:name=".BuildingList" android:screenOrientation="portrait"/>
         <activity
             android:name=".HomeActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".LoginActivity"
-            android:exported="true">
+            android:exported="true" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

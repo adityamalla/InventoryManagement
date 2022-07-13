@@ -210,13 +210,14 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
         if (connected) {
+            hideKeyboard(LoginActivity.this);
             try {
                 final ProgressDialog progress = new ProgressDialog(this);
                 progress.setTitle("");
                 progress.setMessage("Loading...");
                 progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
                 progress.show();
-                progress.getWindow().setLayout(600, 300);
+                progress.getWindow().setLayout(400, 200);
                 String singleSignOn = "";
                 boolean singleSign = false;
                 if (sso.isChecked()) {
@@ -262,6 +263,7 @@ public class LoginActivity extends AppCompatActivity {
                         params.put("password", md5pwd);
                         params.put("email", uname);
                         params.put("sso", singleSignOn);
+                        Log.e("Test Response0>>",params.toString());
                         final boolean finalSingleSign = singleSign;
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(params),
                                 new Response.Listener<JSONObject>() {

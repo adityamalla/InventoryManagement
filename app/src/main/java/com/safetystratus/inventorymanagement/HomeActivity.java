@@ -15,6 +15,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -64,6 +65,7 @@ public class HomeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         SQLiteDatabase.loadLibs(this);
+        hideKeyboard(this);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -119,7 +121,7 @@ public class HomeActivity extends AppCompatActivity {
                 progressSynStart.setMessage("Synchronizing..");
                 progressSynStart.setCancelable(false);
                 progressSynStart.show();
-                progressSynStart.getWindow().setLayout(800, 300);
+                progressSynStart.getWindow().setLayout(500, 200);
                 if (sso.equals("false")) {
                     getAccessToken();
                 } else {
@@ -264,7 +266,12 @@ public class HomeActivity extends AppCompatActivity {
                                     String site_id = jsonObj.get("site_id").toString();
                                     String user_id = jsonObj.get("user_id").toString();
                                     String token = jsonObj.get("access_token").toString();
-                                    insertDbData(site_id, user_id, token);
+                                    if (progressSynStart != null && progressSynStart.isShowing()){
+                                        progressSynStart.dismiss();
+                                        progressSynStart = null;
+                                    }
+                                    hideKeyboard(HomeActivity.this);
+                                    //insertDbData(site_id, user_id, token);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -344,7 +351,6 @@ public class HomeActivity extends AppCompatActivity {
         private ProgressDialog progressSync = new ProgressDialog(HomeActivity.this);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
-
         @Override
         protected void onPreExecute() {
             // TODO Auto-generated method stub
@@ -353,279 +359,21 @@ public class HomeActivity extends AppCompatActivity {
             progressSync.setMessage("Uploading..");
             progressSync.setCancelable(false);
             progressSync.show();
-            progressSync.getWindow().setLayout(800, 300);
+            progressSync.getWindow().setLayout(500, 200);
             super.onPreExecute();
         }
         @SuppressLint("WrongThread")
         @Override
         protected String doInBackground(String... params) {
-            databaseHandler.getWritableDatabase(PASS_PHRASE).beginTransaction();
+            db.beginTransaction();
             try {
-                JSONObject obj = new JSONObject(params[0].toString());
-                ContentValues values = new ContentValues();
-                JSONArray jsonArrayOtDepartments = obj.getJSONArray("ot_department");
-                JSONArray jsonArraySiteUsers = obj.getJSONArray("site_users");
-                JSONArray jsonArrayFiLocations = obj.getJSONArray("fi_locations");
-                JSONArray jsonArrayMenuItems = obj.getJSONArray("menu_items");
-                JSONArray jsonArrayFiFacilRooms = obj.getJSONArray("fi_facil_rooms");
-                JSONArray jsonArrayFiRoomDept = obj.getJSONArray("fi_room_dept");
-                JSONArray jsonArrayFiRoomTypes = obj.getJSONArray("fi_room_types");
-                JSONArray jsonArraySettings = obj.getJSONArray("settings");
-                JSONArray jsonArrayLabels = obj.getJSONArray("labels");
-                JSONArray jsonArrayFiFacilities = obj.getJSONArray("fi_facilities");
-                JSONArray jsonArrayMenuCategories = obj.getJSONArray("menu_categories");
-                JSONArray jsonArrayOtOrganization = obj.getJSONArray("ot_organization");
-                JSONArray jsonArrayChemicalInventory = obj.getJSONArray("chemical_inventory");
-               // JSONArray jsonArrayFiRoomRoster = obj.getJSONArray("fi_room_roster");
-                db.delete(QueryConstants.TABLE_NAME_SITE_USERS, null, null);
-                db.delete(QueryConstants.TABLE_NAME_OT_ORGANIZATION, null, null);
-                db.delete(QueryConstants.TABLE_NAME_OT_DEPARTMENT, null, null);
-                db.delete(QueryConstants.TABLE_NAME_FI_LOCATIONS, null, null);
-                db.delete(QueryConstants.TABLE_NAME_FI_FACILITIES, null, null);
-                db.delete(QueryConstants.TABLE_NAME_FI_ROOM_TYPES, null, null);
-                db.delete(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, null);
-                db.delete(QueryConstants.TABLE_NAME_FI_ROOM_DEPT, null, null);
-                //db.delete(QueryConstants.TABLE_NAME_FI_ROOM_ROSTER, null, null);
-                db.delete(QueryConstants.TABLE_NAME_LABELS, null, null);
-                db.delete(QueryConstants.TABLE_NAME_MENU_CATEGORIES, null, null);
-                db.delete(QueryConstants.TABLE_NAME_MENU_ITEMS, null, null);
-                db.delete(QueryConstants.TABLE_NAME_SETTINGS, null, null);
-                db.delete(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, null);
-                for (int i = 0, size = jsonArrayChemicalInventory.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayChemicalInventory.getJSONObject(i);
-                    String id = objectInArray.getString("id");
-                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_OT_ORGANIZATION, "id", id) == 0) {
-                        values.put("id", id);
-                        values.put("opened_date", objectInArray.getString("opened_date"));
-                        values.put("sec_code", objectInArray.getString("sec_code"));
-                        values.put("object_table", objectInArray.getString("object_table"));
-                        values.put("modified_user_id", objectInArray.getString("modified_user_id"));
-                        values.put("modified_date", objectInArray.getString("modified_date"));
-                        values.put("last_test_date", objectInArray.getString("last_test_date"));
-                        values.put("lot", objectInArray.getString("lot"));
-                        values.put("create_date", objectInArray.getString("create_date"));
-                        values.put("code", objectInArray.getString("code"));
-                        values.put("expiration_date", objectInArray.getString("expiration_date"));
-                        values.put("create_user_id", objectInArray.getString("create_user_id"));
-                        values.put("object_id", objectInArray.getString("object_id"));
-                        values.put("receipt_date", objectInArray.getString("receipt_date"));
-                        db.insert(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, values);
-                        Log.e("checkValues0>>",values.toString()+"**");
-                        values.clear();
-                    }
-                }
-                for (int i = 0, size = jsonArrayOtOrganization.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayOtOrganization.getJSONObject(i);
-                    String id = objectInArray.getString("id");
-                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_OT_ORGANIZATION, "id", id) == 0) {
-                        values.put("id", id);
-                        values.put("location_id", objectInArray.getString("location_id"));
-                        values.put("name", objectInArray.getString("name"));
-                        values.put("org_cd", objectInArray.getString("org_cd"));
-                        values.put("short_name", objectInArray.getString("short_name"));
-                        values.put("status", objectInArray.getString("status"));
-                        db.insert(QueryConstants.TABLE_NAME_OT_ORGANIZATION, null, values);
-                        Log.e("checkValues1>>",values.toString()+"**");
-                        values.clear();
-                    }
-                }
-                for (int i = 0, size = jsonArrayMenuCategories.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayMenuCategories.getJSONObject(i);
-                    String id = objectInArray.getString("id");
-                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_MENU_CATEGORIES, "id", id) == 0) {
-                        values.put("id", id);
-                        values.put("name", objectInArray.getString("name"));
-                        values.put("sort", objectInArray.getString("sort"));
-                        db.insert(QueryConstants.TABLE_NAME_MENU_CATEGORIES, null, values);
-                        Log.e("checkValues2>>",values.toString()+"**");
-                        values.clear();
-                    }
-                }
-                for (int i = 0, size = jsonArrayFiFacilities.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayFiFacilities.getJSONObject(i);
-                    String id = objectInArray.getString("id");
-                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_FACILITIES, "id", id) == 0) {
-                        values.put("location_id", objectInArray.getString("location_id"));
-                        values.put("name", objectInArray.getString("name"));
-                        values.put("id", id);
-                        values.put("short_name", objectInArray.getString("short_name"));
-                        values.put("status", objectInArray.getString("status"));
-                        db.insert(QueryConstants.TABLE_NAME_FI_FACILITIES, null, values);
-                        Log.e("checkValues3>>",values.toString()+"**");
-                        values.clear();
-                    }
-                }
-                for (int i = 0, size = jsonArrayLabels.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayLabels.getJSONObject(i);
-                    values.put("value", objectInArray.getString("value"));
-                    values.put("label", objectInArray.getString("label"));
-                    if (objectInArray.has("last_updated")) {
-                        values.put("last_updated", objectInArray.getString("last_updated"));
-                    }
-                    db.insert(QueryConstants.TABLE_NAME_LABELS, null, values);
-                    Log.e("checkValues4>>",values.toString()+"**");
-                    values.clear();
-                }
-                for (int i = 0, size = jsonArraySettings.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArraySettings.getJSONObject(i);
-                    String setting = objectInArray.getString("setting");
-                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_SETTINGS, "setting", setting) == 0) {
-                        values.put("setting", setting);
-                        values.put("value", objectInArray.getString("value"));
-                        db.insert(QueryConstants.TABLE_NAME_SETTINGS, null, values);
-                        Log.e("checkValues5>>",values.toString()+"**");
-                        values.clear();
-                    }
-                }
-                /*for (int i = 0, size = jsonArrayFiRoomRoster.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayFiRoomRoster.getJSONObject(i);
-                    String user_id = objectInArray.getString("user_id");
-                    String roster_type_id = objectInArray.getString("roster_type_id");
-                    String room_id = objectInArray.getString("room_id");
-                    if (databaseHandler.checkDuplicatesThreePrimaryKeys(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_ROOM_ROSTER, "user_id",
-                            "room_id", "roster_type_id", user_id, room_id, roster_type_id) == 0) {
-                        values.put("user_id", user_id);
-                        values.put("room_id", room_id);
-                        values.put("latch", objectInArray.getString("latch"));
-                        values.put("roster_type_id", roster_type_id);
-                        values.put("type", objectInArray.getString("type"));
-                        db.insert(QueryConstants.TABLE_NAME_FI_ROOM_ROSTER, null, values);
-                        values.clear();
-                    }
-                }*/
-                for (int i = 0, size = jsonArrayFiRoomTypes.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayFiRoomTypes.getJSONObject(i);
-                    String type_id = objectInArray.getString("type_id");
-                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_ROOM_TYPES, "type_id", type_id) == 0) {
-                        values.put("cycle_default", objectInArray.getString("cycle_default"));
-                        values.put("cycle_duration", objectInArray.getString("cycle_duration"));
-                        values.put("required", objectInArray.getString("required"));
-                        values.put("type_id", type_id);
-                        values.put("status", objectInArray.getString("status"));
-                        values.put("type", objectInArray.getString("type"));
-                        values.put("cycle_buffer", objectInArray.getString("cycle_buffer"));
-                        db.insert(QueryConstants.TABLE_NAME_FI_ROOM_TYPES, null, values);
-                        Log.e("checkValues6>>",values.toString()+"**");
-                        values.clear();
-                    }
-                }
-                for (int i = 0, size = jsonArrayFiRoomDept.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayFiRoomDept.getJSONObject(i);
-                    String dept_id = objectInArray.getString("dept_id");
-                    String room_id = objectInArray.getString("room_id");
-                    if (databaseHandler.checkDuplicatesTwoPrimaryKeys(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_ROOM_DEPT,
-                            "dept_id", "room_id",
-                            dept_id, room_id) == 0) {
-                        values.put("dept_id", dept_id);
-                        values.put("room_id", room_id);
-                        db.insert(QueryConstants.TABLE_NAME_FI_ROOM_DEPT, null, values);
-                        Log.e("checkValues7>>",values.toString()+"**");
-                        values.clear();
-                    }
-                }
-                for (int i = 0, size = jsonArrayFiFacilRooms.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayFiFacilRooms.getJSONObject(i);
-                    String id = objectInArray.getString("id");
-                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, "id", id) == 0) {
-                        values.put("room", objectInArray.getString("room"));
-                        values.put("area", objectInArray.getString("area"));
-                        values.put("img_src", objectInArray.getString("img_src"));
-                        values.put("type_id", objectInArray.getString("type_id"));
-                        values.put("id", id);
-                        values.put("status", objectInArray.getString("status"));
-                        values.put("notes", objectInArray.getString("notes"));
-                        values.put("facil_id", objectInArray.getString("facil_id"));
-                        db.insert(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, values);
-                        Log.e("checkValues8>>",values.toString()+"**");
-                        values.clear();
-                    }
-                }
-                for (int i = 0, size = jsonArrayMenuItems.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayMenuItems.getJSONObject(i);
-                    String id = objectInArray.getString("id");
-                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_MENU_ITEMS, "id", id) == 0) {
-                        values.put("sort", objectInArray.getString("sort"));
-                        values.put("name", objectInArray.getString("name"));
-                        values.put("id", id);
-                        values.put("m_cat_id", objectInArray.getString("m_cat_id"));
-                        values.put("descr", objectInArray.getString("descr"));
-                        db.insert(QueryConstants.TABLE_NAME_MENU_ITEMS, null, values);
-                        Log.e("checkValues9>>",values.toString()+"**");
-                        values.clear();
-                    }
-                }
-                for (int i = 0, size = jsonArrayOtDepartments.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayOtDepartments.getJSONObject(i);
-                    String id = objectInArray.getString("id");
-                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_OT_DEPARTMENT, "id", id) == 0) {
-                        values.put("dept_cd", objectInArray.getString("dept_cd"));
-                        values.put("name", objectInArray.getString("name"));
-                        values.put("id", id);
-                        values.put("short_name", objectInArray.getString("short_name"));
-                        values.put("status", objectInArray.getString("status"));
-                        values.put("org_id", objectInArray.getString("org_id"));
-                        db.insert(QueryConstants.TABLE_NAME_OT_DEPARTMENT, null, values);
-                        Log.e("checkValues10>>",values.toString()+"**");
-                        values.clear();
-                    }
-                }
-                for (int i = 0, size = jsonArraySiteUsers.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArraySiteUsers.getJSONObject(i);
-                    String id = objectInArray.getString("user_id");
-                    if(id.equalsIgnoreCase(selectedUserId)) {
-                        if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_SITE_USERS, "user_id", id) == 0) {
-                            values.put("phone", objectInArray.getString("phone"));
-                            values.put("firstname", objectInArray.getString("firstname"));
-                            values.put("user_id", id);
-                            values.put("primary_group", objectInArray.getString("primary_group"));
-                            values.put("username", objectInArray.getString("username"));
-                            values.put("active", objectInArray.getString("active"));
-                            values.put("email_address", objectInArray.getString("email_address"));
-                            values.put("lastname", objectInArray.getString("lastname"));
-                            db.insert(QueryConstants.TABLE_NAME_SITE_USERS, null, values);
-                            Log.e("checkValues11>>", values.toString() + "**");
-                            values.clear();
-                        }
-                    }
-                }
-                for (int i = 0, size = jsonArrayFiLocations.length(); i < size; i++) {
-                    JSONObject objectInArray = jsonArrayFiLocations.getJSONObject(i);
-                    String id = objectInArray.getString("id");
-                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_LOCATIONS, "id", id) == 0) {
-                        values.put("location_cd", objectInArray.getString("location_cd"));
-                        values.put("name", objectInArray.getString("name"));
-                        values.put("id", id);
-                        values.put("short_name", objectInArray.getString("short_name"));
-                        values.put("status", objectInArray.getString("status"));
-                        db.insert(QueryConstants.TABLE_NAME_FI_LOCATIONS, null, values);
-                        Log.e("checkValues12>>",values.toString()+"**");
-                        Log.e("checCount***",databaseHandler.checkCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE))+"**");
-                        values.clear();
-                    }
-                }
-
-                db.setTransactionSuccessful();
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+                insertDataIntoTables(params[0].toString(),databaseHandler,db);
             } finally {
-                try {
-                    String employeeUsername = databaseHandler.getUserEmployeeUsername(db, String.valueOf(selectedUserId));
-                    loggedinUsername = employeeUsername;
-                    employeeId.setText(employeeUsername);
-                    employeeId.setEnabled(false);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
                 db.endTransaction();
                 // progress.dismiss();
                 db.close();
                 if (databaseHandler != null) {
                     databaseHandler.close();
-                }
-                if(progressSync!=null && progressSync.isShowing()){
-                    progressSync.dismiss();
-                    progressSync = null;
                 }
             }
             return "completed";
@@ -642,6 +390,274 @@ public class HomeActivity extends AppCompatActivity {
             }
         }
 
+    }
+    public void insertDataIntoTables(String tableData, DatabaseHandler databaseHandler, SQLiteDatabase db){
+        try {
+            hideKeyboard(HomeActivity.this);
+            JSONObject obj = new JSONObject(tableData);
+            ContentValues values = new ContentValues();
+            JSONArray jsonArrayOtDepartments = obj.getJSONArray("ot_department");
+            JSONArray jsonArraySiteUsers = obj.getJSONArray("site_users");
+            JSONArray jsonArrayFiLocations = obj.getJSONArray("fi_locations");
+            JSONArray jsonArrayMenuItems = obj.getJSONArray("menu_items");
+            JSONArray jsonArrayFiFacilRooms = obj.getJSONArray("fi_facil_rooms");
+            JSONArray jsonArrayFiRoomDept = obj.getJSONArray("fi_room_dept");
+            JSONArray jsonArrayFiRoomTypes = obj.getJSONArray("fi_room_types");
+            JSONArray jsonArraySettings = obj.getJSONArray("settings");
+            JSONArray jsonArrayLabels = obj.getJSONArray("labels");
+            JSONArray jsonArrayFiFacilities = obj.getJSONArray("fi_facilities");
+            JSONArray jsonArrayMenuCategories = obj.getJSONArray("menu_categories");
+            JSONArray jsonArrayOtOrganization = obj.getJSONArray("ot_organization");
+            JSONArray jsonArrayChemicalInventory = obj.getJSONArray("chemical_inventory");
+            // JSONArray jsonArrayFiRoomRoster = obj.getJSONArray("fi_room_roster");
+            db.delete(QueryConstants.TABLE_NAME_SITE_USERS, null, null);
+            db.delete(QueryConstants.TABLE_NAME_OT_ORGANIZATION, null, null);
+            db.delete(QueryConstants.TABLE_NAME_OT_DEPARTMENT, null, null);
+            db.delete(QueryConstants.TABLE_NAME_FI_LOCATIONS, null, null);
+            db.delete(QueryConstants.TABLE_NAME_FI_FACILITIES, null, null);
+            db.delete(QueryConstants.TABLE_NAME_FI_ROOM_TYPES, null, null);
+            db.delete(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, null);
+            db.delete(QueryConstants.TABLE_NAME_FI_ROOM_DEPT, null, null);
+            //db.delete(QueryConstants.TABLE_NAME_FI_ROOM_ROSTER, null, null);
+            db.delete(QueryConstants.TABLE_NAME_LABELS, null, null);
+            db.delete(QueryConstants.TABLE_NAME_MENU_CATEGORIES, null, null);
+            db.delete(QueryConstants.TABLE_NAME_MENU_ITEMS, null, null);
+            db.delete(QueryConstants.TABLE_NAME_SETTINGS, null, null);
+            db.delete(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, null);
+            for (int i = 0, size = jsonArrayChemicalInventory.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayChemicalInventory.getJSONObject(i);
+                String id = objectInArray.getString("id");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_OT_ORGANIZATION, "id", id) == 0) {
+                    values.put("id", id);
+                    values.put("opened_date", objectInArray.getString("opened_date"));
+                    values.put("sec_code", objectInArray.getString("sec_code"));
+                    values.put("object_table", objectInArray.getString("object_table"));
+                    values.put("modified_user_id", objectInArray.getString("modified_user_id"));
+                    values.put("modified_date", objectInArray.getString("modified_date"));
+                    values.put("last_test_date", objectInArray.getString("last_test_date"));
+                    values.put("lot", objectInArray.getString("lot"));
+                    values.put("create_date", objectInArray.getString("create_date"));
+                    values.put("code", objectInArray.getString("code"));
+                    values.put("expiration_date", objectInArray.getString("expiration_date"));
+                    values.put("create_user_id", objectInArray.getString("create_user_id"));
+                    values.put("object_id", objectInArray.getString("object_id"));
+                    values.put("receipt_date", objectInArray.getString("receipt_date"));
+                    db.insert(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, values);
+                    Log.e("checkValues0>>",values.toString()+"**");
+                    values.clear();
+                }
+            }
+            for (int i = 0, size = jsonArrayOtOrganization.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayOtOrganization.getJSONObject(i);
+                String id = objectInArray.getString("id");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_OT_ORGANIZATION, "id", id) == 0) {
+                    values.put("id", id);
+                    values.put("location_id", objectInArray.getString("location_id"));
+                    values.put("name", objectInArray.getString("name"));
+                    values.put("org_cd", objectInArray.getString("org_cd"));
+                    values.put("short_name", objectInArray.getString("short_name"));
+                    values.put("status", objectInArray.getString("status"));
+                    db.insert(QueryConstants.TABLE_NAME_OT_ORGANIZATION, null, values);
+                    Log.e("checkValues1>>",values.toString()+"**");
+                    values.clear();
+                }
+            }
+            for (int i = 0, size = jsonArrayMenuCategories.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayMenuCategories.getJSONObject(i);
+                String id = objectInArray.getString("id");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_MENU_CATEGORIES, "id", id) == 0) {
+                    values.put("id", id);
+                    values.put("name", objectInArray.getString("name"));
+                    values.put("sort", objectInArray.getString("sort"));
+                    db.insert(QueryConstants.TABLE_NAME_MENU_CATEGORIES, null, values);
+                    Log.e("checkValues2>>",values.toString()+"**");
+                    values.clear();
+                }
+            }
+            for (int i = 0, size = jsonArrayFiFacilities.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayFiFacilities.getJSONObject(i);
+                String id = objectInArray.getString("id");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_FACILITIES, "id", id) == 0) {
+                    values.put("location_id", objectInArray.getString("location_id"));
+                    values.put("name", objectInArray.getString("name"));
+                    values.put("id", id);
+                    values.put("short_name", objectInArray.getString("short_name"));
+                    values.put("status", objectInArray.getString("status"));
+                    db.insert(QueryConstants.TABLE_NAME_FI_FACILITIES, null, values);
+                    Log.e("checkValues3>>",values.toString()+"**");
+                    values.clear();
+                }
+            }
+            for (int i = 0, size = jsonArrayLabels.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayLabels.getJSONObject(i);
+                values.put("value", objectInArray.getString("value"));
+                values.put("label", objectInArray.getString("label"));
+                if (objectInArray.has("last_updated")) {
+                    values.put("last_updated", objectInArray.getString("last_updated"));
+                }
+                db.insert(QueryConstants.TABLE_NAME_LABELS, null, values);
+                Log.e("checkValues4>>",values.toString()+"**");
+                values.clear();
+            }
+            for (int i = 0, size = jsonArraySettings.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArraySettings.getJSONObject(i);
+                String setting = objectInArray.getString("setting");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_SETTINGS, "setting", setting) == 0) {
+                    values.put("setting", setting);
+                    values.put("value", objectInArray.getString("value"));
+                    db.insert(QueryConstants.TABLE_NAME_SETTINGS, null, values);
+                    Log.e("checkValues5>>",values.toString()+"**");
+                    values.clear();
+                }
+            }
+                /*for (int i = 0, size = jsonArrayFiRoomRoster.length(); i < size; i++) {
+                    JSONObject objectInArray = jsonArrayFiRoomRoster.getJSONObject(i);
+                    String user_id = objectInArray.getString("user_id");
+                    String roster_type_id = objectInArray.getString("roster_type_id");
+                    String room_id = objectInArray.getString("room_id");
+                    if (databaseHandler.checkDuplicatesThreePrimaryKeys(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_ROOM_ROSTER, "user_id",
+                            "room_id", "roster_type_id", user_id, room_id, roster_type_id) == 0) {
+                        values.put("user_id", user_id);
+                        values.put("room_id", room_id);
+                        values.put("latch", objectInArray.getString("latch"));
+                        values.put("roster_type_id", roster_type_id);
+                        values.put("type", objectInArray.getString("type"));
+                        db.insert(QueryConstants.TABLE_NAME_FI_ROOM_ROSTER, null, values);
+                        values.clear();
+                    }
+                }*/
+            for (int i = 0, size = jsonArrayFiRoomTypes.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayFiRoomTypes.getJSONObject(i);
+                String type_id = objectInArray.getString("type_id");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_ROOM_TYPES, "type_id", type_id) == 0) {
+                    values.put("cycle_default", objectInArray.getString("cycle_default"));
+                    values.put("cycle_duration", objectInArray.getString("cycle_duration"));
+                    values.put("required", objectInArray.getString("required"));
+                    values.put("type_id", type_id);
+                    values.put("status", objectInArray.getString("status"));
+                    values.put("type", objectInArray.getString("type"));
+                    values.put("cycle_buffer", objectInArray.getString("cycle_buffer"));
+                    db.insert(QueryConstants.TABLE_NAME_FI_ROOM_TYPES, null, values);
+                    Log.e("checkValues6>>",values.toString()+"**");
+                    values.clear();
+                }
+            }
+            for (int i = 0, size = jsonArrayFiRoomDept.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayFiRoomDept.getJSONObject(i);
+                String dept_id = objectInArray.getString("dept_id");
+                String room_id = objectInArray.getString("room_id");
+                if (databaseHandler.checkDuplicatesTwoPrimaryKeys(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_ROOM_DEPT,
+                        "dept_id", "room_id",
+                        dept_id, room_id) == 0) {
+                    values.put("dept_id", dept_id);
+                    values.put("room_id", room_id);
+                    db.insert(QueryConstants.TABLE_NAME_FI_ROOM_DEPT, null, values);
+                    Log.e("checkValues7>>",values.toString()+"**");
+                    values.clear();
+                }
+            }
+            for (int i = 0, size = jsonArrayFiFacilRooms.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayFiFacilRooms.getJSONObject(i);
+                String id = objectInArray.getString("id");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, "id", id) == 0) {
+                    values.put("room", objectInArray.getString("room"));
+                    values.put("area", objectInArray.getString("area"));
+                    values.put("img_src", objectInArray.getString("img_src"));
+                    values.put("type_id", objectInArray.getString("type_id"));
+                    values.put("id", id);
+                    values.put("status", objectInArray.getString("status"));
+                    values.put("notes", objectInArray.getString("notes"));
+                    values.put("facil_id", objectInArray.getString("facil_id"));
+                    db.insert(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, values);
+                    Log.e("checkValues8>>",values.toString()+"**");
+                    values.clear();
+                }
+            }
+            for (int i = 0, size = jsonArrayMenuItems.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayMenuItems.getJSONObject(i);
+                String id = objectInArray.getString("id");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_MENU_ITEMS, "id", id) == 0) {
+                    values.put("sort", objectInArray.getString("sort"));
+                    values.put("name", objectInArray.getString("name"));
+                    values.put("id", id);
+                    values.put("m_cat_id", objectInArray.getString("m_cat_id"));
+                    values.put("descr", objectInArray.getString("descr"));
+                    db.insert(QueryConstants.TABLE_NAME_MENU_ITEMS, null, values);
+                    Log.e("checkValues9>>",values.toString()+"**");
+                    values.clear();
+                }
+            }
+            for (int i = 0, size = jsonArrayOtDepartments.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayOtDepartments.getJSONObject(i);
+                String id = objectInArray.getString("id");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_OT_DEPARTMENT, "id", id) == 0) {
+                    values.put("dept_cd", objectInArray.getString("dept_cd"));
+                    values.put("name", objectInArray.getString("name"));
+                    values.put("id", id);
+                    values.put("short_name", objectInArray.getString("short_name"));
+                    values.put("status", objectInArray.getString("status"));
+                    values.put("org_id", objectInArray.getString("org_id"));
+                    db.insert(QueryConstants.TABLE_NAME_OT_DEPARTMENT, null, values);
+                    Log.e("checkValues10>>",values.toString()+"**");
+                    values.clear();
+                }
+            }
+            for (int i = 0, size = jsonArraySiteUsers.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArraySiteUsers.getJSONObject(i);
+                String id = objectInArray.getString("user_id");
+                if(id.equalsIgnoreCase(selectedUserId)) {
+                    if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_SITE_USERS, "user_id", id) == 0) {
+                        values.put("phone", objectInArray.getString("phone"));
+                        values.put("firstname", objectInArray.getString("firstname"));
+                        values.put("user_id", id);
+                        values.put("primary_group", objectInArray.getString("primary_group"));
+                        values.put("username", objectInArray.getString("username"));
+                        values.put("active", objectInArray.getString("active"));
+                        values.put("email_address", objectInArray.getString("email_address"));
+                        values.put("lastname", objectInArray.getString("lastname"));
+                        db.insert(QueryConstants.TABLE_NAME_SITE_USERS, null, values);
+                        Log.e("checkValues11>>", values.toString() + "**");
+                        values.clear();
+                    }
+                }
+            }
+            for (int i = 0, size = jsonArrayFiLocations.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayFiLocations.getJSONObject(i);
+                String id = objectInArray.getString("id");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_LOCATIONS, "id", id) == 0) {
+                    values.put("location_cd", objectInArray.getString("location_cd"));
+                    values.put("name", objectInArray.getString("name"));
+                    values.put("id", id);
+                    values.put("short_name", objectInArray.getString("short_name"));
+                    values.put("status", objectInArray.getString("status"));
+                    db.insert(QueryConstants.TABLE_NAME_FI_LOCATIONS, null, values);
+                    Log.e("checkValues12>>",values.toString()+"**");
+                    Log.e("checCount***",databaseHandler.checkCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE))+"**");
+                    values.clear();
+                }
+            }
+
+            db.setTransactionSuccessful();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                String employeeUsername = databaseHandler.getUserEmployeeUsername(db, String.valueOf(selectedUserId));
+                loggedinUsername = employeeUsername;
+                employeeId.setText(employeeUsername);
+                employeeId.setEnabled(false);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+    }
+    public static void hideKeyboard(HomeActivity activity) {
+        try {
+            InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        } catch (Exception e) {
+        }
     }
 
 }

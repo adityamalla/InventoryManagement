@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.google.android.gms.common.util.Hex;
 import com.zebra.rfid.api3.ACCESS_OPERATION_CODE;
 import com.zebra.rfid.api3.ACCESS_OPERATION_STATUS;
 import com.zebra.rfid.api3.Antennas;
@@ -27,9 +28,13 @@ import com.zebra.rfid.api3.STOP_TRIGGER_TYPE;
 import com.zebra.rfid.api3.TagData;
 import com.zebra.rfid.api3.TriggerInfo;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
-public class RFIDHandler implements Readers.RFIDReaderEventHandler {
+class RFIDHandler implements Readers.RFIDReaderEventHandler {
 
     final static String TAG = "RFID_SAMPLE";
     // RFID Reader
@@ -40,6 +45,10 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
     private EventHandler eventHandler;
     // UI and context
     TextView textView;
+    TextView textViewScanCount;
+    final int[] scanCounts = {0};
+
+
     private RFIDScannerActivity context;
     // general
     private int MAX_POWER = 270;
@@ -51,6 +60,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         context = activity;
         // Status UI
         textView = activity.statusTextViewRFID;
+        textViewScanCount = activity.scanCount;
         // SDK
         InitSDK();
     }
@@ -389,7 +399,7 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
             TagData[] myTags = reader.Actions.getReadTags(100);
             if (myTags != null) {
                 for (int index = 0; index < myTags.length; index++) {
-                    Log.e(TAG, "Tag IDDD " + myTags[index].getMemoryBankData().toString());
+                    Log.d(TAG, "Tag ID " + myTags[index].getTagID());
                     if (myTags[index].getOpCode() == ACCESS_OPERATION_CODE.ACCESS_OPERATION_READ &&
                             myTags[index].getOpStatus() == ACCESS_OPERATION_STATUS.ACCESS_SUCCESS) {
                         if (myTags[index].getMemoryBankData().length() > 0) {
@@ -434,11 +444,47 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
     }
 
     private class AsyncDataUpdate extends AsyncTask<TagData[], Void, Void> {
+        TagData[] data = null;
+
         @Override
         protected Void doInBackground(TagData[]... params) {
+            data = params[0];
             context.handleTagdata(params[0]);
             return null;
         }
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            final StringBuilder sb = new StringBuilder();
+            for (int index = 0; index < data.length; index++) {
+                byte[] bytes = Hex.stringToBytes(String.valueOf(data[index].getTagID().toCharArray()));
+                try {
+                    sb.append(new String(bytes, "UTF-8") + "&&&");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+            }
+                    String[] tagList = sb.toString().split("&&&");
+                    ArrayList<String> list = new ArrayList<String>();
+                    ArrayList<String> newList = new ArrayList<String>();
+                    for (int u=0;u<tagList.length;u++){
+                        list.add(tagList[u]);
+                    }
+                    // Create a new ArrayList
+
+                    // Traverse through the first list
+                    for (String element : list) {
+
+                        // If this element is not present in newList
+                        // then add it
+                        if (!newList.contains(element)) {
+
+                            newList.add(element);
+                        }
+                    }
+                    scanCounts[0] = newList.size();
+
+                }
     }
 
     interface ResponseHandlerInterface {
@@ -447,4 +493,5 @@ public class RFIDHandler implements Readers.RFIDReaderEventHandler {
         void handleTriggerPress(boolean pressed);
         //void handleStatusEvents(Events.StatusEventData eventData);
     }
+
 }

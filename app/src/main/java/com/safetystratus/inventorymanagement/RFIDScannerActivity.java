@@ -2,14 +2,19 @@ package com.safetystratus.inventorymanagement;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.util.Hex;
 import com.zebra.rfid.api3.TagData;
@@ -21,6 +26,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     public TextView statusTextViewRFID = null;
     private ListView textrfid;
     private TextView testStatus;
+    public TextView scanCount;
     ArrayList<String> newList = new ArrayList<String>();
     RFIDHandler rfidHandler;
     final static String TAG = "RFID_SAMPLE";
@@ -35,12 +41,34 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
 
         // UI
         statusTextViewRFID = findViewById(R.id.rfidStatusText);
+        scanCount = findViewById(R.id.scanCount);
         textrfid = findViewById(R.id.tags_list);
         // RFID Handler
         rfidHandler = new RFIDHandler();
         rfidHandler.onCreate(this);
         adapter = new ArrayAdapter<String>(RFIDScannerActivity.this,
                 R.layout.activity_tag_list_row, newList);
+        textrfid.setOnTouchListener(new ListView.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                int action = event.getAction();
+                switch (action) {
+                    case MotionEvent.ACTION_DOWN:
+                        // Disallow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(true);
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        // Allow ScrollView to intercept touch events.
+                        v.getParent().requestDisallowInterceptTouchEvent(false);
+                        break;
+                }
+
+                // Handle ListView touch events.
+                v.onTouchEvent(event);
+                return true;
+            }
+        });
 
     }
 
@@ -67,6 +95,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     @Override
     public void handleTagdata(TagData[] tagData) {
         final StringBuilder sb = new StringBuilder();
+        final int[] scanCounts = {0};
         for (int index = 0; index < tagData.length; index++) {
             byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
             try {
@@ -95,8 +124,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                         newList.add(element);
                     }
                 }
+                scanCounts[0] = newList.size();
                 textrfid.setAdapter(adapter);
-
+                setscancount(String.valueOf(scanCounts[0]));
             }
         });
     }
@@ -108,10 +138,15 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 @Override
                 public void run() {
                     textrfid.setAdapter(null);
+                    scanCount.setText("0");
                 }
             });
             rfidHandler.performInventory();
         } else
             rfidHandler.stopInventory();
+    }
+
+    public void setscancount(String count){
+        scanCount.setText(count);
     }
 }
