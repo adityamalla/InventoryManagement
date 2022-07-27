@@ -36,7 +36,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_SETTINGS);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_MENU_CATEGORIES);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_MENU_ITEMS);
-        sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_CHEMICAL_INVENTORY);
+        //sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_CHEMICAL_INVENTORY);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_FI_ROOM_ROSTER);
     }
     @Override
@@ -90,6 +90,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
 
         return hm;
+    }
+    public boolean isTableExists(SQLiteDatabase sqLiteDatabase,String tableName) {
+        String query = "select DISTINCT tbl_name from sqlite_master where tbl_name = '"+tableName+"'";
+        try (Cursor cursor = sqLiteDatabase.rawQuery(query, null)) {
+            if(cursor!=null) {
+                if(cursor.getCount()>0) {
+                    return true;
+                }
+            }
+            return false;
+        }
     }
     @SuppressLint("Range")
     public String getUserEmployeeUsername(SQLiteDatabase sqLiteDatabase, String val) {

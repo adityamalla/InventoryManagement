@@ -4,10 +4,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -120,7 +118,7 @@ public class BuildingList extends AppCompatActivity {
                     img.setBounds(0, 0, 60, 60);
                     buildingName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
                     final Intent myIntent = new Intent(BuildingList.this,
-                            HomeActivity.class);
+                            RFIDActivity.class);
                     myIntent.putExtra("selectedFacilName", buildingName.getText());
                     myIntent.putExtra("selectedFacil", buildingName.getId()+"");
                     myIntent.putExtra("user_id", user_id);
@@ -149,7 +147,7 @@ public class BuildingList extends AppCompatActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             final Intent myIntent = new Intent(BuildingList.this,
-                    HomeActivity.class);
+                    RFIDActivity.class);
             myIntent.putExtra("selectedFacilName", selectedFacilName);
             myIntent.putExtra("selectedFacil", selectedFacil+"");
             myIntent.putExtra("user_id", user_id);

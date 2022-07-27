@@ -19,17 +19,17 @@ public class QueryConstants {
             "(id integer PRIMARY KEY NOT NULL,\n" +
             "        code text ,\n" +
             "    \tsec_code text,\n" +
-            "    \topened_date timestamp DEFAULT CURRENT_TIMESTAMP,\n" +
-            "    \treceipt_date timestamp DEFAULT CURRENT_TIMESTAMP,\n" +
-            "    \tcreate_date timestamp DEFAULT CURRENT_TIMESTAMP,\n" +
+            "    \topened_date text,\n" +
+            "    \treceipt_date text,\n" +
+            "    \tcreate_date text,\n" +
             "    \tobject_id integer,\n" +
             "        object_table text ,\n" +
             "    \tmodified_user_id numeric,\n" +
-            "        modified_date timestamp DEFAULT CURRENT_TIMESTAMP,\n" +
+            "        modified_date text,\n" +
             "        lot text ,\n" +
-            "    \tlast_test_date timestamp,\n" +
+            "    \tlast_test_date text,\n" +
             "    \tcreate_user_id integer NOT NULL,\n" +
-            "    \texpiration_date timestamp)";
+            "    \texpiration_date text)";
     public static String SQL_CREATE_SETTINGS = "CREATE TABLE IF NOT EXISTS settings\n" +
             "(\n" +
             "    setting character varying(32) PRIMARY KEY NOT NULL,\n" +

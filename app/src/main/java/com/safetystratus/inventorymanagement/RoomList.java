@@ -118,7 +118,7 @@ public class RoomList extends AppCompatActivity {
                     img.setBounds(0, 0, 60, 60);
                     roomName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
                     final Intent myIntent = new Intent(RoomList.this,
-                            HomeActivity.class);
+                            RFIDActivity.class);
                     myIntent.putExtra("selectedFacilName", selectedFacilName);
                     myIntent.putExtra("selectedRoomName", roomName.getText());
                     myIntent.putExtra("selectedRoom", roomName.getId()+"");
@@ -147,7 +147,7 @@ public class RoomList extends AppCompatActivity {
         int id = item.getItemId();
         if (id == android.R.id.home) {
             final Intent myIntent = new Intent(RoomList.this,
-                    HomeActivity.class);
+                    RFIDActivity.class);
             myIntent.putExtra("selectedFacilName", selectedFacilName);
             myIntent.putExtra("selectedFacil", selectedFacil+"");
             myIntent.putExtra("user_id", user_id);

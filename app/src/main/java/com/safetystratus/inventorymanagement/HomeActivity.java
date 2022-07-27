@@ -1,8 +1,10 @@
 package com.safetystratus.inventorymanagement;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -12,12 +14,13 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -34,38 +37,46 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import com.zebra.rfid.api3.*;
+
 public class HomeActivity extends AppCompatActivity {
+    Button inventory;
+    Button locate;
+    Boolean connected;
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
-    boolean connected = false;
     String loggedinUsername = "";
     String loggedinUserSiteId = "";
     String md5Pwd = "";
     String selectedUserId = "";
-    String selectedSearchValue = "";
     String sso = "";
     String site_name = "";
     String request_token="";
+    ConstraintLayout header;
     final String[] site_id = {""};
     final String[] user_id = {""};
     final String[] token = {""};
-    EditText employeeId;
-    EditText building;
-    EditText room;
-    Button scanRFID;
-    String selectedFacilName = "";
-    String selectedFacil = "";
-    String selectedRoomName = "";
-    String selectedRoom = "";
+    TextView welcomeText;
     ProgressDialog progressSynStart = null;
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         SQLiteDatabase.loadLibs(this);
         hideKeyboard(this);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.header);
+        //  getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.headerColor)));
+        getSupportActionBar().setBackgroundDrawable(null);
+        getSupportActionBar().setElevation(0);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        header = (ConstraintLayout) findViewById(R.id.header);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            header.setBackground(null);
+        }
+        welcomeText = (TextView) findViewById(R.id.welcomeText);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -95,25 +106,8 @@ public class HomeActivity extends AppCompatActivity {
         selectedUserId = intent.getStringExtra("selectedUserId");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
-        if (intent.getStringExtra("selectedSearchValue") != null) {
-            selectedSearchValue = intent.getStringExtra("selectedSearchValue");
-        }
-        if (intent.getStringExtra("selectedFacilName") != null) {
-            selectedFacilName = intent.getStringExtra("selectedFacilName");
-        }
-        if (intent.getStringExtra("selectedFacil") != null) {
-            selectedFacil = intent.getStringExtra("selectedFacil");
-        }
-        if (intent.getStringExtra("selectedRoom") != null) {
-            selectedRoom = intent.getStringExtra("selectedRoom");
-        }
-        if (intent.getStringExtra("selectedRoomName") != null) {
-            selectedRoomName = intent.getStringExtra("selectedRoomName");
-        }
-        employeeId = (EditText)findViewById(R.id.employeeId);
-        building = (EditText)findViewById(R.id.building);
-        room = (EditText)findViewById(R.id.room);
-        scanRFID = (Button)findViewById(R.id.scanRFID);
+        inventory = (Button) findViewById(R.id.inventoryBtn);
+        locate = (Button) findViewById(R.id.locationBtn);
         if (intent.getStringExtra("pageLoadTemp") == null ) {
             if (connected) {
                 progressSynStart = new ProgressDialog(HomeActivity.this);
@@ -147,97 +141,20 @@ public class HomeActivity extends AppCompatActivity {
             user_id[0] = selectedUserId;
             token[0] = request_token;
         }
-        employeeId.setText(loggedinUsername);
-        employeeId.setEnabled(false);
-        if(selectedFacilName.trim().length()>0){
-            building.setText(selectedFacilName);
-        }else{
-            building.setText("None");
-        }
-        if(selectedFacil.trim().length()>0 && intent.getStringExtra("fromFacil")!=null){
-            ArrayList<MyObject> roomlist = databaseHandler.getRoomList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedFacil);
-            room.setText(roomlist.get(0).getObjectName());
-            selectedRoomName = roomlist.get(0).getObjectName();
-            selectedRoom = roomlist.get(0).getObjectId();
-        }else if(selectedRoomName.trim().length()>0){
-            room.setText(selectedRoomName);
-        }else{
-            room.setText("None");
-        }
-        building.setOnClickListener(new View.OnClickListener() {
+        inventory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
-                final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
-                ArrayList<MyObject> facillist = databaseHandler.getBuildingList(databaseHandler.getWritableDatabase(PASS_PHRASE));
-                    final Intent myIntent = new Intent(HomeActivity.this,
-                            BuildingList.class);
-                    myIntent.putExtra("user_id", user_id);
-                    myIntent.putExtra("site_id", site_id);
-                    myIntent.putExtra("token", token);
-                    myIntent.putExtra("sso", sso);
-                    myIntent.putExtra("md5pwd", md5Pwd);
-                    myIntent.putExtra("loggedinUsername", loggedinUsername);
-                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-                    myIntent.putExtra("site_name", site_name);
-                    myIntent.putExtra("facillist",facillist);
-                    myIntent.putExtra("selectedFacilName", selectedFacilName);
-                    myIntent.putExtra("selectedFacil", selectedFacil+"");
-                    myIntent.putExtra("selectedRoomName", selectedRoomName);
-                    myIntent.putExtra("selectedRoom", selectedRoom+"");
-                    startActivity(myIntent);
-            }
-        });
-        room.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
-                final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
-                ArrayList<MyObject> roomlist = databaseHandler.getRoomList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedFacil);
                 final Intent myIntent = new Intent(HomeActivity.this,
-                        RoomList.class);
+                        RFIDActivity.class);
                 myIntent.putExtra("user_id", user_id);
                 myIntent.putExtra("site_id", site_id);
                 myIntent.putExtra("token", token);
                 myIntent.putExtra("sso", sso);
                 myIntent.putExtra("md5pwd", md5Pwd);
                 myIntent.putExtra("loggedinUsername", loggedinUsername);
-                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                 myIntent.putExtra("site_name", site_name);
-                myIntent.putExtra("roomlist",roomlist);
-                myIntent.putExtra("selectedFacilName", selectedFacilName);
-                myIntent.putExtra("selectedFacil", selectedFacil+"");
-                myIntent.putExtra("selectedFacilName", selectedFacilName);
-                myIntent.putExtra("selectedFacil", selectedFacil+"");
-                myIntent.putExtra("selectedRoomName", selectedRoomName);
-                myIntent.putExtra("selectedRoom", selectedRoom+"");
-                startActivity(myIntent);
-            }
-        });
-        scanRFID.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final Intent myIntent = new Intent(HomeActivity.this,
-                        RFIDScannerActivity.class);
-                myIntent.putExtra("user_id", user_id);
-                myIntent.putExtra("site_id", site_id);
-                myIntent.putExtra("token", token);
-                myIntent.putExtra("sso", sso);
-                myIntent.putExtra("md5pwd", md5Pwd);
-                myIntent.putExtra("loggedinUsername", loggedinUsername);
-                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-                myIntent.putExtra("site_name", site_name);
-                myIntent.putExtra("selectedFacilName", selectedFacilName);
-                myIntent.putExtra("selectedFacil", selectedFacil+"");
-                myIntent.putExtra("selectedFacilName", selectedFacilName);
-                myIntent.putExtra("selectedFacil", selectedFacil+"");
-                myIntent.putExtra("selectedRoomName", selectedRoomName);
-                myIntent.putExtra("selectedRoom", selectedRoom+"");
                 startActivity(myIntent);
             }});
-    }
-    @Override
-    public void onBackPressed() {
     }
     public void getAccessToken() {
         try {
@@ -260,18 +177,14 @@ public class HomeActivity extends AppCompatActivity {
                             //Process os success response
                             try {
                                 String res = response.toString();
-                                Log.e("Success>>",response.toString()+"**");
                                 if(res.contains("Success:")){
                                     JSONObject jsonObj = new JSONObject(res);
                                     String site_id = jsonObj.get("site_id").toString();
                                     String user_id = jsonObj.get("user_id").toString();
                                     String token = jsonObj.get("access_token").toString();
-                                    if (progressSynStart != null && progressSynStart.isShowing()){
-                                        progressSynStart.dismiss();
-                                        progressSynStart = null;
-                                    }
                                     hideKeyboard(HomeActivity.this);
-                                    //insertDbData(site_id, user_id, token);
+                                    welcomeText.setText("Welcome \n"+jsonObj.get("name").toString());
+                                    insertDbData(site_id, user_id, token);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -321,7 +234,7 @@ public class HomeActivity extends AppCompatActivity {
                     progressSynStart.dismiss();
                     progressSynStart = null;
                 }
-                Log.e("response>>",response.toString()+"**");
+                //Log.e("response>>",response.toString()+"**");
                 SyncDbDialogs sdb = new SyncDbDialogs();
                 sdb.execute(response.toString());
             }
@@ -397,7 +310,7 @@ public class HomeActivity extends AppCompatActivity {
             JSONObject obj = new JSONObject(tableData);
             ContentValues values = new ContentValues();
             JSONArray jsonArrayOtDepartments = obj.getJSONArray("ot_department");
-            JSONArray jsonArraySiteUsers = obj.getJSONArray("site_users");
+            //JSONArray jsonArraySiteUsers = obj.getJSONArray("site_users");
             JSONArray jsonArrayFiLocations = obj.getJSONArray("fi_locations");
             JSONArray jsonArrayMenuItems = obj.getJSONArray("menu_items");
             JSONArray jsonArrayFiFacilRooms = obj.getJSONArray("fi_facil_rooms");
@@ -408,9 +321,9 @@ public class HomeActivity extends AppCompatActivity {
             JSONArray jsonArrayFiFacilities = obj.getJSONArray("fi_facilities");
             JSONArray jsonArrayMenuCategories = obj.getJSONArray("menu_categories");
             JSONArray jsonArrayOtOrganization = obj.getJSONArray("ot_organization");
-            JSONArray jsonArrayChemicalInventory = obj.getJSONArray("chemical_inventory");
+            //JSONArray jsonArrayChemicalInventory = obj.getJSONArray("chemical_inventory");
             // JSONArray jsonArrayFiRoomRoster = obj.getJSONArray("fi_room_roster");
-            db.delete(QueryConstants.TABLE_NAME_SITE_USERS, null, null);
+            //db.delete(QueryConstants.TABLE_NAME_SITE_USERS, null, null);
             db.delete(QueryConstants.TABLE_NAME_OT_ORGANIZATION, null, null);
             db.delete(QueryConstants.TABLE_NAME_OT_DEPARTMENT, null, null);
             db.delete(QueryConstants.TABLE_NAME_FI_LOCATIONS, null, null);
@@ -423,8 +336,8 @@ public class HomeActivity extends AppCompatActivity {
             db.delete(QueryConstants.TABLE_NAME_MENU_CATEGORIES, null, null);
             db.delete(QueryConstants.TABLE_NAME_MENU_ITEMS, null, null);
             db.delete(QueryConstants.TABLE_NAME_SETTINGS, null, null);
-            db.delete(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, null);
-            for (int i = 0, size = jsonArrayChemicalInventory.length(); i < size; i++) {
+            //db.delete(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, null);
+            /*for (int i = 0, size = jsonArrayChemicalInventory.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayChemicalInventory.getJSONObject(i);
                 String id = objectInArray.getString("id");
                 if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_OT_ORGANIZATION, "id", id) == 0) {
@@ -446,7 +359,7 @@ public class HomeActivity extends AppCompatActivity {
                     Log.e("checkValues0>>",values.toString()+"**");
                     values.clear();
                 }
-            }
+            }*/
             for (int i = 0, size = jsonArrayOtOrganization.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayOtOrganization.getJSONObject(i);
                 String id = objectInArray.getString("id");
@@ -458,7 +371,6 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("short_name", objectInArray.getString("short_name"));
                     values.put("status", objectInArray.getString("status"));
                     db.insert(QueryConstants.TABLE_NAME_OT_ORGANIZATION, null, values);
-                    Log.e("checkValues1>>",values.toString()+"**");
                     values.clear();
                 }
             }
@@ -470,7 +382,6 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("name", objectInArray.getString("name"));
                     values.put("sort", objectInArray.getString("sort"));
                     db.insert(QueryConstants.TABLE_NAME_MENU_CATEGORIES, null, values);
-                    Log.e("checkValues2>>",values.toString()+"**");
                     values.clear();
                 }
             }
@@ -484,7 +395,6 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("short_name", objectInArray.getString("short_name"));
                     values.put("status", objectInArray.getString("status"));
                     db.insert(QueryConstants.TABLE_NAME_FI_FACILITIES, null, values);
-                    Log.e("checkValues3>>",values.toString()+"**");
                     values.clear();
                 }
             }
@@ -496,7 +406,6 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("last_updated", objectInArray.getString("last_updated"));
                 }
                 db.insert(QueryConstants.TABLE_NAME_LABELS, null, values);
-                Log.e("checkValues4>>",values.toString()+"**");
                 values.clear();
             }
             for (int i = 0, size = jsonArraySettings.length(); i < size; i++) {
@@ -506,7 +415,6 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("setting", setting);
                     values.put("value", objectInArray.getString("value"));
                     db.insert(QueryConstants.TABLE_NAME_SETTINGS, null, values);
-                    Log.e("checkValues5>>",values.toString()+"**");
                     values.clear();
                 }
             }
@@ -538,7 +446,6 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("type", objectInArray.getString("type"));
                     values.put("cycle_buffer", objectInArray.getString("cycle_buffer"));
                     db.insert(QueryConstants.TABLE_NAME_FI_ROOM_TYPES, null, values);
-                    Log.e("checkValues6>>",values.toString()+"**");
                     values.clear();
                 }
             }
@@ -552,7 +459,6 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("dept_id", dept_id);
                     values.put("room_id", room_id);
                     db.insert(QueryConstants.TABLE_NAME_FI_ROOM_DEPT, null, values);
-                    Log.e("checkValues7>>",values.toString()+"**");
                     values.clear();
                 }
             }
@@ -569,7 +475,6 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("notes", objectInArray.getString("notes"));
                     values.put("facil_id", objectInArray.getString("facil_id"));
                     db.insert(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, values);
-                    Log.e("checkValues8>>",values.toString()+"**");
                     values.clear();
                 }
             }
@@ -583,7 +488,6 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("m_cat_id", objectInArray.getString("m_cat_id"));
                     values.put("descr", objectInArray.getString("descr"));
                     db.insert(QueryConstants.TABLE_NAME_MENU_ITEMS, null, values);
-                    Log.e("checkValues9>>",values.toString()+"**");
                     values.clear();
                 }
             }
@@ -598,11 +502,10 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("status", objectInArray.getString("status"));
                     values.put("org_id", objectInArray.getString("org_id"));
                     db.insert(QueryConstants.TABLE_NAME_OT_DEPARTMENT, null, values);
-                    Log.e("checkValues10>>",values.toString()+"**");
                     values.clear();
                 }
             }
-            for (int i = 0, size = jsonArraySiteUsers.length(); i < size; i++) {
+            /*for (int i = 0, size = jsonArraySiteUsers.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArraySiteUsers.getJSONObject(i);
                 String id = objectInArray.getString("user_id");
                 if(id.equalsIgnoreCase(selectedUserId)) {
@@ -620,7 +523,7 @@ public class HomeActivity extends AppCompatActivity {
                         values.clear();
                     }
                 }
-            }
+            }*/
             for (int i = 0, size = jsonArrayFiLocations.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayFiLocations.getJSONObject(i);
                 String id = objectInArray.getString("id");
@@ -631,8 +534,6 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("short_name", objectInArray.getString("short_name"));
                     values.put("status", objectInArray.getString("status"));
                     db.insert(QueryConstants.TABLE_NAME_FI_LOCATIONS, null, values);
-                    Log.e("checkValues12>>",values.toString()+"**");
-                    Log.e("checCount***",databaseHandler.checkCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE))+"**");
                     values.clear();
                 }
             }
@@ -641,15 +542,6 @@ public class HomeActivity extends AppCompatActivity {
 
         } catch (JSONException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                String employeeUsername = databaseHandler.getUserEmployeeUsername(db, String.valueOf(selectedUserId));
-                loggedinUsername = employeeUsername;
-                employeeId.setText(employeeUsername);
-                employeeId.setEnabled(false);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
         }
     }
     public static void hideKeyboard(HomeActivity activity) {
@@ -659,5 +551,4 @@ public class HomeActivity extends AppCompatActivity {
         } catch (Exception e) {
         }
     }
-
 }

@@ -25,6 +25,7 @@ import com.zebra.rfid.api3.SL_FLAG;
 import com.zebra.rfid.api3.START_TRIGGER_TYPE;
 import com.zebra.rfid.api3.STATUS_EVENT_TYPE;
 import com.zebra.rfid.api3.STOP_TRIGGER_TYPE;
+import com.zebra.rfid.api3.StartTrigger;
 import com.zebra.rfid.api3.TagData;
 import com.zebra.rfid.api3.TriggerInfo;
 
@@ -41,17 +42,27 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
     private static Readers readers;
     private static ArrayList<ReaderDevice> availableRFIDReaderList;
     private static ReaderDevice readerDevice;
-    private static RFIDReader reader;
+    public static RFIDReader reader;
     private EventHandler eventHandler;
     // UI and context
     TextView textView;
     TextView textViewScanCount;
     final int[] scanCounts = {0};
+    public static boolean asciiMode = false;
 
-
+    public static Boolean isInventoryAborted;
+    public static boolean isLocationingAborted;
+    public static boolean isLocatingTag;
+    public static volatile boolean mIsInventoryRunning;
+    public static String currentLocatingTag;
+    public static short TagProximityPercent = -1;
     private RFIDScannerActivity context;
+    public static StartTrigger settings_startTrigger;
+    public static Boolean isBatchModeInventoryRunning = false;
+
     // general
     private int MAX_POWER = 270;
+    private LocationingController locationingController = new LocationingController();
     // In case of RFD8500 change reader name with intended device below from list of paired RFD8500
     String readername = "RFD8500123";
 
@@ -291,6 +302,7 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
         if (reader.isConnected()) {
             TriggerInfo triggerInfo = new TriggerInfo();
             triggerInfo.StartTrigger.setTriggerType(START_TRIGGER_TYPE.START_TRIGGER_TYPE_IMMEDIATE);
+            settings_startTrigger.setTriggerType(START_TRIGGER_TYPE.START_TRIGGER_TYPE_IMMEDIATE);
             triggerInfo.StopTrigger.setTriggerType(STOP_TRIGGER_TYPE.STOP_TRIGGER_TYPE_IMMEDIATE);
             try {
                 // receive events from reader
@@ -492,6 +504,10 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
 
         void handleTriggerPress(boolean pressed);
         //void handleStatusEvents(Events.StatusEventData eventData);
+    }
+
+    public void locationing(final String locateTag,final RfidListeners rfidListeners) {
+        locationingController.locationing(locateTag,rfidListeners);
     }
 
 }
