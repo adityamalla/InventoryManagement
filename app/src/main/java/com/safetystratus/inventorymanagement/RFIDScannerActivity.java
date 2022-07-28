@@ -2,9 +2,18 @@ package com.safetystratus.inventorymanagement;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -31,18 +40,72 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     RFIDHandler rfidHandler;
     final static String TAG = "RFID_SAMPLE";
     ArrayAdapter adapter = null;
+    ConstraintLayout header;
+    String loggedinUsername = "";
+    String loggedinUserSiteId = "";
+    String md5Pwd = "";
+    String selectedUserId = "";
+    String selectedSearchValue = "";
+    String sso = "";
+    String site_name = "";
+    String request_token="";
+    final String[] site_id = {""};
+    final String[] user_id = {""};
+    final String[] token = {""};
+    String selectedFacilName = "";
+    String selectedFacil = "";
+    String selectedRoomName = "";
+    String selectedRoom = "";
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rfidreader);
-        //Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        //setSupportActionBar(toolbar);
-
-
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.header);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.headerColor)));
+        getSupportActionBar().setElevation(0);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        header = (ConstraintLayout) findViewById(R.id.header);
+        TextView tv = (TextView) findViewById(R.id.headerId);
+        ShapeDrawable shape = new ShapeDrawable(new RectShape());
+        shape.getPaint().setColor(Color.RED);
+        shape.getPaint().setStyle(Paint.Style.STROKE);
+        shape.getPaint().setStrokeWidth(3);
+        tv.setText("Scan Activity");
+        tv.setTextSize(20);
+        tv.setVisibility(View.VISIBLE);
         // UI
         statusTextViewRFID = findViewById(R.id.rfidStatusText);
         scanCount = findViewById(R.id.scanCount);
         textrfid = findViewById(R.id.tags_list);
+        Intent intent = getIntent();
+        sso = intent.getStringExtra("sso");
+        if (intent.getStringExtra("token") != null) {
+            request_token = intent.getStringExtra("token");
+        }
+        site_name = intent.getStringExtra("site_name");
+        loggedinUsername = intent.getStringExtra("loggedinUsername");
+        selectedUserId = intent.getStringExtra("selectedUserId");
+        loggedinUserSiteId = intent.getStringExtra("site_id");
+        md5Pwd = intent.getStringExtra("md5pwd");
+        if (intent.getStringExtra("selectedSearchValue") != null) {
+            selectedSearchValue = intent.getStringExtra("selectedSearchValue");
+        }
+        if (intent.getStringExtra("selectedFacilName") != null) {
+            selectedFacilName = intent.getStringExtra("selectedFacilName");
+        }
+        if (intent.getStringExtra("selectedFacil") != null) {
+            selectedFacil = intent.getStringExtra("selectedFacil");
+        }
+        if (intent.getStringExtra("selectedRoom") != null) {
+            selectedRoom = intent.getStringExtra("selectedRoom");
+        }
+        if (intent.getStringExtra("selectedRoomName") != null) {
+            selectedRoomName = intent.getStringExtra("selectedRoomName");
+        }
         // RFID Handler
         rfidHandler = new RFIDHandler();
         rfidHandler.onCreate(this);
@@ -148,5 +211,29 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
 
     public void setscancount(String count){
         scanCount.setText(count);
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            final Intent myIntent = new Intent(RFIDScannerActivity.this,
+                    RFIDActivity.class);
+            myIntent.putExtra("user_id", user_id);
+            myIntent.putExtra("site_id", site_id);
+            myIntent.putExtra("token", token);
+            myIntent.putExtra("sso", sso);
+            myIntent.putExtra("md5pwd", md5Pwd);
+            myIntent.putExtra("loggedinUsername", loggedinUsername);
+            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+            myIntent.putExtra("site_name", site_name);
+            myIntent.putExtra("selectedFacilName", selectedFacilName);
+            myIntent.putExtra("selectedFacil", selectedFacil+"");
+            myIntent.putExtra("selectedFacilName", selectedFacilName);
+            myIntent.putExtra("selectedFacil", selectedFacil+"");
+            myIntent.putExtra("selectedRoomName", selectedRoomName);
+            myIntent.putExtra("selectedRoom", selectedRoom+"");
+            startActivity(myIntent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

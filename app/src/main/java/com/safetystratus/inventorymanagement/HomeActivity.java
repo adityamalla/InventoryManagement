@@ -56,6 +56,7 @@ public class HomeActivity extends AppCompatActivity {
     final String[] user_id = {""};
     final String[] token = {""};
     TextView welcomeText;
+    Button signOut;
     ProgressDialog progressSynStart = null;
     @SuppressLint("WrongConstant")
     @Override
@@ -77,6 +78,9 @@ public class HomeActivity extends AppCompatActivity {
             header.setBackground(null);
         }
         welcomeText = (TextView) findViewById(R.id.welcomeText);
+        signOut = (Button)findViewById(R.id.button_sign_out);
+        welcomeText.setVisibility(View.VISIBLE);
+        signOut.setVisibility(View.VISIBLE);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -155,6 +159,13 @@ public class HomeActivity extends AppCompatActivity {
                 myIntent.putExtra("site_name", site_name);
                 startActivity(myIntent);
             }});
+        signOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(HomeActivity.this, LoginActivity.class)); //Go back to login page
+                finish();
+            }
+        });
     }
     public void getAccessToken() {
         try {
@@ -235,8 +246,8 @@ public class HomeActivity extends AppCompatActivity {
                     progressSynStart = null;
                 }
                 //Log.e("response>>",response.toString()+"**");
-                SyncDbDialogs sdb = new SyncDbDialogs();
-                sdb.execute(response.toString());
+                /*SyncDbDialogs sdb = new SyncDbDialogs();
+                sdb.execute(response.toString());*/
             }
         }, new Response.ErrorListener() {
             @Override

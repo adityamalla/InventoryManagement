@@ -1,10 +1,17 @@
 package com.safetystratus.inventorymanagement;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -34,11 +41,29 @@ public class RoomList extends AppCompatActivity {
     String selectedRoomName = "";
     String selectedRoom = "";
     ArrayList<MyObject> roomlist=null;
+    ConstraintLayout header;
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_room_list);
         SQLiteDatabase.loadLibs(this);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.header);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.headerColor)));
+        getSupportActionBar().setElevation(0);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        header = (ConstraintLayout) findViewById(R.id.header);
+        TextView tv = (TextView) findViewById(R.id.headerId);
+        ShapeDrawable shape = new ShapeDrawable(new RectShape());
+        shape.getPaint().setColor(Color.RED);
+        shape.getPaint().setStyle(Paint.Style.STROKE);
+        shape.getPaint().setStrokeWidth(3);
+        tv.setText("Rooms");
+        tv.setTextSize(20);
+        tv.setVisibility(View.VISIBLE);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RoomList.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         Intent intent = getIntent();
@@ -128,7 +153,7 @@ public class RoomList extends AppCompatActivity {
                     myIntent.putExtra("token", request_token);
                     myIntent.putExtra("sso", sso);
                     myIntent.putExtra("md5pwd", md5Pwd);
-                    myIntent.putExtra("username", loggedinUsername);
+                    myIntent.putExtra("loggedinUsername", loggedinUsername);
                     myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                     myIntent.putExtra("site_name", site_name);
                     myIntent.putExtra("fromRoom", "fromRoom");
@@ -155,7 +180,7 @@ public class RoomList extends AppCompatActivity {
             myIntent.putExtra("token", request_token);
             myIntent.putExtra("sso", sso);
             myIntent.putExtra("md5pwd", md5Pwd);
-            myIntent.putExtra("username", loggedinUsername);
+            myIntent.putExtra("loggedinUsername", loggedinUsername);
             myIntent.putExtra("selectedSearchValue", selectedSearchValue);
             myIntent.putExtra("site_name", site_name);
             myIntent.putExtra("fromFacil", "fromFacil");

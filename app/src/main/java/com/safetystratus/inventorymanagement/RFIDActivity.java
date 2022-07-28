@@ -1,23 +1,32 @@
 package com.safetystratus.inventorymanagement;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.RectShape;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -59,13 +68,31 @@ public class RFIDActivity extends AppCompatActivity {
     String selectedFacil = "";
     String selectedRoomName = "";
     String selectedRoom = "";
+    ConstraintLayout header;
     ProgressDialog progressSynStart = null;
+    @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rfid);
         SQLiteDatabase.loadLibs(this);
         hideKeyboard(this);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.header);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.headerColor)));
+        getSupportActionBar().setElevation(0);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        header = (ConstraintLayout) findViewById(R.id.header);
+        TextView tv = (TextView) findViewById(R.id.headerId);
+        ShapeDrawable shape = new ShapeDrawable(new RectShape());
+        shape.getPaint().setColor(Color.RED);
+        shape.getPaint().setStyle(Paint.Style.STROKE);
+        shape.getPaint().setStrokeWidth(3);
+        tv.setText("Inventory");
+        tv.setTextSize(20);
+        tv.setVisibility(View.VISIBLE);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -110,6 +137,7 @@ public class RFIDActivity extends AppCompatActivity {
         if (intent.getStringExtra("selectedRoomName") != null) {
             selectedRoomName = intent.getStringExtra("selectedRoomName");
         }
+        Log.e("roomname>>",selectedRoomName+"*");
         employeeId = (EditText)findViewById(R.id.employeeId);
         building = (EditText)findViewById(R.id.building);
         room = (EditText)findViewById(R.id.room);
@@ -122,13 +150,13 @@ public class RFIDActivity extends AppCompatActivity {
         }else{
             building.setText("None");
         }
-        if(selectedFacil.trim().length()>0 && intent.getStringExtra("fromFacil")!=null){
+        if(selectedRoomName.trim().length()>0){
+            room.setText(selectedRoomName);
+        }else if(selectedFacil.trim().length()>0 && intent.getStringExtra("fromFacil")!=null){
             ArrayList<MyObject> roomlist = databaseHandler.getRoomList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedFacil);
             room.setText(roomlist.get(0).getObjectName());
             selectedRoomName = roomlist.get(0).getObjectName();
             selectedRoom = roomlist.get(0).getObjectId();
-        }else if(selectedRoomName.trim().length()>0){
-            room.setText(selectedRoomName);
         }else{
             room.setText("None");
         }
@@ -213,6 +241,24 @@ public class RFIDActivity extends AppCompatActivity {
             inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         } catch (Exception e) {
         }
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            final Intent myIntent = new Intent(RFIDActivity.this,
+                    HomeActivity.class);
+            myIntent.putExtra("user_id", user_id);
+            myIntent.putExtra("site_id", site_id);
+            myIntent.putExtra("token", token);
+            myIntent.putExtra("sso", sso);
+            myIntent.putExtra("md5pwd", md5Pwd);
+            myIntent.putExtra("loggedinUsername", loggedinUsername);
+            myIntent.putExtra("site_name", site_name);
+            myIntent.putExtra("pageLoadTemp", "-1");
+            startActivity(myIntent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
 }
