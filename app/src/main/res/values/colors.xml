@@ -10,4 +10,10 @@
     <color name="common_border_color">#979797</color>
     <color name="white">#FFFFFFFF</color>
     <color name="headerColor">#0D69AA</color>
+    <color name="popup">#737373</color>
+    <color name="spinner">#0F75BD</color>
+    <color name="loader">#E5F3FF</color>
+    <color name="transparent">#80000000</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
 </resources>

@@ -57,6 +57,7 @@ public class HomeActivity extends AppCompatActivity {
     final String[] token = {""};
     TextView welcomeText;
     Button signOut;
+    String empName = "";
     ProgressDialog progressSynStart = null;
     @SuppressLint("WrongConstant")
     @Override
@@ -106,7 +107,14 @@ public class HomeActivity extends AppCompatActivity {
             request_token = intent.getStringExtra("token");
         }
         site_name = intent.getStringExtra("site_name");
-        loggedinUsername = intent.getStringExtra("username");
+        if(intent.getStringExtra("empName")!=null) {
+            empName = intent.getStringExtra("empName");
+            welcomeText.setText("Hi "+empName+"!");
+        }
+        if(intent.getStringExtra("username")!=null)
+            loggedinUsername = intent.getStringExtra("username");
+        else if(intent.getStringExtra("loggedinUsername")!=null)
+            loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("selectedUserId");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
@@ -157,6 +165,23 @@ public class HomeActivity extends AppCompatActivity {
                 myIntent.putExtra("md5pwd", md5Pwd);
                 myIntent.putExtra("loggedinUsername", loggedinUsername);
                 myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("empName", empName);
+                startActivity(myIntent);
+            }});
+        locate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent myIntent = new Intent(HomeActivity.this,
+                        LocateTagActivity.class);
+                myIntent.putExtra("user_id", user_id);
+                myIntent.putExtra("site_id", site_id);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("singleLocate", "1");
+                myIntent.putExtra("empName", empName);
                 startActivity(myIntent);
             }});
         signOut.setOnClickListener(new View.OnClickListener() {
@@ -194,7 +219,8 @@ public class HomeActivity extends AppCompatActivity {
                                     String user_id = jsonObj.get("user_id").toString();
                                     String token = jsonObj.get("access_token").toString();
                                     hideKeyboard(HomeActivity.this);
-                                    welcomeText.setText("Welcome \n"+jsonObj.get("name").toString());
+                                    empName = jsonObj.get("name").toString();
+                                    welcomeText.setText("Hi "+empName+"!");
                                     insertDbData(site_id, user_id, token);
                                 }
                             } catch (Exception e) {

@@ -4,6 +4,42 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LocateTagActivity">
+    tools:context=".LocateTagActivity"
+    android:background="@color/white">
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayoutSingleAndMultiTagLocate"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="#F0F0F0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tabIndicatorColor="#0F74BC"
+        app:tabTextAppearance="@style/CustomTextAppearanceActions"
+        app:tabTextColor="#000000">
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tab_border"
+            android:text="Single" />
+
+        <com.google.android.material.tabs.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/tab_border"
+            android:text="Multiple" />
+    </com.google.android.material.tabs.TabLayout>
+
+    <com.safetystratus.inventorymanagement.CustomViewPager
+        android:id="@+id/viewPagerLocateTags"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tabLayoutSingleAndMultiTagLocate" >
+    </com.safetystratus.inventorymanagement.CustomViewPager>
 </androidx.constraintlayout.widget.ConstraintLayout>

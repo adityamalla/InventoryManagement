@@ -56,6 +56,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     String selectedFacil = "";
     String selectedRoomName = "";
     String selectedRoom = "";
+    String empName="";
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +86,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
             request_token = intent.getStringExtra("token");
+        }
+        if(intent.getStringExtra("empName")!=null) {
+            empName = intent.getStringExtra("empName");
         }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
@@ -232,6 +236,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             myIntent.putExtra("selectedFacil", selectedFacil+"");
             myIntent.putExtra("selectedRoomName", selectedRoomName);
             myIntent.putExtra("selectedRoom", selectedRoom+"");
+            myIntent.putExtra("empName", empName);
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);

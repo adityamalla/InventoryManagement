@@ -68,6 +68,7 @@ public class RFIDActivity extends AppCompatActivity {
     String selectedFacil = "";
     String selectedRoomName = "";
     String selectedRoom = "";
+    String empName = "";
     ConstraintLayout header;
     ProgressDialog progressSynStart = null;
     @SuppressLint("WrongConstant")
@@ -116,6 +117,9 @@ public class RFIDActivity extends AppCompatActivity {
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
             request_token = intent.getStringExtra("token");
+        }
+        if(intent.getStringExtra("empName")!=null) {
+            empName = intent.getStringExtra("empName");
         }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
@@ -181,6 +185,7 @@ public class RFIDActivity extends AppCompatActivity {
                     myIntent.putExtra("selectedFacil", selectedFacil+"");
                     myIntent.putExtra("selectedRoomName", selectedRoomName);
                     myIntent.putExtra("selectedRoom", selectedRoom+"");
+                    myIntent.putExtra("empName", empName);
                     startActivity(myIntent);
             }
         });
@@ -207,6 +212,7 @@ public class RFIDActivity extends AppCompatActivity {
                 myIntent.putExtra("selectedFacil", selectedFacil+"");
                 myIntent.putExtra("selectedRoomName", selectedRoomName);
                 myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("empName", empName);
                 startActivity(myIntent);
             }
         });
@@ -229,6 +235,7 @@ public class RFIDActivity extends AppCompatActivity {
                 myIntent.putExtra("selectedFacil", selectedFacil+"");
                 myIntent.putExtra("selectedRoomName", selectedRoomName);
                 myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("empName", empName);
                 startActivity(myIntent);
             }});
     }
@@ -256,6 +263,7 @@ public class RFIDActivity extends AppCompatActivity {
             myIntent.putExtra("loggedinUsername", loggedinUsername);
             myIntent.putExtra("site_name", site_name);
             myIntent.putExtra("pageLoadTemp", "-1");
+            myIntent.putExtra("empName", empName);
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);

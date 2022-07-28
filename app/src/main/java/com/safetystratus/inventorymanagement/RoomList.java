@@ -40,6 +40,7 @@ public class RoomList extends AppCompatActivity {
     String selectedFacil = "";
     String selectedRoomName = "";
     String selectedRoom = "";
+    String empName = "";
     ArrayList<MyObject> roomlist=null;
     ConstraintLayout header;
     @SuppressLint("WrongConstant")
@@ -70,6 +71,9 @@ public class RoomList extends AppCompatActivity {
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
             request_token = intent.getStringExtra("token");
+        }
+        if(intent.getStringExtra("empName")!=null) {
+            empName = intent.getStringExtra("empName");
         }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
@@ -159,6 +163,7 @@ public class RoomList extends AppCompatActivity {
                     myIntent.putExtra("fromRoom", "fromRoom");
                     myIntent.putExtra("roomlist",roomlist);
                     myIntent.putExtra("pageLoadTemp", "-1");
+                    myIntent.putExtra("empName", empName);
                     startActivity(myIntent);
                 }
             });
@@ -188,6 +193,7 @@ public class RoomList extends AppCompatActivity {
             myIntent.putExtra("pageLoadTemp", "-1");
             myIntent.putExtra("selectedRoomName", selectedRoomName);
             myIntent.putExtra("selectedRoom", selectedRoom+"");
+            myIntent.putExtra("empName", empName);
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);
