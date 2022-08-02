@@ -1,5 +1,9 @@
 package com.safetystratus.inventorymanagement;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.media.ToneGenerator;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
@@ -8,6 +12,7 @@ import com.google.android.gms.common.util.Hex;
 import com.zebra.rfid.api3.ACCESS_OPERATION_CODE;
 import com.zebra.rfid.api3.ACCESS_OPERATION_STATUS;
 import com.zebra.rfid.api3.Antennas;
+import com.zebra.rfid.api3.BEEPER_VOLUME;
 import com.zebra.rfid.api3.ENUM_TRANSPORT;
 import com.zebra.rfid.api3.ENUM_TRIGGER_MODE;
 import com.zebra.rfid.api3.HANDHELD_TRIGGER_EVENT_TYPE;
@@ -31,21 +36,21 @@ import com.zebra.rfid.api3.TriggerInfo;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 
-class RFIDHandler implements Readers.RFIDReaderEventHandler {
+class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
 
     final static String TAG = "RFID_SAMPLE";
     // RFID Reader
     private static Readers readers;
+    public static ToneGenerator toneGenerator;
     private static ArrayList<ReaderDevice> availableRFIDReaderList;
     private static ReaderDevice readerDevice;
     public static RFIDReader reader;
     private EventHandler eventHandler;
+    public static BEEPER_VOLUME beeperVolume = BEEPER_VOLUME.HIGH_BEEP;
     // UI and context
     TextView textView;
+    RangeGraph rangeGraph;
     TextView textViewScanCount;
     final int[] scanCounts = {0};
     public static boolean asciiMode = false;
@@ -56,95 +61,23 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
     public static volatile boolean mIsInventoryRunning;
     public static String currentLocatingTag;
     public static short TagProximityPercent = -1;
-    private RFIDScannerActivity context;
+    private LocateTagActivity context;
     public static StartTrigger settings_startTrigger;
     public static Boolean isBatchModeInventoryRunning = false;
 
     // general
     private int MAX_POWER = 270;
-    private LocationingController locationingController = new LocationingController();
     // In case of RFD8500 change reader name with intended device below from list of paired RFD8500
     String readername = "RFD8500123";
 
-    void onCreate(RFIDScannerActivity activity) {
+    void onCreate(LocateTagActivity activity) {
         // application context
         context = activity;
         // Status UI
-        textView = activity.statusTextViewRFID;
-        textViewScanCount = activity.scanCount;
+        textView = activity.rfidStatus;
+        rangeGraph = activity.rangeGraph;
         // SDK
         InitSDK();
-    }
-
-    // TEST BUTTON functionality
-    // following two tests are to try out different configurations features
-
-    public String Test1() {
-        // check reader connection
-        if (!isReaderConnected())
-            return "Not connected";
-        // set antenna configurations - reducing power to 200
-        try {
-            Antennas.AntennaRfConfig config = null;
-            config = reader.Config.Antennas.getAntennaRfConfig(1);
-            config.setTransmitPowerIndex(100);
-            config.setrfModeTableIndex(0);
-            config.setTari(0);
-            reader.Config.Antennas.setAntennaRfConfig(1, config);
-        } catch (InvalidUsageException e) {
-            e.printStackTrace();
-        } catch (OperationFailureException e) {
-            e.printStackTrace();
-            return e.getResults().toString() + " " + e.getVendorMessage();
-        }
-        return "Antenna power Set to 220";
-    }
-
-    public String Test2() {
-        // check reader connection
-        if (!isReaderConnected())
-            return "Not connected";
-        // Set the singulation control to S2 which will read each tag once only
-        try {
-            Antennas.SingulationControl s1_singulationControl = reader.Config.Antennas.getSingulationControl(1);
-            s1_singulationControl.setSession(SESSION.SESSION_S2);
-            s1_singulationControl.Action.setInventoryState(INVENTORY_STATE.INVENTORY_STATE_A);
-            s1_singulationControl.Action.setSLFlag(SL_FLAG.SL_ALL);
-            reader.Config.Antennas.setSingulationControl(1, s1_singulationControl);
-        } catch (InvalidUsageException e) {
-            e.printStackTrace();
-        } catch (OperationFailureException e) {
-            e.printStackTrace();
-            return e.getResults().toString() + " " + e.getVendorMessage();
-        }
-        return "Session set to S2";
-    }
-
-    public String Defaults() {
-        // check reader connection
-        if (!isReaderConnected())
-            return "Not connected";;
-        try {
-            // Power to 270
-            Antennas.AntennaRfConfig config = null;
-            config = reader.Config.Antennas.getAntennaRfConfig(1);
-            config.setTransmitPowerIndex(MAX_POWER);
-            config.setrfModeTableIndex(0);
-            config.setTari(0);
-            reader.Config.Antennas.setAntennaRfConfig(1, config);
-            // singulation to S0
-            Antennas.SingulationControl s1_singulationControl = reader.Config.Antennas.getSingulationControl(1);
-            s1_singulationControl.setSession(SESSION.SESSION_S0);
-            s1_singulationControl.Action.setInventoryState(INVENTORY_STATE.INVENTORY_STATE_A);
-            s1_singulationControl.Action.setSLFlag(SL_FLAG.SL_ALL);
-            reader.Config.Antennas.setSingulationControl(1, s1_singulationControl);
-        } catch (InvalidUsageException e) {
-            e.printStackTrace();
-        } catch (OperationFailureException e) {
-            e.printStackTrace();
-            return e.getResults().toString() + " " + e.getVendorMessage();
-        }
-        return "Default settings applied";
     }
 
     private boolean isReaderConnected() {
@@ -179,9 +112,9 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
     private void InitSDK() {
         Log.d(TAG, "InitSDK");
         if (readers == null) {
-            new CreateInstanceTask().execute();
+            new RFIDLocationHandler.CreateInstanceTask().execute();
         } else
-            new ConnectionTask().execute();
+            new RFIDLocationHandler.ConnectionTask().execute();
     }
 
     // Enumerates SDK based on host device
@@ -210,7 +143,7 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            new ConnectionTask().execute();
+            new RFIDLocationHandler.ConnectionTask().execute();
         }
     }
 
@@ -228,6 +161,7 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
             textView.setText(result);
+            rangeGraph.setValue(0);
         }
     }
 
@@ -264,7 +198,7 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
     @Override
     public void RFIDReaderAppeared(ReaderDevice readerDevice) {
         Log.d(TAG, "RFIDReaderAppeared " + readerDevice.getName());
-        new ConnectionTask().execute();
+        new RFIDLocationHandler.ConnectionTask().execute();
     }
 
     @Override
@@ -387,6 +321,31 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
             e.printStackTrace();
         }
     }
+    synchronized void performLocateInventory(String tag) {
+        // check reader connection
+        if (!isReaderConnected())
+            return;
+        try {
+            Log.e("inperfomlocate::","**");
+            reader.Actions.TagLocationing.Perform(tag,null,null);
+        } catch (InvalidUsageException e) {
+            e.printStackTrace();
+        } catch (OperationFailureException e) {
+            e.printStackTrace();
+        }
+    }
+    synchronized void stopLocateInventory() {
+        // check reader connection
+        if (!isReaderConnected())
+            return;
+        try {
+            reader.Actions.TagLocationing.Stop();
+        } catch (InvalidUsageException e) {
+            e.printStackTrace();
+        } catch (OperationFailureException e) {
+            e.printStackTrace();
+        }
+    }
 
     synchronized void stopInventory() {
         // check reader connection
@@ -408,6 +367,7 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
         public void eventReadNotify(RfidReadEvents e) {
             // Recommended to use new method getReadTagsEx for better performance in case of large tag population
             TagData[] myTags = reader.Actions.getReadTags(100);
+            String dist = null;
             if (myTags != null) {
                 for (int index = 0; index < myTags.length; index++) {
                     Log.d(TAG, "Tag ID " + myTags[index].getTagID());
@@ -418,13 +378,14 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
                         }
                     }
                     if (myTags[index].isContainsLocationInfo()) {
-                        short dist = myTags[index].LocationInfo.getRelativeDistance();
+                        dist = String.valueOf(myTags[index].LocationInfo.getRelativeDistance());
                         Log.d(TAG, "Tag relative distance " + dist);
+                        isLocatingTag = true;
                     }
                 }
                 // possibly if operation was invoked from async task and still busy
                 // handle tag data responses on parallel thread thus THREAD_POOL_EXECUTOR
-                new AsyncDataUpdate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, myTags);
+                new RFIDLocationHandler.AsyncDataUpdate().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, dist);
             }
         }
 
@@ -454,11 +415,11 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
         }
     }
 
-    private class AsyncDataUpdate extends AsyncTask<TagData[], Void, Void> {
-        TagData[] data = null;
+    private class AsyncDataUpdate extends AsyncTask<String, Void, Void> {
+        String data = null;
 
         @Override
-        protected Void doInBackground(TagData[]... params) {
+        protected Void doInBackground(String... params) {
             data = params[0];
             context.handleTagdata(params[0]);
             return null;
@@ -466,47 +427,17 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            /*final StringBuilder sb = new StringBuilder();
-            for (int index = 0; index < data.length; index++) {
-                byte[] bytes = Hex.stringToBytes(String.valueOf(data[index].getTagID().toCharArray()));
-                try {
-                    sb.append(new String(bytes, "UTF-8") + "&&&");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-            }
-                    String[] tagList = sb.toString().split("&&&");
-                    ArrayList<String> list = new ArrayList<String>();
-                    ArrayList<String> newList = new ArrayList<String>();
-                    for (int u=0;u<tagList.length;u++){
-                        list.add(tagList[u]);
-                    }
-                    // Create a new ArrayList
-
-                    // Traverse through the first list
-                    for (String element : list) {
-
-                        // If this element is not present in newList
-                        // then add it
-                        if (!newList.contains(element)) {
-
-                            newList.add(element);
-                        }
-                    }
-                    scanCounts[0] = newList.size();*/
-
-                }
+        }
     }
 
     interface ResponseHandlerInterface {
-        void handleTagdata(TagData[] tagData);
+        void handleTagdata(String per);
 
         void handleTriggerPress(boolean pressed);
+        void triggerReleaseEventRecieved();
         //void handleStatusEvents(Events.StatusEventData eventData);
     }
 
-    public void locationing(final String locateTag,final RfidListeners rfidListeners) {
-        locationingController.locationing(locateTag,rfidListeners);
-    }
 
 }
+

@@ -1,5 +1,7 @@
 package com.safetystratus.inventorymanagement;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,16 +13,30 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import com.zebra.rfid.api3.InvalidUsageException;
+import com.zebra.rfid.api3.OperationFailureException;
+import com.zebra.rfid.api3.RFIDReader;
+import com.zebra.rfid.api3.RFIDResults;
+import com.zebra.rfid.api3.RfidEventsListener;
+import com.zebra.rfid.api3.RfidReadEvents;
+import com.zebra.rfid.api3.RfidStatusEvents;
+import com.zebra.rfid.api3.TagData;
+import com.safetystratus.inventorymanagement.Constants.*;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.PrimitiveIterator;
 
-public class SingleLocateTag extends Fragment {
+import static android.content.ContentValues.TAG;
+import static com.safetystratus.inventorymanagement.RFIDHandler.TagProximityPercent;
+
+public class SingleLocateTag extends Fragment{
     String user_id;
     String site_id;
     String token;
@@ -32,6 +48,9 @@ public class SingleLocateTag extends Fragment {
     String loggedinUsername;
     String selectedSearchValue;
     String lastsynctime;
+    TextView singleLocate;
+    RFIDHandler rfidHandler;
+
     public SingleLocateTag() {
         // Required empty public constructor
     }
@@ -41,6 +60,7 @@ public class SingleLocateTag extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_single_locate_tag, container, false);
+        singleLocate = (TextView) v.findViewById(R.id.singleLocate);
         return v;
 
     }

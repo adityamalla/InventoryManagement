@@ -158,7 +158,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         rfidHandler.onDestroy();
     }
 
-
     @Override
     public void handleTagdata(TagData[] tagData) {
         final StringBuilder sb = new StringBuilder();
