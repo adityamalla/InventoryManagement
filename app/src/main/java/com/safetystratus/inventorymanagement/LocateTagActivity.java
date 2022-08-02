@@ -132,18 +132,19 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
             @Override
             public void run() {
                 if(Integer.parseInt(per)>0) {
+                    Log.e("under handleTag::", RFIDLocationHandler.isLocatingTag+"**");
                     rangeGraph.setValue(Integer.parseInt(per));
                     rangeGraph.invalidate();
                     rangeGraph.requestLayout();
-                    startlocatebeepingTimer(Integer.parseInt(per));
+                    //startlocatebeepingTimer(Integer.parseInt(per));
                 }else{
-                    stoplocatebeepingTimer();
+                    //stoplocatebeepingTimer();
                 }
             }
         });
     }
     public  void startlocatebeepingTimer(int proximity) {
-        if (beeperVolume != BEEPER_VOLUME.QUIET_BEEP) {
+        if (RFIDLocationHandler.beeperVolume != BEEPER_VOLUME.QUIET_BEEP) {
             int POLLING_INTERVAL1 = BEEP_DELAY_TIME_MIN + (((BEEP_DELAY_TIME_MAX - BEEP_DELAY_TIME_MIN) * (100 - proximity)) / 100);
             if (!beepONLocate) {
                 beepONLocate = true;
@@ -167,17 +168,17 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
      * method to stop timer locate beep
      */
     public void stoplocatebeepingTimer() {
-        if (locatebeep != null && toneGenerator != null) {
-            toneGenerator.stopTone();
+        if (locatebeep != null && RFIDLocationHandler.toneGenerator != null) {
+            RFIDLocationHandler.toneGenerator.stopTone();
             locatebeep.cancel();
             locatebeep.purge();
         }
         locatebeep = null;
     }
     public void beep() {
-        if (toneGenerator != null) {
+        if (RFIDLocationHandler.toneGenerator != null) {
             int toneType = ToneGenerator.TONE_PROP_BEEP;
-            toneGenerator.startTone(toneType);
+            RFIDLocationHandler.toneGenerator.startTone(toneType);
         }
     }
     @Override
@@ -197,7 +198,7 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
                                 sb.append(hexString);
                             }
                             Log.e("encoded::::",sb.toString()+"**");
-                            RFIDLocationHandler.isLocatingTag = false;
+                            Log.e("under start::", RFIDLocationHandler.isLocatingTag+"**");
                             if(!RFIDLocationHandler.isLocatingTag )
                                 rfidHandler.performLocateInventory(sb.toString());
                         }
@@ -206,16 +207,20 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
                     }
                 }
             });
+        }else{
+            triggerReleaseEventRecieved();
         }
     }
-    @Override
-    public synchronized void triggerReleaseEventRecieved() {
+    public void triggerReleaseEventRecieved() {
+        Log.e("under stop::", RFIDLocationHandler.isLocatingTag+"**");
         if (RFIDLocationHandler.isLocatingTag) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     rfidHandler.stopLocateInventory();
                     rangeGraph.setValue(0);
+                    rangeGraph.invalidate();
+                    rangeGraph.requestLayout();
                 }
             });
         }

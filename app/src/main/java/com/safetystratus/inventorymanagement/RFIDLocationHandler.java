@@ -9,6 +9,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.gms.common.util.Hex;
+import com.safetystratus.inventorymanagement.LocateTagActivity;
 import com.zebra.rfid.api3.ACCESS_OPERATION_CODE;
 import com.zebra.rfid.api3.ACCESS_OPERATION_STATUS;
 import com.zebra.rfid.api3.Antennas;
@@ -57,7 +58,7 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
 
     public static Boolean isInventoryAborted;
     public static boolean isLocationingAborted;
-    public static boolean isLocatingTag;
+    public static boolean isLocatingTag=false;
     public static volatile boolean mIsInventoryRunning;
     public static String currentLocatingTag;
     public static short TagProximityPercent = -1;
@@ -340,6 +341,10 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
             return;
         try {
             reader.Actions.TagLocationing.Stop();
+            rangeGraph.setValue(0);
+            rangeGraph.invalidate();
+            rangeGraph.requestLayout();
+            isLocatingTag = false;
         } catch (InvalidUsageException e) {
             e.printStackTrace();
         } catch (OperationFailureException e) {
@@ -380,7 +385,11 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
                     if (myTags[index].isContainsLocationInfo()) {
                         dist = String.valueOf(myTags[index].LocationInfo.getRelativeDistance());
                         Log.d(TAG, "Tag relative distance " + dist);
-                        isLocatingTag = true;
+                        if(Integer.parseInt(dist)>1)
+                            isLocatingTag = true;
+                        else
+                            isLocatingTag = false;
+
                     }
                 }
                 // possibly if operation was invoked from async task and still busy
@@ -393,6 +402,7 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
         public void eventStatusNotify(RfidStatusEvents rfidStatusEvents) {
             Log.d(TAG, "Status Notification: " + rfidStatusEvents.StatusEventData.getStatusEventType());
             if (rfidStatusEvents.StatusEventData.getStatusEventType() == STATUS_EVENT_TYPE.HANDHELD_TRIGGER_EVENT) {
+                Log.e( "Status Notification11: " , rfidStatusEvents.StatusEventData.HandheldTriggerEventData.getHandheldEvent()+"**");
                 if (rfidStatusEvents.StatusEventData.HandheldTriggerEventData.getHandheldEvent() == HANDHELD_TRIGGER_EVENT_TYPE.HANDHELD_TRIGGER_PRESSED) {
                     new AsyncTask<Void, Void, Void>() {
                         @Override
@@ -434,7 +444,7 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
         void handleTagdata(String per);
 
         void handleTriggerPress(boolean pressed);
-        void triggerReleaseEventRecieved();
+        // void triggerReleaseEventRecieved();
         //void handleStatusEvents(Events.StatusEventData eventData);
     }
 
