@@ -341,10 +341,8 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
             return;
         try {
             reader.Actions.TagLocationing.Stop();
-            rangeGraph.setValue(0);
-            rangeGraph.invalidate();
-            rangeGraph.requestLayout();
             isLocatingTag = false;
+            context.handleTriggerPress(false);
         } catch (InvalidUsageException e) {
             e.printStackTrace();
         } catch (OperationFailureException e) {

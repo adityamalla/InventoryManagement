@@ -6,6 +6,7 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
+import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.text.Html;
@@ -20,6 +21,9 @@ import com.google.android.gms.common.util.Hex;
 import com.google.android.material.tabs.TabLayout;
 import com.zebra.rfid.api3.BEEPER_VOLUME;
 import com.zebra.rfid.api3.TagData;
+
+import net.sqlcipher.database.SQLiteDatabase;
+
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -63,47 +67,56 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         rangeGraph.setValue(0);
         rfidHandler = new RFIDLocationHandler();
         rfidHandler.onCreate(this);
-        /*tabLayout=(TabLayout)findViewById(R.id.tabLayoutSingleAndMultiTagLocate);
-        viewPager=(CustomViewPager) findViewById(R.id.viewPagerLocateTags);
-        viewPager.setEnableSwipe(false);
-        final TabAdapterLocateTags adapter = new TabAdapterLocateTags(this,getSupportFragmentManager(), tabLayout.getTabCount());
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-            @Override
-            public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabUnselected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-
-            @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
-            }
-        });
-        if(singleLocate.trim().length()>0)
-        {
-            if(Integer.parseInt(singleLocate)==0){
-                TabLayout.Tab tab = tabLayout.getTabAt(0);
-                tab.select();
-            }
+        beeperSettings(0);
+        getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        getSupportActionBar().setCustomView(R.layout.header);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.headerColor)));
+        getSupportActionBar().setElevation(0);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        SQLiteDatabase.loadLibs(this);
+        final TextView tv = (TextView) findViewById(R.id.headerId);
+        tv.setText(Html.fromHtml("Locate Tag"));
+        tv.setTextSize(20);
+        tv.setVisibility(View.VISIBLE);
+        Intent intent = getIntent();
+        if(intent.getStringExtra("empName")!=null) {
+            empName = intent.getStringExtra("empName");
         }
-        if(multiLocate.trim().length()>0){
-            if(Integer.parseInt(multiLocate)==1){
-                TabLayout.Tab tab = tabLayout.getTabAt(1);
-                tab.select();
-            }
-        }*/
+        if(intent.getStringExtra("singleLocate")!=null)
+            singleLocate = intent.getStringExtra("singleLocate");
+        if(intent.getStringExtra("multiLocate")!=null)
+            multiLocate = intent.getStringExtra("multiLocate");
+        sso = intent.getStringExtra("sso");
+        if (intent.getStringExtra("token") != null) {
+            request_token = intent.getStringExtra("token");
+        }
+        site_name = intent.getStringExtra("site_name");
+        loggedinUsername = intent.getStringExtra("loggedinUsername");
+        selectedUserId = intent.getStringExtra("selectedUserId");
+        loggedinUserSiteId = intent.getStringExtra("site_id");
+        md5Pwd = intent.getStringExtra("md5pwd");
+        if (intent.getStringExtra("selectedSearchValue") != null) {
+            selectedSearchValue = intent.getStringExtra("selectedSearchValue");
+        }
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-
+            final Intent myIntent = new Intent(LocateTagActivity.this,
+                    HomeActivity.class);
+            myIntent.putExtra("user_id", user_id);
+            myIntent.putExtra("site_id", site_id);
+            myIntent.putExtra("token", token);
+            myIntent.putExtra("sso", sso);
+            myIntent.putExtra("md5pwd", md5Pwd);
+            myIntent.putExtra("loggedinUsername", loggedinUsername);
+            myIntent.putExtra("site_name", site_name);
+            myIntent.putExtra("pageLoadTemp", "-1");
+            myIntent.putExtra("empName", empName);
+            startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -132,53 +145,39 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
             @Override
             public void run() {
                 if(Integer.parseInt(per)>0) {
-                    Log.e("under handleTag::", RFIDLocationHandler.isLocatingTag+"**");
+                    Log.e("under handleTag::",RFIDLocationHandler.isLocatingTag+"**");
                     rangeGraph.setValue(Integer.parseInt(per));
                     rangeGraph.invalidate();
                     rangeGraph.requestLayout();
-                    //startlocatebeepingTimer(Integer.parseInt(per));
+                    startlocatebeeping(Integer.parseInt(per));
                 }else{
-                    //stoplocatebeepingTimer();
+                    stopbeep();
                 }
             }
         });
     }
-    public  void startlocatebeepingTimer(int proximity) {
-        if (RFIDLocationHandler.beeperVolume != BEEPER_VOLUME.QUIET_BEEP) {
-            int POLLING_INTERVAL1 = BEEP_DELAY_TIME_MIN + (((BEEP_DELAY_TIME_MAX - BEEP_DELAY_TIME_MIN) * (100 - proximity)) / 100);
-            if (!beepONLocate) {
-                beepONLocate = true;
-                beep();
-                if (locatebeep == null) {
-                    TimerTask task = new TimerTask() {
-                        @Override
-                        public void run() {
-                            stoplocatebeepingTimer();
-                            beepONLocate = false;
-                        }
-                    };
-                    locatebeep = new Timer();
-                    locatebeep.schedule(task, POLLING_INTERVAL1, 10);
-                }
-            }
+    public  void startlocatebeeping(int proximity) {
+        if(proximity>0){
+            beep();
+        }else{
+            stopbeep();
         }
     }
 
     /**
      * method to stop timer locate beep
      */
-    public void stoplocatebeepingTimer() {
-        if (locatebeep != null && RFIDLocationHandler.toneGenerator != null) {
-            RFIDLocationHandler.toneGenerator.stopTone();
-            locatebeep.cancel();
-            locatebeep.purge();
+    public void stopbeep() {
+        if (toneGenerator != null) {
+            Log.e("under tone stop::","**");
+            toneGenerator.stopTone();
         }
-        locatebeep = null;
     }
     public void beep() {
-        if (RFIDLocationHandler.toneGenerator != null) {
+        if (toneGenerator != null) {
+            Log.e("under tone generator::","**");
             int toneType = ToneGenerator.TONE_PROP_BEEP;
-            RFIDLocationHandler.toneGenerator.startTone(toneType);
+            toneGenerator.startTone(toneType);
         }
     }
     @Override
@@ -197,8 +196,11 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
                                 String hexString = Integer.toHexString(ch[i]);
                                 sb.append(hexString);
                             }
+                            rangeGraph.setValue(0);
+                            rangeGraph.invalidate();
+                            rangeGraph.requestLayout();
                             Log.e("encoded::::",sb.toString()+"**");
-                            Log.e("under start::", RFIDLocationHandler.isLocatingTag+"**");
+                            Log.e("under start::",RFIDLocationHandler.isLocatingTag+"**");
                             if(!RFIDLocationHandler.isLocatingTag )
                                 rfidHandler.performLocateInventory(sb.toString());
                         }
@@ -212,21 +214,46 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         }
     }
     public void triggerReleaseEventRecieved() {
-        Log.e("under stop::", RFIDLocationHandler.isLocatingTag+"**");
+        Log.e("under stop::",RFIDLocationHandler.isLocatingTag+"**");
         if (RFIDLocationHandler.isLocatingTag) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     rfidHandler.stopLocateInventory();
-                    rangeGraph.setValue(0);
-                    rangeGraph.invalidate();
-                    rangeGraph.requestLayout();
+                    resetRangeGraph();
                 }
             });
         }
     }
-    public void setRangeGraph(short count){
-        Log.e("Test Final Range>>",count+"**");
+    public void resetRangeGraph(){
+        rangeGraph.setValue(0);
+        rangeGraph.invalidate();
+        rangeGraph.requestLayout();
+    }
+    private void beeperSettings(int volume) {
+        int streamType = AudioManager.STREAM_DTMF;
+        int percantageVolume = 100;
+        if (volume == 0) {
+            beeperVolume = BEEPER_VOLUME.HIGH_BEEP;
+            percantageVolume = 100;
+        }
+        if (volume == 1) {
+            beeperVolume = BEEPER_VOLUME.MEDIUM_BEEP;
+            percantageVolume = 75;
+        }
+        if (volume == 2) {
+            beeperVolume = BEEPER_VOLUME.LOW_BEEP;
+            percantageVolume = 50;
+        }
+        if (volume == 3) {
+            beeperVolume = BEEPER_VOLUME.QUIET_BEEP;
+            percantageVolume = 0;
+        }
 
+        try {
+            toneGenerator = new ToneGenerator(streamType, percantageVolume);
+        } catch (RuntimeException exception) {
+            toneGenerator = null;
+        }
     }
 }
