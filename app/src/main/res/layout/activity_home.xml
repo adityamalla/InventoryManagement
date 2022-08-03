@@ -8,37 +8,58 @@
     android:focusableInTouchMode="true"
     tools:context=".HomeActivity">
 
-    <Button
+    <ImageView
         android:id="@+id/inventoryBtn"
         style="@style/DashboardButton"
-        android:layout_width="115dp"
-        android:layout_height="130dp"
-        android:layout_marginStart="40dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="50dp"
         android:layout_marginTop="50dp"
-        android:backgroundTint="@color/white"
-        android:drawableTop="@drawable/ic_btn_inv"
-        android:drawablePadding="5dp"
         android:gravity="center_horizontal|top"
-        android:text="Inventory"
-        android:textSize="18dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_btn_inv" />
 
-    <Button
+    <TextView
+        android:id="@+id/invLabel"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="5dp"
+        android:text="Inventory"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/inventoryBtn"
+        app:layout_constraintStart_toStartOf="@+id/inventoryBtn"
+        app:layout_constraintTop_toBottomOf="@+id/inventoryBtn"
+        tools:ignore="RtlCompat" />
+
+    <ImageView
         android:id="@+id/locationBtn"
         style="@style/DashboardButton"
-        android:layout_width="115dp"
-        android:layout_height="150dp"
-        android:layout_marginStart="20dp"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="50dp"
-        android:layout_marginEnd="40dp"
-        android:backgroundTint="@color/white"
-        android:drawableTop="@drawable/ic_btn_locate"
-        android:drawablePadding="5dp"
-        android:gravity="center_horizontal|top"
-        android:text="Locate\nTag"
-        android:textSize="18dp"
+        android:layout_marginEnd="50dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/inventoryBtn"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_btn_locate" />
+
+    <TextView
+        android:id="@+id/locLabel"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="5dp"
+        android:text="Locate Tag"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/locationBtn"
+        app:layout_constraintStart_toStartOf="@+id/locationBtn"
+        app:layout_constraintTop_toBottomOf="@+id/locationBtn"
+        tools:ignore="RtlCompat" />
 </androidx.constraintlayout.widget.ConstraintLayout>

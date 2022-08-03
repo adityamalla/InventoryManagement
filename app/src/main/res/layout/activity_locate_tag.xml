@@ -18,7 +18,7 @@
 
         <TextView
             android:id="@+id/rfidStatus"
-            android:layout_width="0dp"
+            android:layout_width="200dp"
             android:layout_height="30dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
@@ -26,53 +26,61 @@
             android:paddingRight="10dp"
             android:text="RFID Status:"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textSize="16dp"
             android:textColor="#000000"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/rfidStatusText"
-            android:layout_width="0dp"
+            android:layout_width="200dp"
             android:layout_height="30dp"
+            android:layout_marginTop="11dp"
+            android:layout_marginEnd="110dp"
             android:drawablePadding="10dp"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text=""
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="#59A869"
-            app:layout_constraintStart_toStartOf="@+id/rfidStatus"
-            app:layout_constraintTop_toBottomOf="@+id/rfidStatus" />
+            android:textSize="16dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/rfidStatus"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tagData"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="10dp"
             android:gravity="center"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text="RFID Tag"
+            android:textSize="16dp"
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="#000000"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/rfidStatusText"
-            app:layout_constraintTop_toBottomOf="@+id/rfidStatusText"
+            app:layout_constraintStart_toStartOf="@+id/rfidStatus"
+            app:layout_constraintTop_toBottomOf="@+id/rfidStatus"
             tools:ignore="RtlCompat" />
 
         <EditText
             android:id="@+id/tag"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/rounded_corner"
+            android:drawableLeft="@drawable/ic_search"
+            android:drawablePadding="10dp"
             android:gravity="center"
+            android:hint=" Please enter tag id"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text=""
-            android:background="@drawable/rounded_corner"
-            android:hint="Please enter tag id"
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="#000000"
@@ -80,16 +88,18 @@
             app:layout_constraintStart_toStartOf="@+id/tagData"
             app:layout_constraintTop_toBottomOf="@+id/tagData"
             tools:ignore="RtlCompat" />
+
         <com.safetystratus.inventorymanagement.RangeGraph
             android:id="@+id/locationBar"
             android:layout_width="wrap_content"
             android:layout_height="200dp"
-            android:inputType="textMultiLine"
+            android:layout_marginTop="5dp"
             android:gravity="center"
-            tools:ignore="MissingClass"
+            android:inputType="textMultiLine"
             app:layout_constraintEnd_toEndOf="@+id/tag"
             app:layout_constraintStart_toStartOf="@+id/tag"
-            app:layout_constraintTop_toBottomOf="@+id/tag"/>
+            app:layout_constraintTop_toBottomOf="@+id/tag"
+            tools:ignore="MissingClass" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

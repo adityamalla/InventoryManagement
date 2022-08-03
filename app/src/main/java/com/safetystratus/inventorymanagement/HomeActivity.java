@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -40,8 +41,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity {
-    Button inventory;
-    Button locate;
+    ImageView inventory;
+    ImageView locate;
     Boolean connected;
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     String loggedinUsername = "";
@@ -118,8 +119,8 @@ public class HomeActivity extends AppCompatActivity {
         selectedUserId = intent.getStringExtra("selectedUserId");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
-        inventory = (Button) findViewById(R.id.inventoryBtn);
-        locate = (Button) findViewById(R.id.locationBtn);
+        inventory = (ImageView) findViewById(R.id.inventoryBtn);
+        locate = (ImageView) findViewById(R.id.locationBtn);
         if (intent.getStringExtra("pageLoadTemp") == null ) {
             if (connected) {
                 progressSynStart = new ProgressDialog(HomeActivity.this);
@@ -127,7 +128,7 @@ public class HomeActivity extends AppCompatActivity {
                 progressSynStart.setMessage("Synchronizing..");
                 progressSynStart.setCancelable(false);
                 progressSynStart.show();
-                progressSynStart.getWindow().setLayout(500, 200);
+                progressSynStart.getWindow().setLayout(450, 200);
                 if (sso.equals("false")) {
                     getAccessToken();
                 } else {
@@ -309,7 +310,7 @@ public class HomeActivity extends AppCompatActivity {
             progressSync.setMessage("Uploading..");
             progressSync.setCancelable(false);
             progressSync.show();
-            progressSync.getWindow().setLayout(500, 200);
+            progressSync.getWindow().setLayout(450, 200);
             super.onPreExecute();
         }
         @SuppressLint("WrongThread")
