@@ -273,8 +273,8 @@ public class HomeActivity extends AppCompatActivity {
                     progressSynStart = null;
                 }
                 //Log.e("response>>",response.toString()+"**");
-                /*SyncDbDialogs sdb = new SyncDbDialogs();
-                sdb.execute(response.toString());*/
+                SyncDbDialogs sdb = new SyncDbDialogs();
+                sdb.execute(response.toString());
             }
         }, new Response.ErrorListener() {
             @Override
@@ -351,7 +351,7 @@ public class HomeActivity extends AppCompatActivity {
             //JSONArray jsonArraySiteUsers = obj.getJSONArray("site_users");
             JSONArray jsonArrayFiLocations = obj.getJSONArray("fi_locations");
             JSONArray jsonArrayMenuItems = obj.getJSONArray("menu_items");
-            JSONArray jsonArrayFiFacilRooms = obj.getJSONArray("fi_facil_rooms");
+            //JSONArray jsonArrayFiFacilRooms = obj.getJSONArray("fi_facil_rooms");
             JSONArray jsonArrayFiRoomDept = obj.getJSONArray("fi_room_dept");
             JSONArray jsonArrayFiRoomTypes = obj.getJSONArray("fi_room_types");
             JSONArray jsonArraySettings = obj.getJSONArray("settings");
@@ -500,7 +500,7 @@ public class HomeActivity extends AppCompatActivity {
                     values.clear();
                 }
             }
-            for (int i = 0, size = jsonArrayFiFacilRooms.length(); i < size; i++) {
+            /*for (int i = 0, size = jsonArrayFiFacilRooms.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayFiFacilRooms.getJSONObject(i);
                 String id = objectInArray.getString("id");
                 if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, "id", id) == 0) {
@@ -515,7 +515,7 @@ public class HomeActivity extends AppCompatActivity {
                     db.insert(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, values);
                     values.clear();
                 }
-            }
+            }*/
             for (int i = 0, size = jsonArrayMenuItems.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayMenuItems.getJSONObject(i);
                 String id = objectInArray.getString("id");

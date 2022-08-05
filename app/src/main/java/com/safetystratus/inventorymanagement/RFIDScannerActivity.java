@@ -22,6 +22,7 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     public TextView statusTextViewRFID = null;
     private ListView textrfid;
     private TextView testStatus;
+    private TextView scannedProgressCount;
+    private TextView scannedProgressPercentage;
+    private ProgressBar progressVal;
     public TextView scanCount;
     ArrayList<String> newList = new ArrayList<String>();
     RFIDHandler rfidHandler;
@@ -57,6 +61,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     String selectedRoomName = "";
     String selectedRoom = "";
     String empName="";
+    int total_inventory = 120;
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +87,12 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         statusTextViewRFID = findViewById(R.id.rfidStatusText);
         scanCount = findViewById(R.id.scanCount);
         textrfid = findViewById(R.id.tags_list);
+        scannedProgressCount = findViewById(R.id.scannedProgressCount);
+        scannedProgressPercentage = findViewById(R.id.scannedProgressPercentage);
+        progressVal = findViewById(R.id.scanProgress);
+        scannedProgressPercentage.setText("0 %");
+        scannedProgressCount.setText("0/"+total_inventory);
+        progressVal.setProgress(0);
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
@@ -205,6 +216,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 public void run() {
                     textrfid.setAdapter(null);
                     scanCount.setText("0");
+                    scannedProgressPercentage.setText("0 %");
+                    scannedProgressCount.setText("0/"+total_inventory);
+                    progressVal.setProgress(0);
                 }
             });
             rfidHandler.performInventory();
@@ -214,6 +228,10 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
 
     public void setscancount(String count){
         scanCount.setText(count);
+        int percent = (Integer.parseInt(count) * 100) / total_inventory;
+        scannedProgressPercentage.setText(percent + " %");
+        scannedProgressCount.setText(count+"/"+total_inventory);
+        progressVal.setProgress(percent);
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
