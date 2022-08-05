@@ -43,6 +43,7 @@ import java.util.HashMap;
 public class HomeActivity extends AppCompatActivity {
     ImageView inventory;
     ImageView locate;
+    ImageView sync;
     Boolean connected;
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     String loggedinUsername = "";
@@ -116,11 +117,15 @@ public class HomeActivity extends AppCompatActivity {
             loggedinUsername = intent.getStringExtra("username");
         else if(intent.getStringExtra("loggedinUsername")!=null)
             loggedinUsername = intent.getStringExtra("loggedinUsername");
-        selectedUserId = intent.getStringExtra("selectedUserId");
+        if(intent.getStringExtra("selectedUserId")!=null)
+            selectedUserId = intent.getStringExtra("selectedUserId");
+        else if(intent.getStringExtra("user_id")!=null)
+            selectedUserId = intent.getStringExtra("user_id");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
         inventory = (ImageView) findViewById(R.id.inventoryBtn);
         locate = (ImageView) findViewById(R.id.locationBtn);
+        sync = (ImageView) findViewById(R.id.syncBtn);
         if (intent.getStringExtra("pageLoadTemp") == null ) {
             if (connected) {
                 progressSynStart = new ProgressDialog(HomeActivity.this);
@@ -154,14 +159,16 @@ public class HomeActivity extends AppCompatActivity {
             user_id[0] = selectedUserId;
             token[0] = request_token;
         }
+        Log.e("selecteduserid0>>",selectedUserId+"**");
+
         inventory.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Intent myIntent = new Intent(HomeActivity.this,
                         RFIDActivity.class);
-                myIntent.putExtra("user_id", user_id);
-                myIntent.putExtra("site_id", site_id);
-                myIntent.putExtra("token", token);
+                myIntent.putExtra("user_id", user_id[0]);
+                myIntent.putExtra("site_id", site_id[0]);
+                myIntent.putExtra("token", token[0]);
                 myIntent.putExtra("sso", sso);
                 myIntent.putExtra("md5pwd", md5Pwd);
                 myIntent.putExtra("loggedinUsername", loggedinUsername);
@@ -174,9 +181,25 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final Intent myIntent = new Intent(HomeActivity.this,
                         LocateTagActivity.class);
-                myIntent.putExtra("user_id", user_id);
-                myIntent.putExtra("site_id", site_id);
-                myIntent.putExtra("token", token);
+                myIntent.putExtra("user_id", user_id[0]);
+                myIntent.putExtra("site_id", site_id[0]);
+                myIntent.putExtra("token", token[0]);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("singleLocate", "1");
+                myIntent.putExtra("empName", empName);
+                startActivity(myIntent);
+            }});
+        sync.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent myIntent = new Intent(HomeActivity.this,
+                        SyncDBActivity.class);
+                myIntent.putExtra("user_id", user_id[0]);
+                myIntent.putExtra("site_id", site_id[0]);
+                myIntent.putExtra("token", token[0]);
                 myIntent.putExtra("sso", sso);
                 myIntent.putExtra("md5pwd", md5Pwd);
                 myIntent.putExtra("loggedinUsername", loggedinUsername);
@@ -216,13 +239,16 @@ public class HomeActivity extends AppCompatActivity {
                                 String res = response.toString();
                                 if(res.contains("Success:")){
                                     JSONObject jsonObj = new JSONObject(res);
-                                    String site_id = jsonObj.get("site_id").toString();
-                                    String user_id = jsonObj.get("user_id").toString();
-                                    String token = jsonObj.get("access_token").toString();
+                                    String s_id = jsonObj.get("site_id").toString();
+                                    String u_id = jsonObj.get("user_id").toString();
+                                    String tken = jsonObj.get("access_token").toString();
+                                    site_id[0] = s_id;
+                                    user_id[0] = u_id;
+                                    token[0] = tken;
                                     hideKeyboard(HomeActivity.this);
                                     empName = jsonObj.get("name").toString();
                                     welcomeText.setText("Hi "+empName+"!");
-                                    insertDbData(site_id, user_id, token);
+                                    insertDbData(site_id[0], user_id[0], token[0]);
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
@@ -272,7 +298,7 @@ public class HomeActivity extends AppCompatActivity {
                     progressSynStart.dismiss();
                     progressSynStart = null;
                 }
-                //Log.e("response>>",response.toString()+"**");
+                Log.e("response>>",response.toString()+"**");
                 SyncDbDialogs sdb = new SyncDbDialogs();
                 sdb.execute(response.toString());
             }
@@ -352,13 +378,14 @@ public class HomeActivity extends AppCompatActivity {
             JSONArray jsonArrayFiLocations = obj.getJSONArray("fi_locations");
             JSONArray jsonArrayMenuItems = obj.getJSONArray("menu_items");
             //JSONArray jsonArrayFiFacilRooms = obj.getJSONArray("fi_facil_rooms");
-            JSONArray jsonArrayFiRoomDept = obj.getJSONArray("fi_room_dept");
             JSONArray jsonArrayFiRoomTypes = obj.getJSONArray("fi_room_types");
             JSONArray jsonArraySettings = obj.getJSONArray("settings");
             JSONArray jsonArrayLabels = obj.getJSONArray("labels");
             JSONArray jsonArrayFiFacilities = obj.getJSONArray("fi_facilities");
             JSONArray jsonArrayMenuCategories = obj.getJSONArray("menu_categories");
             JSONArray jsonArrayOtOrganization = obj.getJSONArray("ot_organization");
+            Log.e("Test00>",jsonArrayOtOrganization.toString()+"**");
+
             //JSONArray jsonArrayChemicalInventory = obj.getJSONArray("chemical_inventory");
             // JSONArray jsonArrayFiRoomRoster = obj.getJSONArray("fi_room_roster");
             //db.delete(QueryConstants.TABLE_NAME_SITE_USERS, null, null);
@@ -425,6 +452,7 @@ public class HomeActivity extends AppCompatActivity {
             }
             for (int i = 0, size = jsonArrayFiFacilities.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayFiFacilities.getJSONObject(i);
+                Log.e("Test>>",objectInArray.toString()+"*");
                 String id = objectInArray.getString("id");
                 if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_FACILITIES, "id", id) == 0) {
                     values.put("location_id", objectInArray.getString("location_id"));
@@ -487,19 +515,7 @@ public class HomeActivity extends AppCompatActivity {
                     values.clear();
                 }
             }
-            for (int i = 0, size = jsonArrayFiRoomDept.length(); i < size; i++) {
-                JSONObject objectInArray = jsonArrayFiRoomDept.getJSONObject(i);
-                String dept_id = objectInArray.getString("dept_id");
-                String room_id = objectInArray.getString("room_id");
-                if (databaseHandler.checkDuplicatesTwoPrimaryKeys(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_ROOM_DEPT,
-                        "dept_id", "room_id",
-                        dept_id, room_id) == 0) {
-                    values.put("dept_id", dept_id);
-                    values.put("room_id", room_id);
-                    db.insert(QueryConstants.TABLE_NAME_FI_ROOM_DEPT, null, values);
-                    values.clear();
-                }
-            }
+
             /*for (int i = 0, size = jsonArrayFiFacilRooms.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayFiFacilRooms.getJSONObject(i);
                 String id = objectInArray.getString("id");

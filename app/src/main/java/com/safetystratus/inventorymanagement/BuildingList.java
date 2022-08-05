@@ -35,12 +35,13 @@ public class BuildingList extends AppCompatActivity {
     String lastCompletedInspectionSiteInfo = "";
     String sso = "";
     String site_name = "";
-    String request_token="";
+    String token="";
     String selectedFacilName = "";
     String selectedFacil = "";
     String selectedRoomName = "";
     String selectedRoom = "";
     String empName = "";
+    String fromSync = "";
     ArrayList<MyObject> facillist=null;
     ConstraintLayout header;
     @SuppressLint("WrongConstant")
@@ -70,7 +71,7 @@ public class BuildingList extends AppCompatActivity {
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
-            request_token = intent.getStringExtra("token");
+            token = intent.getStringExtra("token");
         }
         if(intent.getStringExtra("empName")!=null) {
             empName = intent.getStringExtra("empName");
@@ -95,6 +96,9 @@ public class BuildingList extends AppCompatActivity {
         }
         if (intent.getStringExtra("selectedRoomName") != null) {
             selectedRoomName = intent.getStringExtra("selectedRoomName");
+        }
+        if (intent.getStringExtra("fromSync") != null) {
+            fromSync = intent.getStringExtra("fromSync");
         }
         facillist = new ArrayList<MyObject>();
         if(intent.getSerializableExtra("facillist")!=null)
@@ -146,13 +150,18 @@ public class BuildingList extends AppCompatActivity {
                     Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                     img.setBounds(0, 0, 60, 60);
                     buildingName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                    final Intent myIntent = new Intent(BuildingList.this,
-                            RFIDActivity.class);
+                    Intent myIntent = null;
+                    if(fromSync.trim().length()>0)
+                        myIntent = new Intent(BuildingList.this,
+                            SyncDBActivity.class);
+                    else
+                        myIntent = new Intent(BuildingList.this,
+                                RFIDActivity.class);
                     myIntent.putExtra("selectedFacilName", buildingName.getText());
                     myIntent.putExtra("selectedFacil", buildingName.getId()+"");
                     myIntent.putExtra("user_id", user_id);
                     myIntent.putExtra("site_id", loggedinUserSiteId);
-                    myIntent.putExtra("token", request_token);
+                    myIntent.putExtra("token", token);
                     myIntent.putExtra("sso", sso);
                     myIntent.putExtra("md5pwd", md5Pwd);
                     myIntent.putExtra("loggedinUsername", loggedinUsername);
@@ -176,13 +185,18 @@ public class BuildingList extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            final Intent myIntent = new Intent(BuildingList.this,
-                    RFIDActivity.class);
+            Intent myIntent = null;
+            if(fromSync.trim().length()>0)
+                myIntent = new Intent(BuildingList.this,
+                    SyncDBActivity.class);
+            else
+                myIntent = new Intent(BuildingList.this,
+                        RFIDActivity.class);
             myIntent.putExtra("selectedFacilName", selectedFacilName);
             myIntent.putExtra("selectedFacil", selectedFacil+"");
             myIntent.putExtra("user_id", user_id);
             myIntent.putExtra("site_id", loggedinUserSiteId);
-            myIntent.putExtra("token", request_token);
+            myIntent.putExtra("token", token);
             myIntent.putExtra("sso", sso);
             myIntent.putExtra("md5pwd", md5Pwd);
             myIntent.putExtra("loggedinUsername", loggedinUsername);

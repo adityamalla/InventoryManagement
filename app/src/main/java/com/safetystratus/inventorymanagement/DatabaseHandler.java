@@ -36,7 +36,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_SETTINGS);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_MENU_CATEGORIES);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_MENU_ITEMS);
-        //sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_CHEMICAL_INVENTORY);
+        sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_CHEMICAL_INVENTORY);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_FI_ROOM_ROSTER);
     }
     @Override
@@ -168,6 +168,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 count = cursor.getInt(cursor.getColumnIndex("count"));
         }
         cursor.close();
+        return count;
+    }
+
+    @SuppressLint("Range")
+    public int getInventoryCount(SQLiteDatabase sqLiteDatabase, String room_id){
+        int count = 0;
+        Log.e("countDB>",count+"**"+room_id);
+        try{
+            Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT count(*) as count  \n" +
+                    "FROM chemical_inventory where room_id="+room_id), null);
+            if (cursor.moveToFirst()) {
+                Log.e("countDB1>",count+"**"+room_id);
+                count = cursor.getInt(cursor.getColumnIndex("count"));
+            }
+            Log.e("countDB>",count+"**");
+            cursor.close();
+        }catch (Exception e){e.printStackTrace();}
         return count;
     }
 

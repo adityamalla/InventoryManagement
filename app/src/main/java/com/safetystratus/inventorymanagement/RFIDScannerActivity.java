@@ -52,16 +52,13 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     String selectedSearchValue = "";
     String sso = "";
     String site_name = "";
-    String request_token="";
-    final String[] site_id = {""};
-    final String[] user_id = {""};
-    final String[] token = {""};
+    String token="";
     String selectedFacilName = "";
     String selectedFacil = "";
     String selectedRoomName = "";
     String selectedRoom = "";
     String empName="";
-    int total_inventory = 120;
+    String total_inventory = "0";
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,14 +93,14 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
-            request_token = intent.getStringExtra("token");
+            token = intent.getStringExtra("token");
         }
         if(intent.getStringExtra("empName")!=null) {
             empName = intent.getStringExtra("empName");
         }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
-        selectedUserId = intent.getStringExtra("selectedUserId");
+        selectedUserId = intent.getStringExtra("user_id");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
         if (intent.getStringExtra("selectedSearchValue") != null) {
@@ -120,6 +117,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         }
         if (intent.getStringExtra("selectedRoomName") != null) {
             selectedRoomName = intent.getStringExtra("selectedRoomName");
+        }
+        if (intent.getStringExtra("total_inventory") != null) {
+            total_inventory = intent.getStringExtra("total_inventory");
         }
         // RFID Handler
         rfidHandler = new RFIDHandler();
@@ -228,10 +228,12 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
 
     public void setscancount(String count){
         scanCount.setText(count);
-        int percent = (Integer.parseInt(count) * 100) / total_inventory;
-        scannedProgressPercentage.setText(percent + " %");
-        scannedProgressCount.setText(count+"/"+total_inventory);
-        progressVal.setProgress(percent);
+        if(Integer.parseInt(total_inventory)>0) {
+            int percent = (Integer.parseInt(count) * 100) / Integer.parseInt(total_inventory);
+            scannedProgressPercentage.setText(percent + " %");
+            scannedProgressCount.setText(count + "/" + total_inventory);
+            progressVal.setProgress(percent);
+        }
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -239,8 +241,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         if (id == android.R.id.home) {
             final Intent myIntent = new Intent(RFIDScannerActivity.this,
                     RFIDActivity.class);
-            myIntent.putExtra("user_id", user_id);
-            myIntent.putExtra("site_id", site_id);
+            myIntent.putExtra("user_id", selectedUserId);
+            myIntent.putExtra("site_id", loggedinUserSiteId);
             myIntent.putExtra("token", token);
             myIntent.putExtra("sso", sso);
             myIntent.putExtra("md5pwd", md5Pwd);

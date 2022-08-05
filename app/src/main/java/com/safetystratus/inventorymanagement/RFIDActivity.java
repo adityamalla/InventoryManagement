@@ -56,10 +56,7 @@ public class RFIDActivity extends AppCompatActivity {
     String selectedSearchValue = "";
     String sso = "";
     String site_name = "";
-    String request_token="";
-    final String[] site_id = {""};
-    final String[] user_id = {""};
-    final String[] token = {""};
+    String token="";
     EditText employeeId;
     EditText building;
     EditText room;
@@ -116,14 +113,15 @@ public class RFIDActivity extends AppCompatActivity {
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
-            request_token = intent.getStringExtra("token");
+            token = intent.getStringExtra("token");
         }
         if(intent.getStringExtra("empName")!=null) {
             empName = intent.getStringExtra("empName");
         }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
-        selectedUserId = intent.getStringExtra("selectedUserId");
+        selectedUserId = intent.getStringExtra("user_id");
+        Log.e("selecteduserid1>>",selectedUserId+"**");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
         if (intent.getStringExtra("selectedSearchValue") != null) {
@@ -173,11 +171,12 @@ public class RFIDActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
                 final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
-                ArrayList<MyObject> facillist = databaseHandler.getBuildingList(databaseHandler.getWritableDatabase(PASS_PHRASE));
+                try {
+                    ArrayList<MyObject> facillist = databaseHandler.getBuildingList(databaseHandler.getWritableDatabase(PASS_PHRASE));
                     final Intent myIntent = new Intent(RFIDActivity.this,
                             BuildingList.class);
-                    myIntent.putExtra("user_id", user_id);
-                    myIntent.putExtra("site_id", site_id);
+                    myIntent.putExtra("user_id", selectedUserId);
+                    myIntent.putExtra("site_id", loggedinUserSiteId);
                     myIntent.putExtra("token", token);
                     myIntent.putExtra("sso", sso);
                     myIntent.putExtra("md5pwd", md5Pwd);
@@ -191,6 +190,15 @@ public class RFIDActivity extends AppCompatActivity {
                     myIntent.putExtra("selectedRoom", selectedRoom+"");
                     myIntent.putExtra("empName", empName);
                     startActivity(myIntent);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    // progress.dismiss();
+                    db.close();
+                    if (databaseHandler != null) {
+                        databaseHandler.close();
+                    }
+                }
             }
         });
         room.setOnClickListener(new View.OnClickListener() {
@@ -199,26 +207,36 @@ public class RFIDActivity extends AppCompatActivity {
                 final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
                 final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
                 if(selectedFacil.length()>0){
-                    ArrayList<MyObject> roomlist = databaseHandler.getRoomList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedFacil);
-                    final Intent myIntent = new Intent(RFIDActivity.this,
-                            RoomList.class);
-                    myIntent.putExtra("user_id", user_id);
-                    myIntent.putExtra("site_id", site_id);
-                    myIntent.putExtra("token", token);
-                    myIntent.putExtra("sso", sso);
-                    myIntent.putExtra("md5pwd", md5Pwd);
-                    myIntent.putExtra("loggedinUsername", loggedinUsername);
-                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-                    myIntent.putExtra("site_name", site_name);
-                    myIntent.putExtra("roomlist",roomlist);
-                    myIntent.putExtra("selectedFacilName", selectedFacilName);
-                    myIntent.putExtra("selectedFacil", selectedFacil+"");
-                    myIntent.putExtra("selectedFacilName", selectedFacilName);
-                    myIntent.putExtra("selectedFacil", selectedFacil+"");
-                    myIntent.putExtra("selectedRoomName", selectedRoomName);
-                    myIntent.putExtra("selectedRoom", selectedRoom+"");
-                    myIntent.putExtra("empName", empName);
-                    startActivity(myIntent);
+                    try {
+                        ArrayList<MyObject> roomlist = databaseHandler.getRoomList(db,selectedFacil);
+                        final Intent myIntent = new Intent(RFIDActivity.this,
+                                RoomList.class);
+                        myIntent.putExtra("user_id", selectedUserId);
+                        myIntent.putExtra("site_id", loggedinUserSiteId);
+                        myIntent.putExtra("token", token);
+                        myIntent.putExtra("sso", sso);
+                        myIntent.putExtra("md5pwd", md5Pwd);
+                        myIntent.putExtra("loggedinUsername", loggedinUsername);
+                        myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                        myIntent.putExtra("site_name", site_name);
+                        myIntent.putExtra("roomlist",roomlist);
+                        myIntent.putExtra("selectedFacilName", selectedFacilName);
+                        myIntent.putExtra("selectedFacil", selectedFacil+"");
+                        myIntent.putExtra("selectedFacilName", selectedFacilName);
+                        myIntent.putExtra("selectedFacil", selectedFacil+"");
+                        myIntent.putExtra("selectedRoomName", selectedRoomName);
+                        myIntent.putExtra("selectedRoom", selectedRoom+"");
+                        myIntent.putExtra("empName", empName);
+                        startActivity(myIntent);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }finally {
+                        // progress.dismiss();
+                        db.close();
+                        if (databaseHandler != null) {
+                            databaseHandler.close();
+                        }
+                    }
                 }else{
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDActivity.this);
                     dlgAlert.setTitle("SafetyStratus");
@@ -237,29 +255,45 @@ public class RFIDActivity extends AppCompatActivity {
         scanRFID.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.e("inveC>>",selectedRoom+"*");
                 if(selectedRoom.length()>0){
-                    final Intent myIntent = new Intent(RFIDActivity.this,
-                            RFIDScannerActivity.class);
-                    myIntent.putExtra("user_id", user_id);
-                    myIntent.putExtra("site_id", site_id);
-                    myIntent.putExtra("token", token);
-                    myIntent.putExtra("sso", sso);
-                    myIntent.putExtra("md5pwd", md5Pwd);
-                    myIntent.putExtra("loggedinUsername", loggedinUsername);
-                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-                    myIntent.putExtra("site_name", site_name);
-                    myIntent.putExtra("selectedFacilName", selectedFacilName);
-                    myIntent.putExtra("selectedFacil", selectedFacil+"");
-                    myIntent.putExtra("selectedFacilName", selectedFacilName);
-                    myIntent.putExtra("selectedFacil", selectedFacil+"");
-                    myIntent.putExtra("selectedRoomName", selectedRoomName);
-                    myIntent.putExtra("selectedRoom", selectedRoom+"");
-                    myIntent.putExtra("empName", empName);
-                    startActivity(myIntent);
+                    final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
+                    final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+                    try {
+                        int inventoryCount = databaseHandler.getInventoryCount(db,selectedRoom);
+                        Log.e("inveC>>",inventoryCount+"*");
+                        final Intent myIntent = new Intent(RFIDActivity.this,
+                                RFIDScannerActivity.class);
+                        myIntent.putExtra("user_id", selectedUserId);
+                        myIntent.putExtra("site_id", loggedinUserSiteId);
+                        myIntent.putExtra("token", token);
+                        myIntent.putExtra("sso", sso);
+                        myIntent.putExtra("md5pwd", md5Pwd);
+                        myIntent.putExtra("loggedinUsername", loggedinUsername);
+                        myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                        myIntent.putExtra("site_name", site_name);
+                        myIntent.putExtra("selectedFacilName", selectedFacilName);
+                        myIntent.putExtra("selectedFacil", selectedFacil+"");
+                        myIntent.putExtra("selectedFacilName", selectedFacilName);
+                        myIntent.putExtra("selectedFacil", selectedFacil+"");
+                        myIntent.putExtra("selectedRoomName", selectedRoomName);
+                        myIntent.putExtra("selectedRoom", selectedRoom+"");
+                        myIntent.putExtra("empName", empName);
+                        myIntent.putExtra("total_inventory", inventoryCount+"");
+                        startActivity(myIntent);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }finally {
+                        // progress.dismiss();
+                        db.close();
+                        if (databaseHandler != null) {
+                            databaseHandler.close();
+                        }
+                    }
                 }else{
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDActivity.this);
                     dlgAlert.setTitle("SafetyStratus");
-                    dlgAlert.setMessage("Seems like you haven't downloaded rooms for the building '"+selectedFacilName+"'. Please go to home page and download the rooms");
+                    dlgAlert.setMessage("Seems like you haven't downloaded rooms for the building '"+selectedFacilName+"'. Please go to home page and download the rooms or you haven't selected any room!");
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -287,8 +321,9 @@ public class RFIDActivity extends AppCompatActivity {
         if (id == android.R.id.home) {
             final Intent myIntent = new Intent(RFIDActivity.this,
                     HomeActivity.class);
-            myIntent.putExtra("user_id", user_id);
-            myIntent.putExtra("site_id", site_id);
+            Log.e("selecteduserid2>>",selectedUserId+"**");
+            myIntent.putExtra("user_id", selectedUserId);
+            myIntent.putExtra("site_id", loggedinUserSiteId);
             myIntent.putExtra("token", token);
             myIntent.putExtra("sso", sso);
             myIntent.putExtra("md5pwd", md5Pwd);

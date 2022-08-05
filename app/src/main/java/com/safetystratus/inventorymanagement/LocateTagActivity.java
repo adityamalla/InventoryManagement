@@ -41,13 +41,10 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
     String sso = "";
     String site_name = "";
     String selectedUserId = "";
-    String request_token="";
+    String token="";
     String empName="";
     String loggedinUserSiteId = "";
     String selectedSearchValue="";
-    final String[] site_id = {""};
-    final String[] user_id = {""};
-    final String[] token = {""};
     RFIDLocationHandler rfidHandler;
     TextView rfidStatus;
     TextView tagSearch;
@@ -90,11 +87,11 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
             multiLocate = intent.getStringExtra("multiLocate");
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
-            request_token = intent.getStringExtra("token");
+            token = intent.getStringExtra("token");
         }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
-        selectedUserId = intent.getStringExtra("selectedUserId");
+        selectedUserId = intent.getStringExtra("user_id");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
         if (intent.getStringExtra("selectedSearchValue") != null) {
@@ -107,8 +104,8 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         if (id == android.R.id.home) {
             final Intent myIntent = new Intent(LocateTagActivity.this,
                     HomeActivity.class);
-            myIntent.putExtra("user_id", user_id);
-            myIntent.putExtra("site_id", site_id);
+            myIntent.putExtra("user_id", selectedUserId);
+            myIntent.putExtra("site_id", loggedinUserSiteId);
             myIntent.putExtra("token", token);
             myIntent.putExtra("sso", sso);
             myIntent.putExtra("md5pwd", md5Pwd);
