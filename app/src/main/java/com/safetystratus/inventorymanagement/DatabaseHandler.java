@@ -160,32 +160,45 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public int checkCount(SQLiteDatabase sqLiteDatabase){
         int count = 0;
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT count(*) as count  \n" +
-                "FROM chemical_inventory"), null);
-
-        if (cursor.moveToFirst()) {
-
-                count = cursor.getInt(cursor.getColumnIndex("count"));
-        }
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM chemical_inventory"), null);
+        count = cursor.getCount();
         cursor.close();
         return count;
     }
 
     @SuppressLint("Range")
-    public int getInventoryCount(SQLiteDatabase sqLiteDatabase, String room_id){
+    public ArrayList<InventoryObject> getInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
+        ArrayList<InventoryObject> inv = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT sec_code,code  \n" +
+                "FROM  chemical_inventory "), null);
         int count = 0;
-        Log.e("countDB>",count+"**"+room_id);
-        try{
-            Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT count(*) as count  \n" +
-                    "FROM chemical_inventory where room_id="+room_id), null);
-            if (cursor.moveToFirst()) {
-                Log.e("countDB1>",count+"**"+room_id);
-                count = cursor.getInt(cursor.getColumnIndex("count"));
+        int recCount = cursor.getCount();
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String product_name = "";
+                if(cursor.getString(cursor.getColumnIndex("code")).trim().length()>0) {
+                    product_name = cursor.getString(cursor.getColumnIndex("code"));
+                }else{
+                    product_name = "Inv"+count;
+                }
+                String rfidCode = "";
+                if(cursor.getString(cursor.getColumnIndex("sec_code")).trim().length()>0) {
+                    rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                }else{
+                    if(count==0)
+                        rfidCode = "C0058466";
+                    else if(count == recCount-1)
+                        rfidCode = "C0058467";
+                    else
+                        rfidCode = "rfid"+count;
+                }
+                inv.add(new InventoryObject(rfidCode, product_name));
+                cursor.moveToNext();
+                count++;
             }
-            Log.e("countDB>",count+"**");
-            cursor.close();
-        }catch (Exception e){e.printStackTrace();}
-        return count;
+        }
+        cursor.close();
+        return inv;
     }
 
 }

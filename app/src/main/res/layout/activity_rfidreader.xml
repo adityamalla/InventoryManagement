@@ -53,9 +53,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:layout_marginEnd="10dp"
         android:progress="10"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/scanCount"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/rfidStatus"
         app:layout_constraintTop_toBottomOf="@+id/rfidStatus" />
@@ -92,7 +91,7 @@
         app:layout_constraintTop_toBottomOf="@+id/scanProgress"
         tools:ignore="RtlCompat" />
 
-    <TextView
+    <!--TextView
         android:id="@+id/tagData"
         android:layout_width="0dp"
         android:layout_height="50dp"
@@ -108,15 +107,33 @@
         app:layout_constraintEnd_toEndOf="@+id/scannedProgressPercentage"
         app:layout_constraintStart_toStartOf="@+id/scannedProgressPercentage"
         app:layout_constraintTop_toBottomOf="@+id/scannedProgressPercentage"
-        tools:ignore="RtlCompat" />
+        tools:ignore="RtlCompat" /-->
+    <ScrollView
+        android:id="@+id/invList"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="10dp"
+        android:background="#FFFFFF"
+        app:layout_constraintEnd_toEndOf="@+id/scannedProgressPercentage"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/scannedProgressPercentage"
+        app:layout_constraintTop_toBottomOf="@+id/scannedProgressPercentage">
 
-    <ListView
+        <TableLayout
+            android:id="@+id/tableInv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:stretchColumns="0"></TableLayout>
+    </ScrollView>
+    <!---ListView
         android:id="@+id/tags_list"
         android:layout_width="0dp"
         android:layout_height="200dp"
         app:layout_constraintEnd_toEndOf="@+id/tagData"
         app:layout_constraintStart_toStartOf="@+id/tagData"
-        app:layout_constraintTop_toBottomOf="@+id/tagData"></ListView>
+        app:layout_constraintTop_toBottomOf="@+id/tagData"></ListView-->
 
     <Button
         android:id="@+id/postScan"
@@ -126,8 +143,8 @@
         android:layout_marginBottom="20dp"
         android:text="Post Scan"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/tags_list"
-        app:layout_constraintTop_toBottomOf="@+id/tags_list" />
+        app:layout_constraintEnd_toEndOf="@+id/invList"
+        app:layout_constraintTop_toBottomOf="@+id/invList" />
 
     <TextView
         android:id="@+id/totalScanCount"

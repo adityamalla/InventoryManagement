@@ -15,5 +15,6 @@
     <color name="loader">#E5F3FF</color>
     <color name="transparent">#80000000</color>
     <color name="colorPrimaryDark">#00574B</color>
+    <color name="invScanSuccess">#D6F7D6</color>
     <color name="colorAccent">#D81B60</color>
 </resources>
