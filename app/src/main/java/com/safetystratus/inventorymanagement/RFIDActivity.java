@@ -260,7 +260,7 @@ public class RFIDActivity extends AppCompatActivity {
                     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
                     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
                     try {
-                        int inventoryCount = databaseHandler.checkCount(db);
+                        int inventoryCount = databaseHandler.checkCount(db,selectedRoom);
                         Log.e("inveC>>",inventoryCount+"*");
                         final Intent myIntent = new Intent(RFIDActivity.this,
                                 RFIDScannerActivity.class);

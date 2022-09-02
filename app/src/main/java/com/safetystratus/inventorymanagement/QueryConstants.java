@@ -19,10 +19,12 @@ public class QueryConstants {
             "(id integer PRIMARY KEY NOT NULL,\n" +
             "        code text ,\n" +
             "    \tsec_code text,\n" +
+            "    \tname text,\n" +
             "    \topened_date text,\n" +
             "    \treceipt_date text,\n" +
             "    \tcreate_date text,\n" +
             "    \tobject_id integer,\n" +
+            "    \t room_id integer,\n" +
             "        object_table text ,\n" +
             "    \tmodified_user_id numeric,\n" +
             "        modified_date text,\n" +

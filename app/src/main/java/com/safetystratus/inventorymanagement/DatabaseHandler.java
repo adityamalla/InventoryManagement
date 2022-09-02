@@ -158,9 +158,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     @SuppressLint("Range")
-    public int checkCount(SQLiteDatabase sqLiteDatabase){
+    public int checkCount(SQLiteDatabase sqLiteDatabase, String room_id){
         int count = 0;
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM chemical_inventory"), null);
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM chemical_inventory where room_id="+room_id), null);
         count = cursor.getCount();
         cursor.close();
         return count;
@@ -170,7 +170,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<InventoryObject> getInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
         ArrayList<InventoryObject> inv = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT sec_code,code  \n" +
-                "FROM  chemical_inventory "), null);
+                "FROM  chemical_inventory where room_id="+room_id), null);
         int count = 0;
         int recCount = cursor.getCount();
         if (cursor.moveToFirst()) {
