@@ -12,6 +12,7 @@ public class QueryConstants {
     public static final String TABLE_NAME_CHEMICAL_INVENTORY = "chemical_inventory";
     public static final String TABLE_NAME_LABELS = "labels";
     public static final String TABLE_NAME_SETTINGS = "settings";
+    public static final String TABLE_NAME_SCANNED_DATA = "scanned_data";
     public static final String TABLE_NAME_MENU_CATEGORIES = "menu_categories";
     public static final String TABLE_NAME_MENU_ITEMS = "menu_items";
 
@@ -107,6 +108,14 @@ public class QueryConstants {
             "    name varchar(128) NOT NULL,\n" +
             "    short_name varchar(32),\n" +
             "    status varchar(16)\n" +
+            ")";
+
+    public static String SQL_CREATE_TABLE_SCANNED_DATA = "CREATE TABLE IF NOT EXISTS scanned_data\n" +
+            "(\n" +
+            "    id integer PRIMARY KEY NOT NULL ,\n" +
+            "    location_id integer NOT NULL,\n" +
+            "    room_id integer NOT NULL,\n" +
+            "    inventory_id integer NOT NULL\n" +
             ")";
 
 

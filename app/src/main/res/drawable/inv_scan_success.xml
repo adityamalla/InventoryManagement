@@ -7,7 +7,7 @@
     </item>
     <item android:right="0.5dip" android:left="0.9dip">
         <shape android:shape="rectangle">
-            <solid android:color="#F0F0F0" />
+            <solid android:color="@color/invScanSuccess" />
         </shape>
     </item>
 </layer-list>

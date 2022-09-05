@@ -330,6 +330,8 @@ public class SyncDBActivity extends AppCompatActivity {
                 if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_OT_ORGANIZATION, "id", id) == 0) {
                     values.put("id", id);
                     values.put("opened_date", objectInArray.getString("opened_date"));
+                    values.put("name", objectInArray.getString("name"));
+                    values.put("room_id", objectInArray.getString("room_id"));
                     values.put("sec_code", objectInArray.getString("sec_code"));
                     values.put("object_table", objectInArray.getString("object_table"));
                     values.put("modified_user_id", objectInArray.getString("modified_user_id"));

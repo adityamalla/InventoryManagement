@@ -1,6 +1,7 @@
 package com.safetystratus.inventorymanagement;
 
 import android.annotation.SuppressLint;
+import android.content.ContentValues;
 import android.content.Context;
 import android.util.Log;
 
@@ -38,6 +39,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_MENU_ITEMS);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_CHEMICAL_INVENTORY);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_FI_ROOM_ROSTER);
+        sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_SCANNED_DATA);
     }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
@@ -169,15 +171,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<InventoryObject> getInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
         ArrayList<InventoryObject> inv = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT sec_code,code  \n" +
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT sec_code,name,code,id  \n" +
                 "FROM  chemical_inventory where room_id="+room_id), null);
         int count = 0;
         int recCount = cursor.getCount();
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
+                String id = cursor.getString(cursor.getColumnIndex("id"));
                 String product_name = "";
-                if(cursor.getString(cursor.getColumnIndex("code")).trim().length()>0) {
-                    product_name = cursor.getString(cursor.getColumnIndex("code"));
+                String code = "";
+                if(cursor.getString(cursor.getColumnIndex("name")).trim().length()>0) {
+                    product_name = cursor.getString(cursor.getColumnIndex("name"));
                 }else{
                     product_name = "Inv"+count;
                 }
@@ -185,14 +189,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 if(cursor.getString(cursor.getColumnIndex("sec_code")).trim().length()>0) {
                     rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
                 }else{
-                    if(count==0)
-                        rfidCode = "C0058466";
-                    else if(count == recCount-1)
-                        rfidCode = "C0058467";
-                    else
-                        rfidCode = "rfid"+count;
+                    rfidCode = "rfid"+count;
                 }
-                inv.add(new InventoryObject(rfidCode, product_name));
+                if(cursor.getString(cursor.getColumnIndex("code")).trim().length()>0) {
+                    code = cursor.getString(cursor.getColumnIndex("code"));
+                }else{
+                    code = "code"+count;
+                }
+                inv.add(new InventoryObject(rfidCode, product_name,id,code));
                 cursor.moveToNext();
                 count++;
             }
@@ -200,6 +204,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return inv;
     }
-
+    public void insertScannedInvData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+cv.getAsString("room_id")+"" +
+                " and location_id="+cv.getAsString("location_id")+" and inventory_id="+cv.getAsString("inventory_id")), null);
+        int count = cursor1.getCount();
+        cursor1.close();
+        if (count==0)
+        sqLiteDatabase.insert("scanned_data", null, cv);
+    }
+    @SuppressLint("Range")
+    public int checkScannedDataCount(SQLiteDatabase sqLiteDatabase){
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data"), null);
+        int count = cursor1.getCount();
+        Log.e("scannedCount>>",count+"***");
+        cursor1.close();
+        return count;
+    }
 }
 

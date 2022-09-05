@@ -114,18 +114,25 @@
         android:layout_height="200dp"
         android:layout_marginTop="10dp"
         android:background="#FFFFFF"
+        android:scrollbars="horizontal|vertical"
         app:layout_constraintEnd_toEndOf="@+id/scannedProgressPercentage"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/scannedProgressPercentage"
         app:layout_constraintTop_toBottomOf="@+id/scannedProgressPercentage">
-
-        <TableLayout
-            android:id="@+id/tableInv"
-            android:layout_width="match_parent"
+        <HorizontalScrollView
+            android:id="@+id/horizontalView"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:stretchColumns="0"></TableLayout>
+            android:scrollbars="horizontal|vertical"
+            android:layout_width="wrap_content"
+            android:layout_marginTop="5dip">
+                <TableLayout
+                    android:id="@+id/tableInv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:stretchColumns="0"></TableLayout>
+        </HorizontalScrollView>
     </ScrollView>
     <!---ListView
         android:id="@+id/tags_list"

@@ -401,6 +401,7 @@ public class HomeActivity extends AppCompatActivity {
             db.delete(QueryConstants.TABLE_NAME_MENU_CATEGORIES, null, null);
             db.delete(QueryConstants.TABLE_NAME_MENU_ITEMS, null, null);
             db.delete(QueryConstants.TABLE_NAME_SETTINGS, null, null);
+            db.delete(QueryConstants.TABLE_NAME_SCANNED_DATA, null, null);
             //db.delete(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, null);
             /*for (int i = 0, size = jsonArrayChemicalInventory.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayChemicalInventory.getJSONObject(i);
