@@ -196,7 +196,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 }else{
                     code = "code"+count;
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null));
                 cursor.moveToNext();
                 count++;
             }
@@ -219,6 +219,124 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Log.e("scannedCount>>",count+"***");
         cursor1.close();
         return count;
+    }
+
+    @SuppressLint("Range")
+    public ArrayList<InventoryObject> getFoundInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
+        ArrayList<InventoryObject> inv = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,ci.id from chemical_inventory ci \n" +
+                "join scanned_data sc on ci.id = sc.inventory_id \n" +
+                "where ci.room_id = "+room_id), null);
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String id = cursor.getString(cursor.getColumnIndex("id"));
+                String product_name = "";
+                String code = "";
+                if(cursor.getString(cursor.getColumnIndex("name")).trim().length()>0) {
+                    product_name = cursor.getString(cursor.getColumnIndex("name"));
+                }else{
+                    product_name = "Inv"+count;
+                }
+                String rfidCode = "";
+                if(cursor.getString(cursor.getColumnIndex("sec_code")).trim().length()>0) {
+                    rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                }else{
+                    rfidCode = "rfid"+count;
+                }
+                if(cursor.getString(cursor.getColumnIndex("code")).trim().length()>0) {
+                    code = cursor.getString(cursor.getColumnIndex("code"));
+                }else{
+                    code = "code"+count;
+                }
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null));
+                cursor.moveToNext();
+                count++;
+            }
+        }
+        cursor.close();
+        return inv;
+    }
+    @SuppressLint("Range")
+    public ArrayList<InventoryObject> getNotFoundInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
+        ArrayList<InventoryObject> inv = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,ci.id from chemical_inventory ci \n" +
+                "where ci.room_id = 20 and ci.id not in(select inventory_id from scanned_data where room_id="+room_id+");"), null);
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String id = cursor.getString(cursor.getColumnIndex("id"));
+                String product_name = "";
+                String code = "";
+                if(cursor.getString(cursor.getColumnIndex("name")).trim().length()>0) {
+                    product_name = cursor.getString(cursor.getColumnIndex("name"));
+                }else{
+                    product_name = "Inv"+count;
+                }
+                String rfidCode = "";
+                if(cursor.getString(cursor.getColumnIndex("sec_code")).trim().length()>0) {
+                    rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                }else{
+                    rfidCode = "rfid"+count;
+                }
+                if(cursor.getString(cursor.getColumnIndex("code")).trim().length()>0) {
+                    code = cursor.getString(cursor.getColumnIndex("code"));
+                }else{
+                    code = "code"+count;
+                }
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null));
+                cursor.moveToNext();
+                count++;
+            }
+        }
+        cursor.close();
+        return inv;
+    }
+    @SuppressLint("Range")
+    public ArrayList<InventoryObject> getALLInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
+        ArrayList<InventoryObject> inv = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,sc.scanned,ci.id from chemical_inventory ci \n" +
+                "left join scanned_data sc on ci.id = sc.inventory_id \n" +
+                "where ci.room_id = "+room_id), null);
+        int count = 0;
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String id = cursor.getString(cursor.getColumnIndex("id"));
+                String product_name = "";
+                String code = "";
+                String scanned = "";
+                if(cursor.getString(cursor.getColumnIndex("name")).trim().length()>0) {
+                    product_name = cursor.getString(cursor.getColumnIndex("name"));
+                }else{
+                    product_name = "Inv"+count;
+                }
+                String rfidCode = "";
+                if(cursor.getString(cursor.getColumnIndex("sec_code")).trim().length()>0) {
+                    rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                }else{
+                    rfidCode = "rfid"+count;
+                }
+                if(cursor.getString(cursor.getColumnIndex("code")).trim().length()>0) {
+                    code = cursor.getString(cursor.getColumnIndex("code"));
+                }else{
+                    code = "code"+count;
+                }
+                if(cursor.getString(cursor.getColumnIndex("scanned"))!=null) {
+                    if (cursor.getString(cursor.getColumnIndex("scanned")).trim().length() > 0) {
+                        scanned = cursor.getString(cursor.getColumnIndex("scanned"));
+                    } else {
+                        scanned = "0";
+                    }
+                } else {
+                    scanned = "0";
+                }
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned));
+                cursor.moveToNext();
+                count++;
+            }
+        }
+        cursor.close();
+        return inv;
     }
 }
 

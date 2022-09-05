@@ -7,13 +7,23 @@ public class InventoryObject implements Serializable {
     public String rfidCode;
     public String productName;
     public String code;
+    public String scanned;
 
 
-    public InventoryObject(String rfidCode, String productName, String inv_id, String code) {
+    public InventoryObject(String rfidCode, String productName, String inv_id, String code, String scanned) {
         this.rfidCode = rfidCode;
         this.productName = productName;
         this.inv_id = inv_id;
         this.code = code;
+        this.scanned = scanned;
+    }
+
+    public String getScanned() {
+        return scanned;
+    }
+
+    public void setScanned(String scanned) {
+        this.scanned = scanned;
     }
 
     public String getCode() {
