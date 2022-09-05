@@ -16,6 +16,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -166,8 +167,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         tableInv = (TableLayout) findViewById(R.id.tableInv);
         final TextView invNameHeader = new TextView(this);
         invNameHeader.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
-                100,5));
-        invNameHeader.setGravity(Gravity.LEFT);
+                80,5));
+        invNameHeader.setGravity(Gravity.CENTER);
         invNameHeader.setMaxWidth(300);
         invNameHeader.setPadding(15, 30, 0, 0);
         invNameHeader.setBackgroundResource(R.drawable.table_header_border);
@@ -176,8 +177,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         invNameHeader.setTextColor(Color.parseColor("#FFFFFF"));
         final TextView invRFIDCodeHeader = new TextView(this);
         invRFIDCodeHeader.setLayoutParams(new TableRow.LayoutParams(200,
-                100,5));
-        invRFIDCodeHeader.setGravity(Gravity.LEFT);
+                80,5));
+        invRFIDCodeHeader.setGravity(Gravity.CENTER);
         invRFIDCodeHeader.setPadding(5, 30,20, 0);
         invRFIDCodeHeader.setBackgroundResource(R.drawable.table_header_border);
         invRFIDCodeHeader.setText("RFID Code");
@@ -185,8 +186,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         invRFIDCodeHeader.setTextColor(Color.parseColor("#FFFFFF"));
         final TextView invRFIDCodeHeader1 = new TextView(this);
         invRFIDCodeHeader1.setLayoutParams(new TableRow.LayoutParams(200,
-                100,5));
-        invRFIDCodeHeader1.setGravity(Gravity.LEFT);
+                80,5));
+        invRFIDCodeHeader1.setGravity(Gravity.CENTER);
         invRFIDCodeHeader1.setPadding(5, 30,20, 0);
         invRFIDCodeHeader1.setBackgroundResource(R.drawable.table_header_border);
         invRFIDCodeHeader1.setText("Code");
@@ -200,25 +201,29 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         trInvHeader.setLayoutParams(trParamsHeader);
         trInvHeader.addView(invNameHeader);
         trInvHeader.addView(invRFIDCodeHeader);
+        trInvHeader.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         trInvHeader.addView(invRFIDCodeHeader1);
         tableInv.addView(trInvHeader, trParamsHeader);
         for (int i = 0; i < invList.size(); i++) {
             final TextView invName = new TextView(this);
             invName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
-                    100,5));
-            invName.setGravity(Gravity.LEFT);
+                    80,5));
+            invName.setGravity(Gravity.CENTER);
             invName.setMaxWidth(300);
-            invName.setPadding(10, 30, 0, 0);
+            invName.setPadding(10, 40, 0, 0);
             invName.setText(invList.get(i).getProductName());
             invName.setBackgroundResource(R.drawable.tab_border);
             invName.setId(i);
             invName.setTextSize(16);
+            invName.setMinLines(2);
+            invName.setSingleLine(true);
+            invName.setEllipsize(TextUtils.TruncateAt.END);
             invName.setTextColor(Color.parseColor("#000000"));
             final TextView invRFIDCode = new TextView(this);
             invRFIDCode.setLayoutParams(new TableRow.LayoutParams(200,
-                    100,5));
-            invRFIDCode.setGravity(Gravity.LEFT);
-            invRFIDCode.setPadding(5, 30, 20, 0);
+                    80,5));
+            invRFIDCode.setGravity(Gravity.CENTER);
+            invRFIDCode.setPadding(5, 40, 20, 0);
             invRFIDCode.setText(invList.get(i).getRfidCode());
             invRFIDCode.setId(i+1);
             invRFIDCode.setBackgroundResource(R.drawable.tab_border);
@@ -226,9 +231,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             invRFIDCode.setTextColor(Color.parseColor("#000000"));
             final TextView invCode = new TextView(this);
             invCode.setLayoutParams(new TableRow.LayoutParams(200,
-                    100,5));
-            invCode.setGravity(Gravity.LEFT);
-            invCode.setPadding(5, 30, 20, 0);
+                    80,5));
+            invCode.setGravity(Gravity.CENTER);
+            invCode.setPadding(5, 40, 20, 0);
             invCode.setText(invList.get(i).getCode());
             invCode.setId(i+1);
             invCode.setBackgroundResource(R.drawable.tab_border);

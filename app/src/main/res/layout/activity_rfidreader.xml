@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#FFFFFF"
-    android:scrollbars="vertical" xmlns:android="http://schemas.android.com/apk/res/android"
+    android:scrollbars="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".RFIDScannerActivity">
@@ -90,7 +91,42 @@
         app:layout_constraintStart_toStartOf="@+id/scanProgress"
         app:layout_constraintTop_toBottomOf="@+id/scanProgress"
         tools:ignore="RtlCompat" />
+    <RadioGroup
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:weightSum="1"
+        android:orientation="horizontal"
+        android:id="@+id/radioGroup"
+        app:layout_constraintEnd_toEndOf="@+id/scannedProgressPercentage"
+        app:layout_constraintStart_toStartOf="@+id/scannedProgressPercentage"
+        app:layout_constraintTop_toBottomOf="@+id/scannedProgressPercentage">
 
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:text="Show All"
+            android:id="@+id/showall"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
+            android:textSize="16dp" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:text="Found"
+            android:id="@+id/found"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
+            android:textSize="16dp" />
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:text="Not Found"
+            android:id="@+id/notfound"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
+            android:textSize="16dp" />
+    </RadioGroup>
     <!--TextView
         android:id="@+id/tagData"
         android:layout_width="0dp"
@@ -108,17 +144,17 @@
         app:layout_constraintStart_toStartOf="@+id/scannedProgressPercentage"
         app:layout_constraintTop_toBottomOf="@+id/scannedProgressPercentage"
         tools:ignore="RtlCompat" /-->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/invList"
         android:layout_width="0dp"
         android:layout_height="200dp"
         android:layout_marginTop="10dp"
         android:background="#FFFFFF"
         android:scrollbars="horizontal|vertical"
-        app:layout_constraintEnd_toEndOf="@+id/scannedProgressPercentage"
+        app:layout_constraintEnd_toEndOf="@+id/radioGroup"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/scannedProgressPercentage"
-        app:layout_constraintTop_toBottomOf="@+id/scannedProgressPercentage">
+        app:layout_constraintStart_toStartOf="@+id/radioGroup"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroup">
         <HorizontalScrollView
             android:id="@+id/horizontalView"
             android:layout_height="wrap_content"
@@ -133,7 +169,7 @@
                     android:layout_marginRight="10dp"
                     android:stretchColumns="0"></TableLayout>
         </HorizontalScrollView>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
     <!---ListView
         android:id="@+id/tags_list"
         android:layout_width="0dp"
