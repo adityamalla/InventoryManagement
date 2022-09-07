@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".PostSuccess">
+
+    <ImageView
+        android:id="@+id/successIcon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="50dp"
+        android:background="@drawable/inspection"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/successText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/successIcon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:background="@android:color/transparent"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:inputType="textPersonName"
+        android:selectAllOnFocus="false"
+        android:singleLine="false"
+        android:text="Success!"
+        android:textColor="#0F74BC"
+        android:textSize="30dp"
+        app:layout_constraintEnd_toEndOf="@+id/successIcon"
+        app:layout_constraintStart_toStartOf="@+id/successIcon"
+        app:layout_constraintTop_toBottomOf="@+id/successIcon" />
+
+    <EditText
+        android:id="@+id/defaultText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@android:color/transparent"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:gravity="center"
+        android:inputType="textPersonName"
+        android:selectAllOnFocus="false"
+        android:singleLine="false"
+        android:text="Inventory scan is now complete"
+        android:textColor="#757575"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="@+id/successText"
+        app:layout_constraintStart_toStartOf="@+id/successText"
+        app:layout_constraintTop_toBottomOf="@+id/successText" />
+
+    <Button
+        android:id="@+id/gotohome"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/login_button_border"
+        android:text="Go to Home Screen"
+        android:textColor="@color/white"
+        android:textSize="20dp"
+        app:layout_constraintEnd_toEndOf="@+id/defaultText"
+        app:layout_constraintStart_toStartOf="@+id/defaultText"
+        app:layout_constraintTop_toBottomOf="@+id/defaultText" />
+</androidx.constraintlayout.widget.ConstraintLayout>

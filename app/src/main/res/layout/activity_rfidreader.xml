@@ -184,7 +184,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        android:text="Post Scan"
+        android:text="Post Data"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/invList"
         app:layout_constraintTop_toBottomOf="@+id/invList" />

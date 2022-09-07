@@ -116,7 +116,9 @@ public class QueryConstants {
             "    location_id integer NOT NULL,\n" +
             "    room_id integer NOT NULL,\n" +
             "    inventory_id integer NOT NULL,\n" +
-            "    scanned integer NOT NULL\n" +
+            "    scanned integer NOT NULL,\n" +
+            "    scanned_by integer NOT NULL,\n" +
+            "    scanned_date timestamp DEFAULT CURRENT_TIMESTAMP\n" +
             ")";
 
 
