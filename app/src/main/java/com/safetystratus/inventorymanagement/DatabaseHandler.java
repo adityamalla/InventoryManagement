@@ -357,7 +357,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return inv;
     }
     public void delAllSavedScanData(SQLiteDatabase sqLiteDatabase, String room_id){
-        sqLiteDatabase.delete("scanned_date", "room_id=?", new String[]{room_id});
+        sqLiteDatabase.delete("scanned_data", "room_id=?", new String[]{room_id});
     }
 }
 
