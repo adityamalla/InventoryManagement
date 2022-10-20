@@ -261,7 +261,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<InventoryObject> getNotFoundInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
         ArrayList<InventoryObject> inv = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,ci.id from chemical_inventory ci \n" +
-                "where ci.room_id = 20 and ci.id not in(select inventory_id from scanned_data where room_id="+room_id+");"), null);
+                "where ci.room_id="+room_id+" and ci.id not in(select inventory_id from scanned_data sc where sc.room_id="+room_id+");"), null);
         int count = 0;
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
@@ -359,5 +359,30 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void delAllSavedScanData(SQLiteDatabase sqLiteDatabase, String room_id){
         sqLiteDatabase.delete("scanned_data", "room_id=?", new String[]{room_id});
     }
+    @SuppressLint("Range")
+    public MyObject[] getAutoSearchBuildingsData(SQLiteDatabase sqLiteDatabase, String searchTerm) {
+        String sql = "SELECT name,id FROM fi_facilities " +
+                "where status = 'active' and name like '%"+searchTerm+"%'";
+        Log.e("TESTSQL>",sql);
+        Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
+        int recCount = cursor2.getCount();
+        MyObject[] ObjectItemData = new MyObject[recCount];
+        int x = 0;
+        // looping through all rows and adding to list
+        if (cursor2.moveToFirst()) {
+            do {
+                String objectName = cursor2.getString(cursor2.getColumnIndex("name"));
+                String objectId = cursor2.getString(cursor2.getColumnIndex("id"));
+                MyObject myObject = new MyObject(objectName, objectId);
+                ObjectItemData[x] = myObject;
+                x++;
+                Log.e("Count>>",x+"");
+            } while (cursor2.moveToNext());
+        }
+        cursor2.close();
+        // return the list of records
+        return ObjectItemData;
+    }
+
 }
 
