@@ -383,6 +383,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // return the list of records
         return ObjectItemData;
     }
+    @SuppressLint("Range")
+    public MyObject[] getAutoSearchRoomsData(SQLiteDatabase sqLiteDatabase, String searchTerm,String facil_id) {
+        String sql = "SELECT room,id FROM fi_facil_rooms where status = 'active' and room like '%"+searchTerm+"%' and facil_id="+facil_id;
+        Log.e("TESTSQL>",sql);
+        Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
+        int recCount = cursor2.getCount();
+        MyObject[] ObjectItemData = new MyObject[recCount];
+        int x = 0;
+        // looping through all rows and adding to list
+        if (cursor2.moveToFirst()) {
+            do {
+                String objectName = cursor2.getString(cursor2.getColumnIndex("room"));
+                String objectId = cursor2.getString(cursor2.getColumnIndex("id"));
+                MyObject myObject = new MyObject(objectName, objectId);
+                ObjectItemData[x] = myObject;
+                x++;
+                Log.e("Count>>",x+"");
+            } while (cursor2.moveToNext());
+        }
+        cursor2.close();
+        // return the list of records
+        return ObjectItemData;
+    }
 
 }
 

@@ -255,13 +255,11 @@ public class RFIDActivity extends AppCompatActivity {
         scanRFID.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("inveC>>",selectedRoom+"*");
                 if(selectedRoom.length()>0){
                     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
                     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
                     try {
                         int inventoryCount = databaseHandler.checkCount(db,selectedRoom);
-                        Log.e("inveC>>",inventoryCount+"*");
                         final Intent myIntent = new Intent(RFIDActivity.this,
                                 RFIDScannerActivity.class);
                         myIntent.putExtra("user_id", selectedUserId);
