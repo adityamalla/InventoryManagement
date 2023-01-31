@@ -168,6 +168,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return count;
     }
+    @SuppressLint("Range")
+    public int getSavedDataCount(SQLiteDatabase sqLiteDatabase, String room_id){
+        int count = 0;
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data where room_id="+room_id), null);
+        count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
 
     @SuppressLint("Range")
     public ArrayList<InventoryObject> getInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){

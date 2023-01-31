@@ -125,6 +125,8 @@ public class QueryConstants {
     public static String SQL_CREATE_TABLE_SCANNED_JSON_DATA = "CREATE TABLE IF NOT EXISTS scanned_json_data\n" +
             "(\n" +
             "    id integer PRIMARY KEY NOT NULL ,\n" +
+            "    location_id integer NOT NULL,\n" +
+            "    room_id integer NOT NULL,\n" +
             "    json_data text\n" +
             ")";
 

@@ -107,6 +107,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     Button postScanData;
     Button saveScanData;
     ProgressBar spinner;
+    TextView badge_notification;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDScannerActivity.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
     @SuppressLint("WrongConstant")
@@ -138,6 +139,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         scannedProgressCount = findViewById(R.id.scannedProgressCount);
         scannedProgressPercentage = findViewById(R.id.scannedProgressPercentage);
         progressVal = findViewById(R.id.scanProgress);
+        badge_notification = findViewById(R.id.badge_notification);
         all = findViewById(R.id.showall);
         found = findViewById(R.id.found);
         notfound = findViewById(R.id.notfound);
@@ -227,6 +229,11 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         trInvHeader.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
         trInvHeader.addView(invRFIDCodeHeader1);
         tableInv.addView(trInvHeader, trParamsHeader);
+        int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+        if(scannedJsonData > 0){
+            badge_notification.setVisibility(View.VISIBLE);
+            badge_notification.setText(scannedJsonData);
+        }
         for (int i = 0; i < invList.size(); i++) {
             final TextView invName = new TextView(this);
             invName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
@@ -579,7 +586,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                         jsonString = mapper.writeValueAsString(postScanObj);
                         ContentValues cv = new ContentValues();
                         cv.put("json_data", jsonString);
-                        databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        cv.put("location_id", selectedFacil);
+                        cv.put("room_id", selectedRoom);
+                        databaseHandler.insertScannedInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                         AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDScannerActivity.this);
                         dlgAlert.setTitle("Safety Stratus");
                         dlgAlert.setMessage("Data Saved Successfully!");
