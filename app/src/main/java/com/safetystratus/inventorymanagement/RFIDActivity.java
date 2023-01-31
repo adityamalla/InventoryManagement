@@ -88,7 +88,7 @@ public class RFIDActivity extends AppCompatActivity {
         shape.getPaint().setColor(Color.RED);
         shape.getPaint().setStyle(Paint.Style.STROKE);
         shape.getPaint().setStrokeWidth(3);
-        tv.setText("Inventory");
+        tv.setText("Reconcilation");
         tv.setTextSize(20);
         tv.setVisibility(View.VISIBLE);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
