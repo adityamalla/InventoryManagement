@@ -195,11 +195,31 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:layout_marginBottom="20dp"
-        android:text="Post Data"
+        android:backgroundTint="#0F74BC"
+        android:drawableTint="@drawable/login_button_border"
+        android:text="Sync Data to CMS"
+        android:textAllCaps="false"
+        android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/invList"
-        app:layout_constraintTop_toBottomOf="@+id/invList" />
+        app:layout_constraintEnd_toEndOf="@+id/completeScan"
+        app:layout_constraintStart_toStartOf="@+id/completeScan"
+        app:layout_constraintTop_toBottomOf="@+id/completeScan" />
 
+    <Button
+        android:id="@+id/completeScan"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:backgroundTint="#0F74BC"
+        android:drawableTint="@drawable/login_button_border"
+        android:text="Complete"
+        android:textAllCaps="false"
+        android:textSize="18dp"
+        app:layout_constraintEnd_toEndOf="@+id/invList"
+        app:layout_constraintStart_toStartOf="@+id/invList"
+        app:layout_constraintTop_toBottomOf="@+id/invList" />
     <TextView
         android:id="@+id/totalScanCount"
         android:layout_width="wrap_content"
