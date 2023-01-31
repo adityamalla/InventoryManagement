@@ -685,16 +685,16 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     ConstraintLayout constraintLayout = findViewById(R.id.rfidLayout);
                     ConstraintSet constraintSet = new ConstraintSet();
                     constraintSet.clone(constraintLayout);
-                    constraintSet.connect(R.id.postScan,ConstraintSet.BOTTOM,R.id.rfidLayout,ConstraintSet.BOTTOM,0);
-                    constraintSet.connect(R.id.postScan,ConstraintSet.END,R.id.progressBar1,ConstraintSet.END,0);
-                    constraintSet.connect(R.id.postScan,ConstraintSet.TOP,R.id.progressBar1,ConstraintSet.BOTTOM,0);
+                    constraintSet.connect(R.id.completeScan,ConstraintSet.START,R.id.progressBar1,ConstraintSet.START,0);
+                    constraintSet.connect(R.id.completeScan,ConstraintSet.END,R.id.progressBar1,ConstraintSet.END,0);
+                    constraintSet.connect(R.id.completeScan,ConstraintSet.TOP,R.id.progressBar1,ConstraintSet.BOTTOM,0);
                     constraintSet.applyTo(constraintLayout);
-                    ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) postScanData.getLayoutParams();
-                    newLayoutParams.topMargin = 10;
-                    newLayoutParams.leftMargin = 0;
-                    newLayoutParams.rightMargin = 0;
+                    ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) saveScanData.getLayoutParams();
+                    newLayoutParams.topMargin = 20;
+                    newLayoutParams.leftMargin = 10;
+                    newLayoutParams.rightMargin = 10;
                     newLayoutParams.bottomMargin = 0;
-                    postScanData.setLayoutParams(newLayoutParams);
+                    saveScanData.setLayoutParams(newLayoutParams);
                     spinner.setVisibility(View.VISIBLE);
                 }
             });
@@ -714,6 +714,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                Log.e("TESTTTTTTTTTTT",newList.size()+"*****");
                 setscancount(String.valueOf(newList.size()));
                 tableInv.removeAllViews();
                 final TextView invNameHeader = new TextView(RFIDScannerActivity.this);
@@ -832,16 +833,28 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 ConstraintLayout constraintLayout = findViewById(R.id.rfidLayout);
                 ConstraintSet constraintSet = new ConstraintSet();
                 constraintSet.clone(constraintLayout);
-                constraintSet.connect(R.id.postScan,ConstraintSet.BOTTOM,R.id.rfidLayout,ConstraintSet.BOTTOM,0);
-                constraintSet.connect(R.id.postScan,ConstraintSet.END,R.id.invList,ConstraintSet.END,0);
-                constraintSet.connect(R.id.postScan,ConstraintSet.TOP,R.id.invList,ConstraintSet.BOTTOM,0);
+                constraintSet.connect(R.id.completeScan,ConstraintSet.START,R.id.invList,ConstraintSet.START,0);
+                constraintSet.connect(R.id.completeScan,ConstraintSet.END,R.id.invList,ConstraintSet.END,0);
+                constraintSet.connect(R.id.completeScan,ConstraintSet.TOP,R.id.invList,ConstraintSet.BOTTOM,0);
                 constraintSet.applyTo(constraintLayout);
-                ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) postScanData.getLayoutParams();
-                newLayoutParams.topMargin = 10;
-                newLayoutParams.leftMargin = 0;
-                newLayoutParams.rightMargin = 0;
+                ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) saveScanData.getLayoutParams();
+                newLayoutParams.topMargin = 20;
+                newLayoutParams.leftMargin = 10;
+                newLayoutParams.rightMargin = 10;
                 newLayoutParams.bottomMargin = 0;
-                postScanData.setLayoutParams(newLayoutParams);
+                saveScanData.setLayoutParams(newLayoutParams);
+                constraintSet.clone(constraintLayout);
+                constraintSet.connect(R.id.postScan,ConstraintSet.BOTTOM,R.id.rfidLayout,ConstraintSet.BOTTOM,0);
+                constraintSet.connect(R.id.postScan,ConstraintSet.END,R.id.completeScan,ConstraintSet.END,0);
+                constraintSet.connect(R.id.postScan,ConstraintSet.START,R.id.completeScan,ConstraintSet.START,0);
+                constraintSet.connect(R.id.postScan,ConstraintSet.TOP,R.id.completeScan,ConstraintSet.BOTTOM,0);
+                constraintSet.applyTo(constraintLayout);
+                ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) postScanData.getLayoutParams();
+                newLayoutParams1.topMargin = 20;
+                newLayoutParams1.leftMargin = 0;
+                newLayoutParams1.rightMargin = 0;
+                newLayoutParams1.bottomMargin = 20;
+                postScanData.setLayoutParams(newLayoutParams1);
                 //SyncInvTable sdb = new SyncInvTable();
                 //sdb.execute();
             }
@@ -850,6 +863,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
 
     public void setscancount(String count){
         scanCount.setText(count);
+        Log.e("TEST000000",count+"**");
+        Log.e("TEST0000001",total_inventory+"**");
         if(Integer.parseInt(total_inventory)>0) {
             if(Integer.parseInt(count)<=Integer.parseInt(total_inventory)) {
                 int percent = (Integer.parseInt(count) * 100) / Integer.parseInt(total_inventory);
