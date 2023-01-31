@@ -105,6 +105,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     RadioButton found;
     RadioButton notfound;
     Button postScanData;
+    Button saveScanData;
     ProgressBar spinner;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDScannerActivity.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
@@ -141,6 +142,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         found = findViewById(R.id.found);
         notfound = findViewById(R.id.notfound);
         postScanData = findViewById(R.id.postScan);
+        saveScanData = findViewById(R.id.completeScan);
         scannedProgressPercentage.setText("0 %");
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
@@ -559,6 +561,50 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                             });
                     dlgAlert.create().show();
                 }
+            }
+        });
+        saveScanData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                    Gson gson = new Gson();
+                    String scannedObj = "";
+                    ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                    scannedObj = gson.toJson(rfidScanDataObjs);
+                    RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
+                            token,loggedinUserSiteId,scannedObj
+                    );
+                    ObjectMapper mapper = new ObjectMapper();
+                    String jsonString = "";
+                    try {
+                        jsonString = mapper.writeValueAsString(postScanObj);
+                        ContentValues cv = new ContentValues();
+                        cv.put("json_data", jsonString);
+                        databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDScannerActivity.this);
+                        dlgAlert.setTitle("Safety Stratus");
+                        dlgAlert.setMessage("Data Saved Successfully!");
+                        dlgAlert.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        final Intent myIntent = new Intent(RFIDScannerActivity.this,
+                                                PostSuccess.class);
+                                        myIntent.putExtra("user_id", selectedUserId);
+                                        myIntent.putExtra("site_id", loggedinUserSiteId);
+                                        myIntent.putExtra("token", token);
+                                        myIntent.putExtra("sso", sso);
+                                        myIntent.putExtra("md5pwd", md5Pwd);
+                                        myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                        myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                        myIntent.putExtra("site_name", site_name);
+                                        myIntent.putExtra("empName", empName);
+                                        startActivity(myIntent);
+                                    }
+                                });
+                        dlgAlert.create().show();
+
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
             }
         });
     }

@@ -15,6 +15,7 @@ public class QueryConstants {
     public static final String TABLE_NAME_SCANNED_DATA = "scanned_data";
     public static final String TABLE_NAME_MENU_CATEGORIES = "menu_categories";
     public static final String TABLE_NAME_MENU_ITEMS = "menu_items";
+    public static final String TABLE_NAME_SCANNED_JSON_DATA = "scanned_json_data";
 
     public static String SQL_CREATE_CHEMICAL_INVENTORY = "CREATE TABLE IF NOT EXISTS chemical_inventory\n" +
             "(id integer PRIMARY KEY NOT NULL,\n" +
@@ -119,6 +120,12 @@ public class QueryConstants {
             "    scanned integer NOT NULL,\n" +
             "    scanned_by integer NOT NULL,\n" +
             "    scanned_date timestamp DEFAULT CURRENT_TIMESTAMP\n" +
+            ")";
+
+    public static String SQL_CREATE_TABLE_SCANNED_JSON_DATA = "CREATE TABLE IF NOT EXISTS scanned_json_data\n" +
+            "(\n" +
+            "    id integer PRIMARY KEY NOT NULL ,\n" +
+            "    json_data text\n" +
             ")";
 
 

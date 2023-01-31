@@ -40,6 +40,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_CHEMICAL_INVENTORY);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_FI_ROOM_ROSTER);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_SCANNED_DATA);
+        sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_SCANNED_JSON_DATA);
     }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
@@ -211,6 +212,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor1.close();
         if (count==0)
         sqLiteDatabase.insert("scanned_data", null, cv);
+    }
+    public void insertScannedInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
+            sqLiteDatabase.insert("scanned_json_data", null, cv);
     }
     @SuppressLint("Range")
     public int checkScannedDataCount(SQLiteDatabase sqLiteDatabase){
