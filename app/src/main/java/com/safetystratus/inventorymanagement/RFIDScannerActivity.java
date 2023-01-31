@@ -232,7 +232,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         if(scannedJsonData > 0){
             badge_notification.setVisibility(View.VISIBLE);
-            badge_notification.setText(scannedJsonData);
+            badge_notification.setText(String.valueOf(scannedJsonData));
         }
         for (int i = 0; i < invList.size(); i++) {
             final TextView invName = new TextView(this);
@@ -715,7 +715,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             @Override
             public void run() {
                 Log.e("TESTTTTTTTTTTT",newList.size()+"*****");
-                setscancount(String.valueOf(newList.size()));
                 tableInv.removeAllViews();
                 final TextView invNameHeader = new TextView(RFIDScannerActivity.this);
                 invNameHeader.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
@@ -855,14 +854,16 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 newLayoutParams1.rightMargin = 0;
                 newLayoutParams1.bottomMargin = 20;
                 postScanData.setLayoutParams(newLayoutParams1);
+                int scannedCount = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom);
+                setscancount(String.valueOf(scannedCount), String.valueOf(newList.size()));
                 //SyncInvTable sdb = new SyncInvTable();
                 //sdb.execute();
             }
         });
     }
 
-    public void setscancount(String count){
-        scanCount.setText(count);
+    public void setscancount(String count, String total_scan_count){
+        scanCount.setText(total_scan_count);
         Log.e("TEST000000",count+"**");
         Log.e("TEST0000001",total_inventory+"**");
         if(Integer.parseInt(total_inventory)>0) {

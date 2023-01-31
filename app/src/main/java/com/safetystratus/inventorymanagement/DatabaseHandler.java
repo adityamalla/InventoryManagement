@@ -225,8 +225,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sqLiteDatabase.insert("scanned_json_data", null, cv);
     }
     @SuppressLint("Range")
-    public int checkScannedDataCount(SQLiteDatabase sqLiteDatabase){
-        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data"), null);
+    public int checkScannedDataCount(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id){
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+room_id+"" +
+                " and location_id="+loc_id), null);
         int count = cursor1.getCount();
         Log.e("scannedCount>>",count+"***");
         cursor1.close();
