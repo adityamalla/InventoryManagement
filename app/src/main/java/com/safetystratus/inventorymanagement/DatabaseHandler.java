@@ -169,9 +169,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return count;
     }
     @SuppressLint("Range")
-    public int getSavedDataCount(SQLiteDatabase sqLiteDatabase, String room_id){
+    public int getSavedDataCount(SQLiteDatabase sqLiteDatabase){
         int count = 0;
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data where room_id="+room_id), null);
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data"), null);
         count = cursor.getCount();
         cursor.close();
         return count;
@@ -223,6 +223,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     public void insertScannedInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
             sqLiteDatabase.insert("scanned_json_data", null, cv);
+    }
+    @SuppressLint("Range")
+    public ArrayList<MyObject> getSavedJsonData(SQLiteDatabase sqLiteDatabase){
+        int count = 0;
+        ArrayList<MyObject> jsonList = new ArrayList<MyObject>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,json_data FROM scanned_json_data"), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                jsonList.add(new MyObject(cursor.getString(cursor.getColumnIndex("json_data")).trim(),
+                                cursor.getString(cursor.getColumnIndex("id")))
+                        );
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return jsonList;
     }
     @SuppressLint("Range")
     public int checkScannedDataCount(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id){
@@ -371,6 +387,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     public void delAllSavedScanData(SQLiteDatabase sqLiteDatabase, String room_id){
         sqLiteDatabase.delete("scanned_data", "room_id=?", new String[]{room_id});
+        sqLiteDatabase.delete("scanned_json_data", "room_id=?", new String[]{room_id});
+    }
+    public void delSavedScanData(SQLiteDatabase sqLiteDatabase, String id){
+        sqLiteDatabase.delete("scanned_json_data", "id=?", new String[]{id});
     }
     @SuppressLint("Range")
     public MyObject[] getAutoSearchBuildingsData(SQLiteDatabase sqLiteDatabase, String searchTerm) {

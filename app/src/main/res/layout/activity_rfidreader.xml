@@ -188,7 +188,7 @@
         app:layout_constraintEnd_toEndOf="@+id/tagData"
         app:layout_constraintStart_toStartOf="@+id/tagData"
         app:layout_constraintTop_toBottomOf="@+id/tagData"></ListView-->
-    <TextView
+    <!---TextView
         android:id="@+id/badge_notification"
         android:layout_width="25dp"
         android:layout_height="wrap_content"
@@ -219,7 +219,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/completeScan"
         app:layout_constraintStart_toStartOf="@+id/completeScan"
-        app:layout_constraintTop_toBottomOf="@+id/completeScan" />
+        app:layout_constraintTop_toBottomOf="@+id/completeScan" -->
 
     <Button
         android:id="@+id/completeScan"
@@ -228,12 +228,14 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
-        app:backgroundTint="@null"
+        android:layout_marginBottom="10dp"
         android:background="@drawable/sign_out_border"
-        android:textColor="#15BAB6"
-        android:textSize="14dp"
         android:text="Complete"
         android:textAllCaps="false"
+        android:textColor="#15BAB6"
+        android:textSize="14dp"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/invList"
         app:layout_constraintStart_toStartOf="@+id/invList"
         app:layout_constraintTop_toBottomOf="@+id/invList" />
