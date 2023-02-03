@@ -234,10 +234,8 @@ public class PostSuccess extends AppCompatActivity {
                                     public void onResponse(JSONObject response) {
                                         //Process os success response
                                         String res = response.toString();
-                                        Log.e("TESTYYYYYY",res);
                                         databaseHandler.delSavedScanData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
                                         ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
-                                        Log.e("TESTZZZZZZ",jsonListModified.size()+"***");
                                         if (jsonListModified.size()==0){
                                             progressSync.dismiss();
                                             AlertDialog.Builder dlgAlert = new AlertDialog.Builder(PostSuccess.this);
