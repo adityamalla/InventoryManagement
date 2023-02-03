@@ -71,6 +71,7 @@ public class PostSuccess extends AppCompatActivity {
     Button gotohome;
     TextView badge_notification;
     Button postScanData;
+    Button startAnotherInv;
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(PostSuccess.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
@@ -97,6 +98,7 @@ public class PostSuccess extends AppCompatActivity {
         tv.setTextSize(20);
         tv.setVisibility(View.VISIBLE);
         gotohome = findViewById(R.id.gotohome);
+        startAnotherInv = findViewById(R.id.startAnotherInvScan);
         // UI
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
@@ -191,6 +193,22 @@ public class PostSuccess extends AppCompatActivity {
                 myIntent.putExtra("site_name", site_name);
                 myIntent.putExtra("empName", empName);
                 myIntent.putExtra("pageLoadTemp", "-1");
+                startActivity(myIntent);
+            }
+        });
+        startAnotherInv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Intent myIntent = new Intent(PostSuccess.this,
+                        RFIDActivity.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("empName", empName);
                 startActivity(myIntent);
             }
         });

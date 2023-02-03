@@ -83,7 +83,7 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="20dp"
         android:background="@drawable/sign_out_border"
-        android:text="Sync Data to CMS"
+        android:text="Upload Data to CMS"
         android:textAllCaps="false"
         android:textColor="#15BAB6"
         android:textSize="14dp"
@@ -91,7 +91,22 @@
         app:layout_constraintEnd_toEndOf="@+id/defaultText"
         app:layout_constraintStart_toStartOf="@+id/defaultText"
         app:layout_constraintTop_toBottomOf="@+id/defaultText" />
-
+    <Button
+        android:id="@+id/startAnotherInvScan"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/sign_out_border"
+        android:text="Start Another Inventory Scan"
+        android:textAllCaps="false"
+        android:textColor="#15BAB6"
+        android:textSize="14dp"
+        app:backgroundTint="@null"
+        app:layout_constraintEnd_toEndOf="@+id/postScan"
+        app:layout_constraintStart_toStartOf="@+id/postScan"
+        app:layout_constraintTop_toBottomOf="@+id/postScan" />
     <Button
         android:id="@+id/gotohome"
         android:layout_width="match_parent"
@@ -105,7 +120,7 @@
         android:textColor="#15BAB6"
         android:textSize="14dp"
         app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="@+id/postScan"
-        app:layout_constraintStart_toStartOf="@+id/postScan"
-        app:layout_constraintTop_toBottomOf="@+id/postScan" />
+        app:layout_constraintEnd_toEndOf="@+id/startAnotherInvScan"
+        app:layout_constraintStart_toStartOf="@+id/startAnotherInvScan"
+        app:layout_constraintTop_toBottomOf="@+id/startAnotherInvScan" />
 </androidx.constraintlayout.widget.ConstraintLayout>
