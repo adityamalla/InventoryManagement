@@ -242,7 +242,7 @@ public class PostSuccess extends AppCompatActivity {
                                             progressSync.dismiss();
                                             AlertDialog.Builder dlgAlert = new AlertDialog.Builder(PostSuccess.this);
                                             dlgAlert.setTitle("Safety Stratus");
-                                            dlgAlert.setMessage("Inventory data got uploaded to CMS successfully!");
+                                            dlgAlert.setMessage("Inventory data uploaded successfully!");
                                             dlgAlert.setPositiveButton("Ok",
                                                     new DialogInterface.OnClickListener() {
                                                         public void onClick(DialogInterface dialog, int which) {
