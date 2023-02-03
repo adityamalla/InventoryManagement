@@ -125,7 +125,7 @@ public class HomeActivity extends AppCompatActivity {
         md5Pwd = intent.getStringExtra("md5pwd");
         inventory = (ImageView) findViewById(R.id.inventoryBtn);
         locate = (ImageView) findViewById(R.id.locationBtn);
-        sync = (ImageView) findViewById(R.id.syncBtn);
+        sync = (ImageView) findViewById(R.id.downloadData);
         if (intent.getStringExtra("pageLoadTemp") == null ) {
             if (connected) {
                 progressSynStart = new ProgressDialog(HomeActivity.this);

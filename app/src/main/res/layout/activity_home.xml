@@ -23,12 +23,12 @@
 
     <TextView
         android:id="@+id/invLabel"
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_marginStart="15dp"
         android:layout_marginTop="5dp"
         android:fontFamily="@font/roboto_regular"
         android:text="Reconcilation"
+        android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="#000000"
         android:textSize="16dp"
@@ -50,12 +50,12 @@
 
     <TextView
         android:id="@+id/locLabel"
-        android:layout_width="100dp"
+        android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_marginStart="25dp"
         android:layout_marginTop="5dp"
-        android:text="Locate Tag"
         android:fontFamily="@font/roboto_regular"
+        android:text="Locate Tag"
+        android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="#000000"
         android:textSize="16dp"
@@ -65,31 +65,58 @@
         tools:ignore="RtlCompat" />
 
     <ImageView
-        android:id="@+id/syncBtn"
+        android:id="@+id/downloadData"
         style="@style/DashboardButton"
         android:layout_width="55dp"
         android:layout_height="55dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginTop="10dp"
         android:gravity="center_horizontal|top"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/locLabel"
-        app:srcCompat="@drawable/ic_sync" />
+        app:layout_constraintEnd_toEndOf="@+id/invLabel"
+        app:layout_constraintStart_toStartOf="@+id/invLabel"
+        app:layout_constraintTop_toBottomOf="@+id/invLabel"
+        app:srcCompat="@drawable/ic_download_data" />
 
     <TextView
         android:id="@+id/syncLabel"
-        android:layout_width="100dp"
+        android:layout_width="80dp"
         android:layout_height="50dp"
-        android:layout_marginStart="30dp"
         android:layout_marginTop="5dp"
-        android:text="Sync Data"
         android:fontFamily="@font/roboto_regular"
+        android:text="Download Data"
+        android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"
         android:textColor="#000000"
         android:textSize="16dp"
-        app:layout_constraintEnd_toEndOf="@+id/syncBtn"
-        app:layout_constraintStart_toStartOf="@+id/syncBtn"
-        app:layout_constraintTop_toBottomOf="@+id/syncBtn"
+        app:layout_constraintEnd_toEndOf="@+id/downloadData"
+        app:layout_constraintStart_toStartOf="@+id/downloadData"
+        app:layout_constraintTop_toBottomOf="@+id/downloadData"
+        tools:ignore="RtlCompat" />
+
+    <ImageView
+        android:id="@+id/uploadData"
+        style="@style/DashboardButton"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="10dp"
+        android:gravity="right"
+        app:layout_constraintEnd_toEndOf="@+id/locLabel"
+        app:layout_constraintStart_toStartOf="@+id/locLabel"
+        app:layout_constraintTop_toBottomOf="@+id/locLabel"
+        app:srcCompat="@drawable/ic_upload_data" />
+
+    <TextView
+        android:id="@+id/uploadDataLabel"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="Upload Data to CMS"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        android:textSize="16dp"
+        app:layout_constraintEnd_toEndOf="@+id/uploadData"
+        app:layout_constraintStart_toStartOf="@+id/uploadData"
+        app:layout_constraintTop_toBottomOf="@+id/uploadData"
         tools:ignore="RtlCompat" />
 </androidx.constraintlayout.widget.ConstraintLayout>
