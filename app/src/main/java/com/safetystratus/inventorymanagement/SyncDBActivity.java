@@ -86,7 +86,7 @@ public class SyncDBActivity extends AppCompatActivity {
         shape.getPaint().setColor(Color.RED);
         shape.getPaint().setStyle(Paint.Style.STROKE);
         shape.getPaint().setStrokeWidth(3);
-        tv.setText("Sync Data");
+        tv.setText("Download Data");
         tv.setTextSize(20);
         tv.setVisibility(View.VISIBLE);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(SyncDBActivity.this);

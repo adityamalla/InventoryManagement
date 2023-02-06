@@ -38,6 +38,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class HomeActivity extends AppCompatActivity {
@@ -59,7 +60,9 @@ public class HomeActivity extends AppCompatActivity {
     final String[] token = {""};
     TextView welcomeText;
     Button signOut;
+    ImageView postScanData;
     String empName = "";
+    TextView badge_notification;
     ProgressDialog progressSynStart = null;
     @SuppressLint("WrongConstant")
     @Override
@@ -83,6 +86,8 @@ public class HomeActivity extends AppCompatActivity {
         welcomeText = (TextView) findViewById(R.id.welcomeText);
         signOut = (Button)findViewById(R.id.button_sign_out);
         welcomeText.setVisibility(View.VISIBLE);
+        badge_notification = findViewById(R.id.badge_notification);
+        postScanData = findViewById(R.id.uploadData);
         signOut.setVisibility(View.VISIBLE);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
@@ -208,6 +213,43 @@ public class HomeActivity extends AppCompatActivity {
                 myIntent.putExtra("empName", empName);
                 startActivity(myIntent);
             }});
+        int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
+        if(scannedJsonData > 0){
+            badge_notification.setVisibility(View.VISIBLE);
+            badge_notification.setText(String.valueOf(scannedJsonData));
+        }else{
+            badge_notification.setVisibility(View.GONE);
+            badge_notification.setText("");
+        }
+        postScanData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(connected){
+                    try {
+                        ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                        //SyncInventory sdb = new SyncInventory();
+                        //sdb.execute(jsonList);
+                        uploadScannedInventoryData(jsonList);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    } finally {
+
+                    }
+                }else{
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(HomeActivity.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Slow or no Internet Connection. Your data will be saved offline. " +
+                            "Please sync the data when the network is online");
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
+                }
+            }
+        });
         signOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -215,6 +257,77 @@ public class HomeActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
+    public void uploadScannedInventoryData(ArrayList<MyObject> jsonList){
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        try {
+            ProgressDialog progressSync = new ProgressDialog(HomeActivity.this);
+            progressSync.setTitle("");
+            progressSync.setMessage("Uploading..");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(400, 200);
+            String URL = ApiConstants.syncpostscanneddata;
+            RequestQueue requestQueue = Volley.newRequestQueue(HomeActivity.this);
+            for (int k=0;k<jsonList.size();k++){
+                int finalK = k;
+                Log.e("JSON>>>",jsonList.get(k).getObjectName()+"**");
+                JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonList.get(k).getObjectName()),
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                //Process os success response
+                                String res = response.toString();
+                                Log.e("res>>>>",res);
+                                databaseHandler.delSavedScanData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
+                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                                Log.e("size******",jsonListModified.size()+"***");
+                                if (jsonListModified.size()==0){
+                                    progressSync.dismiss();
+                                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(HomeActivity.this);
+                                    dlgAlert.setTitle("Safety Stratus");
+                                    dlgAlert.setMessage("Inventory data uploaded successfully!");
+                                    dlgAlert.setPositiveButton("Ok",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
+                                                    if(scannedJsonData > 0){
+                                                        badge_notification.setVisibility(View.VISIBLE);
+                                                        badge_notification.setText(String.valueOf(scannedJsonData));
+                                                    }else{
+                                                        badge_notification.setVisibility(View.GONE);
+                                                        badge_notification.setText("");
+                                                    }
+                                                    return;
+                                                }
+                                            });
+                                    dlgAlert.create().show();
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+                int socketTimeout = 60000;//30 seconds - change to what you want
+                RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, 2, 2);
+                request_json.setRetryPolicy(policy);
+                // add the request object to the queue to be executed
+                requestQueue.add(request_json);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            // progress.dismiss();
+            db.close();
+            if (databaseHandler != null) {
+                databaseHandler.close();
+            }
+        }
+        //}
+        //});
     }
     public void getAccessToken() {
         try {
