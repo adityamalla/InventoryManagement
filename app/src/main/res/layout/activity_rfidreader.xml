@@ -220,14 +220,29 @@
         app:layout_constraintEnd_toEndOf="@+id/completeScan"
         app:layout_constraintStart_toStartOf="@+id/completeScan"
         app:layout_constraintTop_toBottomOf="@+id/completeScan" -->
-
     <Button
-        android:id="@+id/completeScan"
+        android:id="@+id/saveScan"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/sign_out_border"
+        android:text="Save Data"
+        android:textAllCaps="false"
+        android:textColor="#15BAB6"
+        android:textSize="14dp"
+        app:backgroundTint="@null"
+        app:layout_constraintEnd_toEndOf="@+id/invList"
+        app:layout_constraintStart_toStartOf="@+id/invList"
+        app:layout_constraintTop_toBottomOf="@+id/invList" />
+
+    <Button
+        android:id="@+id/completeScan"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/sign_out_border"
         android:text="Complete"
@@ -236,9 +251,9 @@
         android:textSize="14dp"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/invList"
-        app:layout_constraintStart_toStartOf="@+id/invList"
-        app:layout_constraintTop_toBottomOf="@+id/invList" />
+        app:layout_constraintEnd_toEndOf="@+id/saveScan"
+        app:layout_constraintStart_toStartOf="@+id/saveScan"
+        app:layout_constraintTop_toBottomOf="@+id/saveScan" />
     <TextView
         android:id="@+id/totalScanCount"
         android:layout_width="wrap_content"
