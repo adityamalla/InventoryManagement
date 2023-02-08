@@ -196,7 +196,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         if (json_data_from_continue.trim().length()>0) {
             try {
                 JSONObject obj = new JSONObject(json_data_from_continue.toString());
-                JSONArray inventory_details = obj.getJSONArray("inventory_details");
+                JSONArray inventory_details = new JSONArray(obj.getString("inventory_details"));
                 int n = inventory_details.length();
                 for (int i = 0; i < n; ++i) {
                     JSONObject details = inventory_details.getJSONObject(i);
@@ -494,8 +494,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             public void onClick(View view) {
                     Gson gson = new Gson();
                     ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                    String rfidJson = gson.toJson(rfidScanDataObjs);
                     RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
-                            token,loggedinUserSiteId,rfidScanDataObjs
+                            token,loggedinUserSiteId,rfidJson
                     );
                     ObjectMapper mapper = new ObjectMapper();
                     String jsonString = "";
@@ -529,7 +530,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 Gson gson = new Gson();
                 ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                 RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
-                        token,loggedinUserSiteId,rfidScanDataObjs
+                        token,loggedinUserSiteId,gson.toJson(rfidScanDataObjs)
                 );
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";
