@@ -23,8 +23,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InventoryManagement"
         tools:replace="android:allowBackup">
-        <activity android:name=".PostSuccess" android:screenOrientation="portrait"></activity>
-        <activity android:name=".SyncDBActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".ContinueActivity" android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".PostSuccess"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SyncDBActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".LocateTagActivity"
             android:screenOrientation="portrait" />

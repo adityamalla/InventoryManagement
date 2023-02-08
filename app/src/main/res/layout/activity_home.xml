@@ -136,4 +136,31 @@
         app:layout_constraintStart_toStartOf="@+id/uploadData"
         app:layout_constraintTop_toBottomOf="@+id/uploadData"
         tools:ignore="RtlCompat" />
+
+
+    <ImageView
+        android:id="@+id/continueScan"
+        style="@style/DashboardButton"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="@+id/syncLabel"
+        app:layout_constraintStart_toStartOf="@+id/syncLabel"
+        app:layout_constraintTop_toBottomOf="@+id/syncLabel"
+        app:srcCompat="@drawable/continue_inspection" />
+
+    <TextView
+        android:id="@+id/continueLabel"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="Continue Reconcilation"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        android:textSize="14dp"
+        app:layout_constraintEnd_toEndOf="@+id/continueScan"
+        app:layout_constraintStart_toStartOf="@+id/continueScan"
+        app:layout_constraintTop_toBottomOf="@+id/continueScan"
+        tools:ignore="RtlCompat" />
 </androidx.constraintlayout.widget.ConstraintLayout>

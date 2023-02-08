@@ -124,7 +124,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return name;
     }
-
+    @SuppressLint("Range")
+    public ArrayList<ScanInfo> getPendingScans(SQLiteDatabase sqLiteDatabase){
+        ArrayList<ScanInfo> scanInfo = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data"), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String room_id = cursor.getString(cursor.getColumnIndex("room_id"));
+                String location_id = cursor.getString(cursor.getColumnIndex("location_id"));
+                String roomName = getRoomName(sqLiteDatabase,room_id);
+                String locName = getFacilName(sqLiteDatabase,location_id);
+                scanInfo.add(
+                        new ScanInfo(cursor.getString(cursor.getColumnIndex("id")),
+                                cursor.getString(cursor.getColumnIndex("room_id")),roomName,location_id,locName,cursor.getString(cursor.getColumnIndex("json_data"))));
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return scanInfo;
+    }
     @SuppressLint("Range")
     public ArrayList<MyObject> getBuildingList(SQLiteDatabase sqLiteDatabase){
         ArrayList<MyObject> facil = new ArrayList<>();
@@ -384,6 +402,36 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         return inv;
+    }
+    @SuppressLint("Range")
+    public String getRoomName(SQLiteDatabase sqLiteDatabase, String room_id){
+        String sql = "SELECT room,id FROM fi_facil_rooms " +
+                "where status = 'active' and id = "+room_id;
+        Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
+        String roomName="";
+        // looping through all rows and adding to list
+        if (cursor2.moveToFirst()) {
+            do {
+                 roomName = cursor2.getString(cursor2.getColumnIndex("room"));
+            } while (cursor2.moveToNext());
+        }
+        cursor2.close();
+        return roomName;
+    }
+    @SuppressLint("Range")
+    public String getFacilName(SQLiteDatabase sqLiteDatabase, String facil_id){
+        String sql = "SELECT name,id FROM fi_facilities " +
+                "where status = 'active' and id = "+facil_id;
+        Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
+        String facilName="";
+        // looping through all rows and adding to list
+        if (cursor2.moveToFirst()) {
+            do {
+                facilName = cursor2.getString(cursor2.getColumnIndex("name"));
+            } while (cursor2.moveToNext());
+        }
+        cursor2.close();
+        return facilName;
     }
     public void delAllSavedScanData(SQLiteDatabase sqLiteDatabase, String room_id){
         sqLiteDatabase.delete("scanned_data", "room_id=?", new String[]{room_id});

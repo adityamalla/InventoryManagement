@@ -45,6 +45,7 @@ public class HomeActivity extends AppCompatActivity {
     ImageView inventory;
     ImageView locate;
     ImageView sync;
+    ImageView continueScan;
     Boolean connected;
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     String loggedinUsername = "";
@@ -131,6 +132,7 @@ public class HomeActivity extends AppCompatActivity {
         inventory = (ImageView) findViewById(R.id.inventoryBtn);
         locate = (ImageView) findViewById(R.id.locationBtn);
         sync = (ImageView) findViewById(R.id.downloadData);
+        continueScan = (ImageView) findViewById(R.id.continueScan);
         if (intent.getStringExtra("pageLoadTemp") == null ) {
             if (connected) {
                 progressSynStart = new ProgressDialog(HomeActivity.this);
@@ -210,6 +212,21 @@ public class HomeActivity extends AppCompatActivity {
                 myIntent.putExtra("loggedinUsername", loggedinUsername);
                 myIntent.putExtra("site_name", site_name);
                 myIntent.putExtra("singleLocate", "1");
+                myIntent.putExtra("empName", empName);
+                startActivity(myIntent);
+            }});
+        continueScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent myIntent = new Intent(HomeActivity.this,
+                        ContinueActivity.class);
+                myIntent.putExtra("user_id", user_id[0]);
+                myIntent.putExtra("site_id", site_id[0]);
+                myIntent.putExtra("token", token[0]);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("site_name", site_name);
                 myIntent.putExtra("empName", empName);
                 startActivity(myIntent);
             }});
