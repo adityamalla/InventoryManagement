@@ -126,9 +126,37 @@ public class PostSuccess extends AppCompatActivity {
         postScanData = findViewById(R.id.postScan);
         int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
         if(scannedJsonData > 0){
+            postScanData.setVisibility(View.VISIBLE);
+            ConstraintLayout constraintLayout = findViewById(R.id.successLayout);
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(constraintLayout);
+            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.START,R.id.postScan,ConstraintSet.START,0);
+            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.END,R.id.postScan,ConstraintSet.END,0);
+            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.TOP,R.id.postScan,ConstraintSet.BOTTOM,0);
+            constraintSet.applyTo(constraintLayout);
+            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) startAnotherInv.getLayoutParams();
+            newLayoutParams.topMargin = 10;
+            newLayoutParams.leftMargin = 20;
+            newLayoutParams.rightMargin = 20;
+            newLayoutParams.bottomMargin = 0;
+            startAnotherInv.setLayoutParams(newLayoutParams);
             badge_notification.setVisibility(View.VISIBLE);
             badge_notification.setText(String.valueOf(scannedJsonData));
         }else{
+            postScanData.setVisibility(View.GONE);
+            ConstraintLayout constraintLayout = findViewById(R.id.successLayout);
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(constraintLayout);
+            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.START,R.id.defaultText,ConstraintSet.START,0);
+            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.END,R.id.defaultText,ConstraintSet.END,0);
+            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.TOP,R.id.defaultText,ConstraintSet.BOTTOM,0);
+            constraintSet.applyTo(constraintLayout);
+            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) startAnotherInv.getLayoutParams();
+            newLayoutParams.topMargin = 10;
+            newLayoutParams.leftMargin = 20;
+            newLayoutParams.rightMargin = 20;
+            newLayoutParams.bottomMargin = 0;
+            startAnotherInv.setLayoutParams(newLayoutParams);
             badge_notification.setVisibility(View.GONE);
             badge_notification.setText("");
         }
@@ -234,7 +262,7 @@ public class PostSuccess extends AppCompatActivity {
                                     public void onResponse(JSONObject response) {
                                         //Process os success response
                                         String res = response.toString();
-                                        databaseHandler.delSavedScanData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
+                                        databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
                                         ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                                         if (jsonListModified.size()==0){
                                             progressSync.dismiss();

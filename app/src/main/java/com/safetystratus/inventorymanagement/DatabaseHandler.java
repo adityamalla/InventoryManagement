@@ -240,7 +240,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.insert("scanned_data", null, cv);
     }
     public void insertScannedInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
-            sqLiteDatabase.insert("scanned_json_data", null, cv);
+        sqLiteDatabase.delete("scanned_json_data", "room_id=? and location_id=? and user_id=?", new String[]{cv.getAsString("room_id"),cv.getAsString("location_id"),cv.getAsString("user_id")});
+        sqLiteDatabase.insert("scanned_json_data", null, cv);
     }
     @SuppressLint("Range")
     public ArrayList<MyObject> getSavedJsonData(SQLiteDatabase sqLiteDatabase){
@@ -437,7 +438,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.delete("scanned_data", "room_id=?", new String[]{room_id});
         sqLiteDatabase.delete("scanned_json_data", "room_id=?", new String[]{room_id});
     }
-    public void delSavedScanData(SQLiteDatabase sqLiteDatabase, String id){
+    public void delSavedScanData(SQLiteDatabase sqLiteDatabase, String user_id,String room_id){
+        sqLiteDatabase.delete("scanned_json_data", "user_id=? and room_id=?", new String[]{user_id,room_id});
+    }
+    public void delSavedScanDatabyId(SQLiteDatabase sqLiteDatabase, String id){
         sqLiteDatabase.delete("scanned_json_data", "id=?", new String[]{id});
     }
     @SuppressLint("Range")

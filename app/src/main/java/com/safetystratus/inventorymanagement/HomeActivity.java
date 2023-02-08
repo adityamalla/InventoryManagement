@@ -297,7 +297,7 @@ public class HomeActivity extends AppCompatActivity {
                                 //Process os success response
                                 String res = response.toString();
                                 Log.e("res>>>>",res);
-                                databaseHandler.delSavedScanData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
+                                databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
                                 ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                                 Log.e("size******",jsonListModified.size()+"***");
                                 if (jsonListModified.size()==0){
