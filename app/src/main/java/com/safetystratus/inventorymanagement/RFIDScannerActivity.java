@@ -191,7 +191,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         tableInv = (TableLayout) findViewById(R.id.tableInv);
         spinner = (ProgressBar)findViewById(R.id.progressBar1);
         invScrollview = (NestedScrollView)findViewById(R.id.invList);
-        Log.e("json_data_from_continue>>",json_data_from_continue+"**");
         if (json_data_from_continue.trim().length()>0) {
             try {
                 JSONObject obj = new JSONObject(json_data_from_continue.toString());
@@ -199,14 +198,12 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 int n = inventory_details.length();
                 for (int i = 0; i < n; ++i) {
                     JSONObject details = inventory_details.getJSONObject(i);
-                    Log.e("each detail>>",details.getInt("inventory_id")+"**");
                     scannedListfromContinue.add(String.valueOf(details.getInt("inventory_id")));
                 }
             }catch (Exception e){
                 e.printStackTrace();
             }
         }
-        Log.e("scannedlist>>",scannedListfromContinue+"**");
         final TextView invNameHeader = new TextView(this);
         invNameHeader.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
                 80,5));
@@ -771,8 +768,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
 
     public void setscancount(String count, String total_scan_count){
         scanCount.setText(total_scan_count);
-        Log.e("TEST000000",count+"**");
-        Log.e("TEST0000001",total_inventory+"**");
         if(Integer.parseInt(total_inventory)>0) {
             if(Integer.parseInt(count)<=Integer.parseInt(total_inventory)) {
                 int percent = (Integer.parseInt(count) * 100) / Integer.parseInt(total_inventory);
