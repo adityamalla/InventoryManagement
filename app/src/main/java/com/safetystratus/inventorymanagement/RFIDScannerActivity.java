@@ -98,6 +98,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     String selectedRoomName = "";
     String selectedRoom = "";
     String empName="";
+    String json_data_from_continue="";
     String total_inventory = "120";
     TableLayout tableInv;
     NestedScrollView invScrollview;
@@ -106,6 +107,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     RadioButton notfound;
     Button saveScanData;
     ProgressBar spinner;
+    ArrayList<String> scannedListfromContinue = new ArrayList<String>();
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDScannerActivity.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
     @SuppressLint("WrongConstant")
@@ -175,6 +177,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         if (intent.getStringExtra("selectedRoomName") != null) {
             selectedRoomName = intent.getStringExtra("selectedRoomName");
         }
+        if (intent.getStringExtra("json_data_from_continue") != null) {
+            json_data_from_continue = intent.getStringExtra("json_data_from_continue");
+        }
         /*if (intent.getStringExtra("total_inventory") != null) {
             total_inventory = intent.getStringExtra("total_inventory");
         }*/
@@ -186,6 +191,22 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         tableInv = (TableLayout) findViewById(R.id.tableInv);
         spinner = (ProgressBar)findViewById(R.id.progressBar1);
         invScrollview = (NestedScrollView)findViewById(R.id.invList);
+        Log.e("json_data_from_continue>>",json_data_from_continue+"**");
+        if (json_data_from_continue.trim().length()>0) {
+            try {
+                JSONObject obj = new JSONObject(json_data_from_continue.toString());
+                JSONArray inventory_details = obj.getJSONArray("inventory_details");
+                int n = inventory_details.length();
+                for (int i = 0; i < n; ++i) {
+                    JSONObject details = inventory_details.getJSONObject(i);
+                    Log.e("each detail>>",details.getInt("inventory_id")+"**");
+                    scannedListfromContinue.add(String.valueOf(details.getInt("inventory_id")));
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        Log.e("scannedlist>>",scannedListfromContinue+"**");
         final TextView invNameHeader = new TextView(this);
         invNameHeader.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
                 80,5));
@@ -233,7 +254,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             invName.setMaxWidth(300);
             invName.setPadding(10, 40, 0, 0);
             invName.setText(invList.get(i).getProductName());
-            invName.setBackgroundResource(R.drawable.tab_border);
+            //invName.setBackgroundResource(R.drawable.tab_border);
             invName.setId(i);
             invName.setTextSize(16);
             invName.setMinLines(2);
@@ -247,7 +268,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             invRFIDCode.setPadding(5, 40, 20, 0);
             invRFIDCode.setText(invList.get(i).getRfidCode());
             invRFIDCode.setId(i+1);
-            invRFIDCode.setBackgroundResource(R.drawable.tab_border);
+            //invRFIDCode.setBackgroundResource(R.drawable.tab_border);
             invRFIDCode.setTextSize(16);
             invRFIDCode.setTextColor(Color.parseColor("#000000"));
             final TextView invCode = new TextView(this);
@@ -257,9 +278,25 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             invCode.setPadding(5, 40, 20, 0);
             invCode.setText(invList.get(i).getCode());
             invCode.setId(i+1);
-            invCode.setBackgroundResource(R.drawable.tab_border);
+            //invCode.setBackgroundResource(R.drawable.tab_border);
             invCode.setTextSize(16);
             invCode.setTextColor(Color.parseColor("#000000"));
+            if (scannedListfromContinue.contains(invList.get(i).getInv_id())) {
+                invName.setBackgroundResource(R.drawable.inv_scan_success);
+                invRFIDCode.setBackgroundResource(R.drawable.inv_scan_success);
+                invCode.setBackgroundResource(R.drawable.inv_scan_success);
+                ContentValues cv = new ContentValues();
+                cv.put("location_id", selectedFacil);
+                cv.put("room_id", selectedRoom);
+                cv.put("inventory_id", Integer.parseInt(invList.get(i).getInv_id()));
+                cv.put("scanned_by", selectedUserId);
+                cv.put("scanned", 1);
+                databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+            } else {
+                invName.setBackgroundResource(R.drawable.tab_border);
+                invRFIDCode.setBackgroundResource(R.drawable.tab_border);
+                invCode.setBackgroundResource(R.drawable.tab_border);
+            }
             final TableRow trInv = new TableRow(this);
             TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
                     TableLayout.LayoutParams.WRAP_CONTENT);
@@ -457,11 +494,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             @Override
             public void onClick(View view) {
                     Gson gson = new Gson();
-                    String scannedObj = "";
                     ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
-                    scannedObj = gson.toJson(rfidScanDataObjs);
                     RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
-                            token,loggedinUserSiteId,scannedObj
+                            token,loggedinUserSiteId,rfidScanDataObjs
                     );
                     ObjectMapper mapper = new ObjectMapper();
                     String jsonString = "";
@@ -599,7 +634,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.e("TESTTTTTTTTTTT",newList.size()+"*****");
                 tableInv.removeAllViews();
                 final TextView invNameHeader = new TextView(RFIDScannerActivity.this);
                 invNameHeader.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,

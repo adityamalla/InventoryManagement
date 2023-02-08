@@ -92,6 +92,13 @@ public class CustomizedListView extends BaseAdapter {
                 myIntent.putExtra("loggedinUsername", obj.getLoggedinUsername());
                 myIntent.putExtra("site_name", obj.getSite_name());
                 myIntent.putExtra("fromContinueInsp","true");
+                myIntent.putExtra("json_data_from_continue",scanInfo.getJson_data());
+                myIntent.putExtra("selectedFacilName", scanInfo.getFacility_name());
+                myIntent.putExtra("selectedFacil", scanInfo.getFacility_id()+"");
+                myIntent.putExtra("selectedRoomName", scanInfo.getRoom_name());
+                myIntent.putExtra("selectedRoom", scanInfo.getRoom_id()+"");
+                int inventoryCount = databaseHandler.checkCount(db,scanInfo.getRoom_id());
+                myIntent.putExtra("total_inventory", inventoryCount+"");
                 activity.startActivity(myIntent);
             }
         });

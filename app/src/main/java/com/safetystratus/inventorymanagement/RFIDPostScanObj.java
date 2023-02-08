@@ -1,14 +1,15 @@
 package com.safetystratus.inventorymanagement;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class RFIDPostScanObj implements Serializable {
     public String user_id;
     public String token;
     public String site_id;
-    public String inventory_details;
+    public ArrayList<RFIDScanDataObj> inventory_details;
 
-    public RFIDPostScanObj(String user_id, String token, String site_id, String inventory_details) {
+    public RFIDPostScanObj(String user_id, String token, String site_id, ArrayList<RFIDScanDataObj> inventory_details) {
         this.user_id = user_id;
         this.token = token;
         this.site_id = site_id;
@@ -39,11 +40,11 @@ public class RFIDPostScanObj implements Serializable {
         this.site_id = site_id;
     }
 
-    public String getInventory_details() {
+    public ArrayList<RFIDScanDataObj> getInventory_details() {
         return inventory_details;
     }
 
-    public void setInventory_details(String inventory_details) {
+    public void setInventory_details(ArrayList<RFIDScanDataObj> inventory_details) {
         this.inventory_details = inventory_details;
     }
 }
