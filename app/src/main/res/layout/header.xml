@@ -7,18 +7,18 @@
     android:layout_height="60dp"
     android:layout_alignParentTop="true"
     android:background="@android:color/transparent">
+
     <TextView
         android:id="@+id/headerId"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="35dp"
-        android:layout_marginRight="35dp"
-        android:text="TextView"
+        android:fontFamily="@font/roboto_regular"
+        android:text="Scan Activity"
+        android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
         android:visibility="gone"
-        android:fontFamily="@font/roboto_regular"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,5 +66,23 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+    <Button
+        android:id="@+id/backToHome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#0D69AA"
+        android:text="Home"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:textAllCaps="false"
+        android:visibility="gone"
+        android:textAlignment="viewStart"
+        app:backgroundTint="@null"
+        android:fontFamily="@font/roboto_regular"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center"
+        android:paddingLeft="10dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -108,6 +108,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     Button saveScanData;
     Button completeScan;
     ProgressBar spinner;
+    Button backToHome;
     ArrayList<String> scannedListfromContinue = new ArrayList<String>();
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDScannerActivity.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
@@ -122,8 +123,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         getSupportActionBar().setCustomView(R.layout.header);
         getSupportActionBar().setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.headerColor)));
         getSupportActionBar().setElevation(0);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         header = (ConstraintLayout) findViewById(R.id.header);
         TextView tv = (TextView) findViewById(R.id.headerId);
         ShapeDrawable shape = new ShapeDrawable(new RectShape());
@@ -145,6 +146,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         notfound = findViewById(R.id.notfound);
         completeScan = findViewById(R.id.completeScan);
         saveScanData = findViewById(R.id.saveScan);
+        backToHome = (Button) findViewById(R.id.backToHome);
+        backToHome.setVisibility(View.VISIBLE);
         scannedProgressPercentage.setText("0 %");
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
@@ -659,6 +662,27 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 }
             }
         });
+        backToHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                backToHome();
+            }
+        });
+    }
+    public void backToHome() {
+        final Intent myIntent = new Intent(RFIDScannerActivity.this,
+                HomeActivity.class);
+        myIntent.putExtra("user_id", selectedUserId);
+        myIntent.putExtra("site_id", loggedinUserSiteId);
+        myIntent.putExtra("token", token);
+        myIntent.putExtra("sso", sso);
+        myIntent.putExtra("md5pwd", md5Pwd);
+        myIntent.putExtra("loggedinUsername", loggedinUsername);
+        myIntent.putExtra("site_name", site_name);
+        myIntent.putExtra("pageLoadTemp", "-1");
+        myIntent.putExtra("empName", empName);
+        startActivity(myIntent);
     }
 
     @Override
@@ -903,7 +927,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             }
         }
     }
-    @Override
+    /*@Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
@@ -927,7 +951,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);
-    }
+    }*/
     @Override
     public void onBackPressed() {
     }

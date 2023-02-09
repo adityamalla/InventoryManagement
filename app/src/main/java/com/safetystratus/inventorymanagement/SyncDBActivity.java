@@ -180,44 +180,92 @@ public class SyncDBActivity extends AppCompatActivity {
         syncData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(selectedFacilName.length()>0){
-                    if (connected) {
-                        progressSynStart = new ProgressDialog(SyncDBActivity.this);
-                        progressSynStart.setTitle("");
-                        progressSynStart.setMessage("Synchronizing..");
-                        progressSynStart.setCancelable(false);
-                        progressSynStart.show();
-                        progressSynStart.getWindow().setLayout(450, 200);
-                        Log.e("test>",loggedinUserSiteId+"*");
-                        Log.e("test1>",selectedUserId+"*");
-                        Log.e("test2>",token+"*");
-                        Log.e("test3>",selectedFacil+"*");
-                        insertDbData(loggedinUserSiteId, selectedUserId, token, selectedFacil);
-                    }else{
-                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
-                        dlgAlert.setTitle("Not getting connection");
-                        dlgAlert.setMessage("Please check your wifi or mobile data!!");
-                        dlgAlert.setPositiveButton("Ok",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        return;
-                                    }
-                                });
-                        dlgAlert.create().show();
-                    }
-                }else{
+                int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
+                if(scannedJsonData > 0){
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
                     dlgAlert.setTitle("SafetyStratus");
-                    dlgAlert.setMessage("Please select a building");
-                    dlgAlert.setPositiveButton("Ok",
+                    if (scannedJsonData==1){
+                        dlgAlert.setMessage("There is "+scannedJsonData+" pending reconciliation! Please complete or upload to CMS");
+                    }else{
+                        dlgAlert.setMessage("There are "+scannedJsonData+" pending reconciliations! Please complete or upload them to CMS");
+                    }
+                    dlgAlert.setPositiveButton("Upload",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    dialog.dismiss();
+                                    if(connected){
+                                        try {
+                                            ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                                            //SyncInventory sdb = new SyncInventory();
+                                            //sdb.execute(jsonList);
+                                            uploadScannedInventoryData(jsonList);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        } finally {
+
+                                        }
+                                    }else{
+                                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
+                                        dlgAlert.setTitle("Safety Stratus");
+                                        dlgAlert.setMessage("Slow or no Internet Connection. Your data will be saved offline. " +
+                                                "Please sync the data when the network is online");
+                                        dlgAlert.setPositiveButton("Ok",
+                                                new DialogInterface.OnClickListener() {
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        return;
+                                                    }
+                                                });
+                                        dlgAlert.create().show();
+                                    }
+                                    return;
+                                }
+                            });
+                    dlgAlert.setNegativeButton("Cancel",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    return;
                                 }
                             });
                     dlgAlert.create().show();
                 }
-
+                else {
+                    if (selectedFacilName.length() > 0) {
+                        if (connected) {
+                            progressSynStart = new ProgressDialog(SyncDBActivity.this);
+                            progressSynStart.setTitle("");
+                            progressSynStart.setMessage("Synchronizing..");
+                            progressSynStart.setCancelable(false);
+                            progressSynStart.show();
+                            progressSynStart.getWindow().setLayout(450, 200);
+                            Log.e("test>", loggedinUserSiteId + "*");
+                            Log.e("test1>", selectedUserId + "*");
+                            Log.e("test2>", token + "*");
+                            Log.e("test3>", selectedFacil + "*");
+                            insertDbData(loggedinUserSiteId, selectedUserId, token, selectedFacil);
+                        } else {
+                            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
+                            dlgAlert.setTitle("Not getting connection");
+                            dlgAlert.setMessage("Please check your wifi or mobile data!!");
+                            dlgAlert.setPositiveButton("Ok",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            return;
+                                        }
+                                    });
+                            dlgAlert.create().show();
+                        }
+                    } else {
+                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
+                        dlgAlert.setTitle("SafetyStratus");
+                        dlgAlert.setMessage("Please select a building");
+                        dlgAlert.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        dlgAlert.create().show();
+                    }
+                }
             }});
     }
     @Override
@@ -229,6 +277,69 @@ public class SyncDBActivity extends AppCompatActivity {
             inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         } catch (Exception e) {
         }
+    }
+    public void uploadScannedInventoryData(ArrayList<MyObject> jsonList){
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(SyncDBActivity.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        try {
+            ProgressDialog progressSync = new ProgressDialog(SyncDBActivity.this);
+            progressSync.setTitle("");
+            progressSync.setMessage("Uploading..");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(400, 200);
+            String URL = ApiConstants.syncpostscanneddata;
+            RequestQueue requestQueue = Volley.newRequestQueue(SyncDBActivity.this);
+            for (int k=0;k<jsonList.size();k++){
+                int finalK = k;
+                Log.e("JSON>>>",jsonList.get(k).getObjectName()+"**");
+                JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonList.get(k).getObjectName()),
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                //Process os success response
+                                String res = response.toString();
+                                Log.e("res>>>>",res);
+                                databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
+                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                                Log.e("size******",jsonListModified.size()+"***");
+                                if (jsonListModified.size()==0){
+                                    progressSync.dismiss();
+                                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
+                                    dlgAlert.setTitle("Safety Stratus");
+                                    dlgAlert.setMessage("Inventory data uploaded successfully!");
+                                    dlgAlert.setPositiveButton("Ok",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    return;
+                                                }
+                                            });
+                                    dlgAlert.create().show();
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+                int socketTimeout = 60000;//30 seconds - change to what you want
+                RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, 2, 2);
+                request_json.setRetryPolicy(policy);
+                // add the request object to the queue to be executed
+                requestQueue.add(request_json);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            // progress.dismiss();
+            db.close();
+            if (databaseHandler != null) {
+                databaseHandler.close();
+            }
+        }
+        //}
+        //});
     }
     public void insertDbData(String siteId, String userId, String token, String selectedFacil) {
         String url = String.format(ApiConstants.downloadRoomInvDbUrl, siteId, userId, token,selectedFacil);
