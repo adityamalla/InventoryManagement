@@ -184,11 +184,7 @@ public class SyncDBActivity extends AppCompatActivity {
                 if(scannedJsonData > 0){
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
                     dlgAlert.setTitle("SafetyStratus");
-                    if (scannedJsonData==1){
-                        dlgAlert.setMessage("There is "+scannedJsonData+" pending reconciliation! Please complete or upload to CMS");
-                    }else{
-                        dlgAlert.setMessage("There are "+scannedJsonData+" pending reconciliations! Please complete or upload them to CMS");
-                    }
+                    dlgAlert.setMessage("Reconciliations still pending. Upload to CMS or Cancel to return to the homepage.");
                     dlgAlert.setPositiveButton("Upload",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
@@ -222,7 +218,19 @@ public class SyncDBActivity extends AppCompatActivity {
                     dlgAlert.setNegativeButton("Cancel",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
-                                    return;
+                                    final Intent myIntent = new Intent(SyncDBActivity.this,
+                                            HomeActivity.class);
+                                    Log.e("selecteduserid6>>",selectedUserId+"**");
+                                    myIntent.putExtra("user_id", selectedUserId);
+                                    myIntent.putExtra("site_id", loggedinUserSiteId);
+                                    myIntent.putExtra("token", token);
+                                    myIntent.putExtra("sso", sso);
+                                    myIntent.putExtra("md5pwd", md5Pwd);
+                                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                    myIntent.putExtra("site_name", site_name);
+                                    myIntent.putExtra("pageLoadTemp", "-1");
+                                    myIntent.putExtra("empName", empName);
+                                    startActivity(myIntent);
                                 }
                             });
                     dlgAlert.create().show();
