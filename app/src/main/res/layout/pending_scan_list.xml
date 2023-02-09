@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="300dp"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/listLayout"
     android:background="@drawable/layout_border_continue_scan_list">
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="30dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="20dp"
         android:stretchColumns="0,1"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -72,6 +72,31 @@
                 android:textColor="#1E1E1E"
                 android:textSize="15sp" />
         </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/labelUser"
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:paddingLeft="5dp"
+                android:text="TextView"
+                android:textColor="#9B9B9B"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/userValue"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:text="TextViewValue"
+                android:textColor="#1E1E1E"
+                android:textSize="15sp" />
+        </TableRow>
     </TableLayout>
 
     <Button
@@ -90,5 +115,22 @@
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tableLayout2" />
+
+    <Button
+        android:id="@+id/discardScanButton"
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/sign_out_border"
+        android:text="Discard"
+        android:textAllCaps="false"
+        android:textColor="#15BAB6"
+        android:textSize="14dp"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tableLayout2" />
 </androidx.constraintlayout.widget.ConstraintLayout>

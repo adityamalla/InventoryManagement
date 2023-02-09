@@ -69,12 +69,17 @@ public class CustomizedListView extends BaseAdapter {
         TextView facilName = (TextView)vi.findViewById(R.id.facilityName);
         TextView labelRoom = (TextView)vi.findViewById(R.id.labelRoom);
         TextView roomValue = (TextView)vi.findViewById(R.id.roomValue);
-        final Button continueScan = (Button)vi.findViewById(R.id.continueScanButton);
+        TextView userLabel = (TextView)vi.findViewById(R.id.labelUser);
+        TextView userValue = (TextView)vi.findViewById(R.id.userValue);
+        Button continueScan = (Button)vi.findViewById(R.id.continueScanButton);
+        Button discardScan = (Button)vi.findViewById(R.id.discardScanButton);
         ScanInfo scanInfo = data.get(position);
         continueScan.setId(Integer.parseInt(scanInfo.getId()));
         facilityLabel.setText("Location");
         facilName.setText(scanInfo.getFacility_name());
         labelRoom.setText("Room");
+        userLabel.setText("Scanned By");
+        userValue.setText(obj.getEmpName());
         roomValue.setText(scanInfo.getRoom_name());
         continueScan.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -101,6 +106,45 @@ public class CustomizedListView extends BaseAdapter {
                 int inventoryCount = databaseHandler.checkCount(db,scanInfo.getRoom_id());
                 myIntent.putExtra("total_inventory", inventoryCount+"");
                 activity.startActivity(myIntent);
+            }
+        });
+        discardScan.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SQLiteDatabase.loadLibs(activity);
+                final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(activity);
+                final SQLiteDatabase db = databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE);
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(activity);
+                dlgAlert.setTitle("Safety Stratus");
+                dlgAlert.setMessage("Are you sure you want to discard this reconciliation?");
+                dlgAlert.setPositiveButton("Discard",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                boolean deleted = databaseHandler.deletePendingScan(db,scanInfo.getId());
+                                if(deleted){
+                                    final Intent myIntent = new Intent(activity,
+                                            ContinueActivity.class);
+                                    myIntent.putExtra("user_id", obj.getUser_id());
+                                    myIntent.putExtra("site_id", obj.getSite_id());
+                                    myIntent.putExtra("token", obj.getToken());
+                                    myIntent.putExtra("sso", obj.getSso());
+                                    myIntent.putExtra("md5pwd", obj.getMd5());
+                                    myIntent.putExtra("loggedinUsername", obj.getLoggedinUsername());
+                                    myIntent.putExtra("site_name", obj.getSite_name());
+                                    myIntent.putExtra("empName", obj.getEmpName());
+                                    activity.startActivity(myIntent);
+                                    return;
+                                }else
+                                return;
+                            }
+                        });
+                dlgAlert.setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        });
+                dlgAlert.create().show();
             }
         });
         return vi;

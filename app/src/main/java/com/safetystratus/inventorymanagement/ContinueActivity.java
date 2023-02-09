@@ -43,6 +43,7 @@ public class ContinueActivity extends AppCompatActivity {
     ConstraintLayout header;
     CustomizedListView adapter;
     ListView pendingScansList;
+    TextView msg;
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,11 +104,20 @@ public class ContinueActivity extends AppCompatActivity {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
         pendingScansList = (ListView) findViewById(R.id.pendingScanList);
+        msg = (TextView) findViewById(R.id.msg);
         IntentModel model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername);
         ArrayList<ScanInfo> listPendingScans = new ArrayList<ScanInfo>();
         listPendingScans = databaseHandler.getPendingScans(db);
-        adapter=new CustomizedListView(this, listPendingScans,model);
-        pendingScansList.setAdapter(adapter);
+        if (listPendingScans.size()==0){
+            pendingScansList.setVisibility(View.GONE);
+            msg.setVisibility(View.VISIBLE);
+
+        }else{
+            msg.setVisibility(View.GONE);
+            pendingScansList.setVisibility(View.VISIBLE);
+            adapter=new CustomizedListView(this, listPendingScans,model);
+            pendingScansList.setAdapter(adapter);
+        }
     }
     public static void hideKeyboard(ContinueActivity activity) {
         try {

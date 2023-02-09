@@ -124,6 +124,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
         return name;
     }
+    //@SuppressLint("Range")
+    /*public String getUserEmployeeName(SQLiteDatabase sqLiteDatabase, String val) {
+        Cursor cursor = null;
+        String name = "";
+        Log.e("test>>",val);
+        try{
+            cursor = sqLiteDatabase.rawQuery(String.format("select firstname||' '||lastname as name from site_users " +
+                    "where user_id = " + val), null);
+            if (cursor.moveToFirst()) {
+                name = cursor.getString(cursor.getColumnIndex("name"));
+            }
+            cursor.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        Log.e("test>>",name);
+        return name;
+    }*/
     @SuppressLint("Range")
     public ArrayList<ScanInfo> getPendingScans(SQLiteDatabase sqLiteDatabase){
         ArrayList<ScanInfo> scanInfo = new ArrayList<>();
@@ -142,6 +160,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         return scanInfo;
+    }
+    @SuppressLint("Range")
+    public boolean deletePendingScan(SQLiteDatabase sqLiteDatabase,String id){
+        boolean deleted = false;
+        sqLiteDatabase.delete("scanned_json_data", "id=?", new String[]{id});
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data where id="+id), null);
+        if(cursor.getCount()==0)
+            deleted = true;
+        cursor.close();
+        return deleted;
     }
     @SuppressLint("Range")
     public ArrayList<MyObject> getBuildingList(SQLiteDatabase sqLiteDatabase){
