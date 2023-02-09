@@ -524,7 +524,7 @@ public class HomeActivity extends AppCompatActivity {
             db.delete(QueryConstants.TABLE_NAME_FI_LOCATIONS, null, null);
             db.delete(QueryConstants.TABLE_NAME_FI_FACILITIES, null, null);
             db.delete(QueryConstants.TABLE_NAME_FI_ROOM_TYPES, null, null);
-            db.delete(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, null);
+            //db.delete(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, null);
             db.delete(QueryConstants.TABLE_NAME_FI_ROOM_DEPT, null, null);
             //db.delete(QueryConstants.TABLE_NAME_FI_ROOM_ROSTER, null, null);
             db.delete(QueryConstants.TABLE_NAME_LABELS, null, null);
