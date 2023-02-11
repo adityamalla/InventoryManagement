@@ -23,9 +23,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InventoryManagement"
         tools:replace="android:allowBackup">
+        <activity android:name=".ContainerDetailsActivity"></activity>
         <activity
             android:name=".ScanBarcodeActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ContinueActivity"
             android:screenOrientation="portrait" />

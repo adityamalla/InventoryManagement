@@ -463,6 +463,14 @@ public class SyncDBActivity extends AppCompatActivity {
                     values.put("create_user_id", objectInArray.getString("create_user_id"));
                     values.put("object_id", objectInArray.getString("object_id"));
                     values.put("receipt_date", objectInArray.getString("receipt_date"));
+                    values.put("notes", objectInArray.getString("notes"));
+                    values.put("comment", objectInArray.getString("comment"));
+                    values.put("quantity", objectInArray.getString("quantity"));
+                    values.put("quantity_unit_abbreviation", objectInArray.getString("quantity_unit_abbreviation"));
+                    values.put("cas_number", objectInArray.getString("cas_number"));
+                    values.put("status", objectInArray.getString("status"));
+                    values.put("loc", objectInArray.getString("loc"));
+                    values.put("owner", objectInArray.getString("owner"));
                     db.insert(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, values);
                     Log.e("checkValues0>>",values.toString()+"**");
                     values.clear();

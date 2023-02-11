@@ -259,6 +259,34 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return inv;
     }
+    @SuppressLint("Range")
+    public InventoryModel getScannedInventoryDetails(SQLiteDatabase sqLiteDatabase, String cde){
+        InventoryModel inv = null;
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM  chemical_inventory where code='"+cde+"' limit 1"), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String id = cursor.getString(cursor.getColumnIndex("id"));
+                String code = cursor.getString(cursor.getColumnIndex("code"));
+                String name = cursor.getString(cursor.getColumnIndex("name"));
+                String cas = cursor.getString(cursor.getColumnIndex("cas_number"));
+                String status = cursor.getString(cursor.getColumnIndex("status"));
+                String location = cursor.getString(cursor.getColumnIndex("loc"));
+                String object_id = cursor.getString(cursor.getColumnIndex("object_id"));
+                String object_table = cursor.getString(cursor.getColumnIndex("object_table"));
+                String owner = cursor.getString(cursor.getColumnIndex("owner"));
+                String notes = cursor.getString(cursor.getColumnIndex("notes"));
+                String comments = cursor.getString(cursor.getColumnIndex("comment"));
+                String volume_mass = cursor.getString(cursor.getColumnIndex("quantity"));
+                String volume_mass_units = cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
+                String rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                inv = new InventoryModel(id, code,name,cas,status,location,owner,notes,comments,volume_mass,volume_mass_units,rfidCode);
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return inv;
+    }
+
     public void insertScannedInvData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+cv.getAsString("room_id")+"" +
                 " and location_id="+cv.getAsString("location_id")+" and inventory_id="+cv.getAsString("inventory_id")), null);
@@ -295,6 +323,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Log.e("scannedCount>>",count+"***");
         cursor1.close();
         return count;
+    }
+    @SuppressLint("Range")
+    public boolean checkScannedBarcodeDataAvailable(SQLiteDatabase sqLiteDatabase,  String code){
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from chemical_inventory where code='"+code+"'"), null);
+        int count = cursor1.getCount();
+        Log.e("scannedCount>>",count+"***");
+        cursor1.close();
+        if(count>0)
+            return true;
+        else
+            return false;
     }
 
     @SuppressLint("Range")

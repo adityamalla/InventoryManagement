@@ -26,6 +26,7 @@ public class QueryConstants {
             "    \treceipt_date text,\n" +
             "    \tcreate_date text,\n" +
             "    \tnotes text,\n" +
+            "    \towner text,\n" +
             "    \tcomment text,\n" +
             "    \tobject_id integer,\n" +
             "    \tquantity integer,\n" +

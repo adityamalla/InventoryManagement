@@ -5,12 +5,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
-import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
@@ -29,7 +25,7 @@ import android.widget.TextView;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
-public class ScanBarcodeActivity extends AppCompatActivity {
+public class ContainerDetailsActivity extends AppCompatActivity {
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     boolean connected = false;
     String loggedinUsername = "";
@@ -40,16 +36,28 @@ public class ScanBarcodeActivity extends AppCompatActivity {
     String sso = "";
     String site_name = "";
     String token="";
-    TextView scanBarcode;
+    Button uploadData;
     String empName = "";
+    String decodedData = "";
+    EditText name;
+    EditText code;
+    EditText cas;
+    EditText owner;
+    EditText quantity;
+    EditText unit;
+    EditText location;
+    EditText status;
+    EditText notes;
+    EditText comments;
+
     ConstraintLayout header;
-    final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(ScanBarcodeActivity.this);
+    final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(ContainerDetailsActivity.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scan_barcode);
+        setContentView(R.layout.activity_container_details);
         SQLiteDatabase.loadLibs(this);
         hideKeyboard(this);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -65,7 +73,7 @@ public class ScanBarcodeActivity extends AppCompatActivity {
         shape.getPaint().setColor(Color.RED);
         shape.getPaint().setStyle(Paint.Style.STROKE);
         shape.getPaint().setStrokeWidth(3);
-        tv.setText("Scan Container");
+        tv.setText("Edit Container");
         tv.setTextSize(18);
         tv.setVisibility(View.VISIBLE);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -93,6 +101,9 @@ public class ScanBarcodeActivity extends AppCompatActivity {
         if(intent.getStringExtra("empName")!=null) {
             empName = intent.getStringExtra("empName");
         }
+        if(intent.getStringExtra("decodedData")!=null) {
+            decodedData = intent.getStringExtra("decodedData");
+        }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
@@ -102,85 +113,46 @@ public class ScanBarcodeActivity extends AppCompatActivity {
         if (intent.getStringExtra("selectedSearchValue") != null) {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
-        scanBarcode = (TextView)findViewById(R.id.scanBarcodeBtn);
-        IntentFilter filter = new IntentFilter();
-        filter.addCategory(Intent.CATEGORY_DEFAULT);
-        filter.addAction(getResources().getString(R.string.activity_intent_filter_action));
-        registerReceiver(myBroadcastReceiver, filter);
+        uploadData = (Button) findViewById(R.id.uploadToWeb);
+        name = (EditText)findViewById(R.id.productName);
+        cas = (EditText)findViewById(R.id.cas);
+        code = (EditText)findViewById(R.id.barcode);
+        owner = (EditText)findViewById(R.id.owner);
+        quantity = (EditText)findViewById(R.id.volumeMass);
+        unit = (EditText)findViewById(R.id.volumeMassUnit);
+        notes = (EditText)findViewById(R.id.locationNotes);
+        location = (EditText)findViewById(R.id.location);
+        comments = (EditText)findViewById(R.id.comment);
+        status = (EditText)findViewById(R.id.status);
+        if (decodedData.trim().length()>0){
+            InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,decodedData);
+            name.setText(inv.getProductName());
+            cas.setText(inv.getCas_number());
+            code.setText(inv.getCode());
+            comments.setText(inv.getComments());
+            notes.setText(inv.getNotes());
+            owner.setText(inv.getOwner());
+            location.setText(inv.getLocation());
+            quantity.setText(inv.getVolume_mass());
+            unit.setText(inv.getVolume_mass_unit());
+            status.setText(inv.getStatus());
+        }else{
+            name.setText("");
+            cas.setText("");
+            code.setText("");
+            comments.setText("");
+            notes.setText("");
+            owner.setText("");
+            location.setText("");
+            quantity.setText("");
+            unit.setText("");
+            status.setText("");
+        }
     }
     @Override
     public void onBackPressed() {
     }
-    @Override
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        unregisterReceiver(myBroadcastReceiver);
-    }
-    private BroadcastReceiver myBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            Bundle b = intent.getExtras();
-            //  This is useful for debugging to verify the format of received intents from DataWedge
-            //for (String key : b.keySet())
-            //{
-            //    Log.v(LOG_TAG, key);
-            //}
-            if (action.equals(getResources().getString(R.string.activity_intent_filter_action))) {
-                //  Received a barcode scan
-                try {
-                    displayScanResult(intent, "via Broadcast");
-                } catch (Exception e) {
-                    //  Catch if the UI does not exist when we receive the broadcast... this is not designed to be a production app
-                }
-            }
-        }
-    };
-
-    private void displayScanResult(Intent initiatingIntent, String howDataReceived)
-    {
-        String decodedSource = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_source));
-        String decodedData = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_data));
-        String decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type));
-
-        if (null == decodedSource)
-        {
-            decodedSource = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_source_legacy));
-            decodedData = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_data_legacy));
-            decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type_legacy));
-        }
-        Log.e("TestDecodeData>>",decodedData+"---"+databaseHandler.checkScannedBarcodeDataAvailable(db,decodedData));
-        if(databaseHandler.checkScannedBarcodeDataAvailable(db,decodedData)){
-            unregisterReceiver(myBroadcastReceiver);
-            final Intent myIntent = new Intent(ScanBarcodeActivity.this,
-                    ContainerDetailsActivity.class);
-            myIntent.putExtra("user_id", selectedUserId);
-            myIntent.putExtra("site_id", loggedinUserSiteId);
-            myIntent.putExtra("token", token);
-            myIntent.putExtra("sso", sso);
-            myIntent.putExtra("md5pwd", md5Pwd);
-            myIntent.putExtra("loggedinUsername", loggedinUsername);
-            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-            myIntent.putExtra("site_name", site_name);
-            myIntent.putExtra("decodedData", decodedData);
-            myIntent.putExtra("empName", empName);
-            startActivity(myIntent);
-        }else{
-            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
-            dlgAlert.setTitle("Safety Stratus");
-            dlgAlert.setMessage("Information for the container is not available on this device!");
-            dlgAlert.setPositiveButton("Ok",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            return;
-                        }
-                    });
-            dlgAlert.create().show();
-        }
-
-    }
-    public static void hideKeyboard(ScanBarcodeActivity activity) {
+    public static void hideKeyboard(ContainerDetailsActivity activity) {
         try {
             InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -190,10 +162,9 @@ public class ScanBarcodeActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        unregisterReceiver(myBroadcastReceiver);
         if (id == android.R.id.home) {
-            final Intent myIntent = new Intent(ScanBarcodeActivity.this,
-                    HomeActivity.class);
+            final Intent myIntent = new Intent(ContainerDetailsActivity.this,
+                    ScanBarcodeActivity.class);
             myIntent.putExtra("user_id", selectedUserId);
             myIntent.putExtra("site_id", loggedinUserSiteId);
             myIntent.putExtra("token", token);

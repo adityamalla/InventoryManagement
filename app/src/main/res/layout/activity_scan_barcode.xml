@@ -21,6 +21,7 @@
         android:textAllCaps="false"
         android:textColor="#15BAB6"
         android:textSize="14dp"
+        android:visibility="visible"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
