@@ -25,9 +25,16 @@ public class QueryConstants {
             "    \topened_date text,\n" +
             "    \treceipt_date text,\n" +
             "    \tcreate_date text,\n" +
+            "    \tnotes text,\n" +
+            "    \tcomment text,\n" +
             "    \tobject_id integer,\n" +
+            "    \tquantity integer,\n" +
             "    \t room_id integer,\n" +
             "        object_table text ,\n" +
+            "        quantity_unit_abbreviation text ,\n" +
+            "        cas_number text ,\n" +
+            "        status text ,\n" +
+            "        loc text ,\n" +
             "    \tmodified_user_id numeric,\n" +
             "        modified_date text,\n" +
             "        lot text ,\n" +
