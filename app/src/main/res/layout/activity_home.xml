@@ -173,5 +173,30 @@
         app:layout_constraintStart_toStartOf="@+id/continueScan"
         app:layout_constraintTop_toBottomOf="@+id/continueScan"
         tools:ignore="RtlCompat" />
+    <ImageView
+        android:id="@+id/viewContainer"
+        style="@style/DashboardButton"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="@+id/uploadDataLabel"
+        app:layout_constraintStart_toStartOf="@+id/uploadDataLabel"
+        app:layout_constraintTop_toBottomOf="@+id/uploadDataLabel"
+        app:srcCompat="@drawable/view_container" />
+
+    <TextView
+        android:id="@+id/viewContainerLabel"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="View Container"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        android:textSize="14dp"
+        app:layout_constraintEnd_toEndOf="@+id/viewContainer"
+        app:layout_constraintStart_toStartOf="@+id/viewContainer"
+        app:layout_constraintTop_toBottomOf="@+id/viewContainer"
+        tools:ignore="RtlCompat" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
