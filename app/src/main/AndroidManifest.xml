@@ -23,7 +23,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InventoryManagement"
         tools:replace="android:allowBackup">
-        <activity android:name=".ContinueActivity" android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".ScanBarcodeActivity"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".ContinueActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".PostSuccess"
             android:screenOrientation="portrait" />
