@@ -521,6 +521,8 @@ public class HomeActivity extends AppCompatActivity {
             JSONObject obj = new JSONObject(tableData);
             ContentValues values = new ContentValues();
             JSONArray jsonArrayOtDepartments = obj.getJSONArray("ot_department");
+            JSONArray jsonArrayInventoryStatus = obj.getJSONArray("inventory_status");
+            JSONArray jsonArrayUOM = obj.getJSONArray("units_of_measure");
             //JSONArray jsonArraySiteUsers = obj.getJSONArray("site_users");
             JSONArray jsonArrayFiLocations = obj.getJSONArray("fi_locations");
             JSONArray jsonArrayMenuItems = obj.getJSONArray("menu_items");
@@ -549,6 +551,8 @@ public class HomeActivity extends AppCompatActivity {
             db.delete(QueryConstants.TABLE_NAME_MENU_ITEMS, null, null);
             db.delete(QueryConstants.TABLE_NAME_SETTINGS, null, null);
             db.delete(QueryConstants.TABLE_NAME_SCANNED_DATA, null, null);
+            db.delete(QueryConstants.TABLE_NAME_UOM, null, null);
+            db.delete(QueryConstants.TABLE_NAME_INV_STATUS, null, null);
             //db.delete(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, null);
             /*for (int i = 0, size = jsonArrayChemicalInventory.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayChemicalInventory.getJSONObject(i);
@@ -584,6 +588,31 @@ public class HomeActivity extends AppCompatActivity {
                     values.put("short_name", objectInArray.getString("short_name"));
                     values.put("status", objectInArray.getString("status"));
                     db.insert(QueryConstants.TABLE_NAME_OT_ORGANIZATION, null, values);
+                    values.clear();
+                }
+            }
+            for (int i = 0, size = jsonArrayUOM.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayUOM.getJSONObject(i);
+                String id = objectInArray.getString("id");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_UOM, "id", id) == 0) {
+                    values.put("id", id);
+                    values.put("label", objectInArray.getString("label"));
+                    values.put("type", objectInArray.getString("type"));
+                    values.put("status", objectInArray.getString("status"));
+                    values.put("abbreviation", objectInArray.getString("abbreviation"));
+                    values.put("conversion_multiplier", objectInArray.getString("conversion_multiplier"));
+                    db.insert(QueryConstants.TABLE_NAME_UOM, null, values);
+                    values.clear();
+                }
+            }
+            for (int i = 0, size = jsonArrayInventoryStatus.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayInventoryStatus.getJSONObject(i);
+                String id = objectInArray.getString("id");
+                if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_INV_STATUS, "id", id) == 0) {
+                    values.put("id", id);
+                    values.put("status", objectInArray.getString("status"));
+                    values.put("active", objectInArray.getString("active"));
+                    db.insert(QueryConstants.TABLE_NAME_INV_STATUS, null, values);
                     values.clear();
                 }
             }

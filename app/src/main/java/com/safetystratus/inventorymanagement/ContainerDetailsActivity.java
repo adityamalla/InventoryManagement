@@ -5,7 +5,9 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -25,6 +27,8 @@ import android.widget.TextView;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
+import java.util.ArrayList;
+
 public class ContainerDetailsActivity extends AppCompatActivity {
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     boolean connected = false;
@@ -39,6 +43,10 @@ public class ContainerDetailsActivity extends AppCompatActivity {
     Button uploadData;
     String empName = "";
     String decodedData = "";
+    String selectedFacilName = "";
+    String selectedFacil = "";
+    String selectedRoomName = "";
+    String selectedRoom = "";
     EditText name;
     EditText code;
     EditText cas;
@@ -49,7 +57,8 @@ public class ContainerDetailsActivity extends AppCompatActivity {
     EditText status;
     EditText notes;
     EditText comments;
-
+    EditText concentration;
+    EditText concentrationUnit;
     ConstraintLayout header;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(ContainerDetailsActivity.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
@@ -104,6 +113,18 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         if(intent.getStringExtra("decodedData")!=null) {
             decodedData = intent.getStringExtra("decodedData");
         }
+        if (intent.getStringExtra("selectedFacilName") != null) {
+            selectedFacilName = intent.getStringExtra("selectedFacilName");
+        }
+        if (intent.getStringExtra("selectedFacil") != null) {
+            selectedFacil = intent.getStringExtra("selectedFacil");
+        }
+        if (intent.getStringExtra("selectedRoom") != null) {
+            selectedRoom = intent.getStringExtra("selectedRoom");
+        }
+        if (intent.getStringExtra("selectedRoomName") != null) {
+            selectedRoomName = intent.getStringExtra("selectedRoomName");
+        }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
@@ -124,6 +145,8 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         location = (EditText)findViewById(R.id.location);
         comments = (EditText)findViewById(R.id.comment);
         status = (EditText)findViewById(R.id.status);
+        concentration = (EditText)findViewById(R.id.concentration);
+        concentrationUnit = (EditText)findViewById(R.id.concUnit);
         if (decodedData.trim().length()>0){
             InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,decodedData);
             name.setText(inv.getProductName());
@@ -132,10 +155,18 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             comments.setText(inv.getComments());
             notes.setText(inv.getNotes());
             owner.setText(inv.getOwner());
-            location.setText(inv.getLocation());
             quantity.setText(inv.getVolume_mass());
             unit.setText(inv.getVolume_mass_unit());
             status.setText(inv.getStatus());
+            concentration.setText(inv.getConcentration());
+            concentrationUnit.setText(inv.getConcentration_unit_abbrevation());
+            if(selectedFacil.trim().length()==0){
+                selectedFacil = inv.getFacil_id();
+            }
+            if(selectedRoom.trim().length()==0){
+                selectedRoom = inv.getRoom_id();
+                selectedRoomName = inv.getRoom();
+            }
         }else{
             name.setText("");
             cas.setText("");
@@ -147,7 +178,42 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             quantity.setText("");
             unit.setText("");
             status.setText("");
+            concentration.setText("");
+            concentrationUnit.setText("");
         }
+        location.setText(selectedRoomName);
+        location.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                    try {
+                        ArrayList<MyObject> roomlist = databaseHandler.getRoomList(db,selectedFacil);
+                        final Intent myIntent = new Intent(ContainerDetailsActivity.this,
+                                RoomList.class);
+                        myIntent.putExtra("user_id", selectedUserId);
+                        myIntent.putExtra("site_id", loggedinUserSiteId);
+                        myIntent.putExtra("token", token);
+                        myIntent.putExtra("sso", sso);
+                        myIntent.putExtra("md5pwd", md5Pwd);
+                        myIntent.putExtra("loggedinUsername", loggedinUsername);
+                        myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                        myIntent.putExtra("site_name", site_name);
+                        myIntent.putExtra("roomlist",roomlist);
+                        myIntent.putExtra("decodedData", decodedData);
+                        myIntent.putExtra("selectedRoomName", selectedRoomName);
+                        myIntent.putExtra("selectedRoom", selectedRoom+"");
+                        myIntent.putExtra("empName", empName);
+                        startActivity(myIntent);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }finally {
+                        // progress.dismiss();
+                        db.close();
+                        if (databaseHandler != null) {
+                            databaseHandler.close();
+                        }
+                    }
+            }
+        });
     }
     @Override
     public void onBackPressed() {

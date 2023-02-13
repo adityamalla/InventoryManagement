@@ -45,6 +45,7 @@ public class RoomList extends AppCompatActivity {
     String selectedRoomName = "";
     String selectedRoom = "";
     String empName = "";
+    String decodedData = "";
     ArrayList<MyObject> roomlist=null;
     ConstraintLayout header;
     EditText roomSearch;
@@ -79,6 +80,9 @@ public class RoomList extends AppCompatActivity {
         }
         if(intent.getStringExtra("empName")!=null) {
             empName = intent.getStringExtra("empName");
+        }
+        if(intent.getStringExtra("decodedData")!=null) {
+            decodedData = intent.getStringExtra("decodedData");
         }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
@@ -152,11 +156,17 @@ public class RoomList extends AppCompatActivity {
                     Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                     img.setBounds(0, 0, 60, 60);
                     roomName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                    final Intent myIntent = new Intent(RoomList.this,
-                            RFIDActivity.class);
+                    Intent myIntent = null;
+                    if(decodedData.trim().length()>0){
+                        myIntent = new Intent(RoomList.this, ContainerDetailsActivity.class);
+                    }else{
+                        myIntent = new Intent(RoomList.this,
+                                RFIDActivity.class);
+                    }
                     myIntent.putExtra("selectedFacilName", selectedFacilName);
                     myIntent.putExtra("selectedRoomName", roomName.getText());
                     myIntent.putExtra("selectedRoom", roomName.getId()+"");
+                    myIntent.putExtra("decodedData", decodedData+"");
                     myIntent.putExtra("selectedFacil", selectedFacil+"");
                     myIntent.putExtra("user_id", user_id);
                     myIntent.putExtra("site_id", loggedinUserSiteId);
@@ -240,12 +250,17 @@ public class RoomList extends AppCompatActivity {
                             img.setBounds(0, 0, 60, 60);
                             roomName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
                             Intent myIntent = null;
-                            myIntent = new Intent(RoomList.this,
+                            if(decodedData.trim().length()>0){
+                                myIntent = new Intent(RoomList.this, ContainerDetailsActivity.class);
+                            }else{
+                                myIntent = new Intent(RoomList.this,
                                         RFIDActivity.class);
+                            }
                             myIntent.putExtra("selectedFacilName", selectedFacilName);
                             myIntent.putExtra("selectedRoomName", roomName.getText());
                             myIntent.putExtra("selectedRoom", roomName.getId()+"");
                             myIntent.putExtra("selectedFacil", selectedFacil+"");
+                            myIntent.putExtra("decodedData", decodedData+"");
                             myIntent.putExtra("user_id", user_id);
                             myIntent.putExtra("site_id", loggedinUserSiteId);
                             myIntent.putExtra("token", request_token);
@@ -273,10 +288,16 @@ public class RoomList extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            final Intent myIntent = new Intent(RoomList.this,
-                    RFIDActivity.class);
+            Intent myIntent = null;
+            if(decodedData.trim().length()>0){
+                myIntent = new Intent(RoomList.this, ContainerDetailsActivity.class);
+            }else{
+                myIntent = new Intent(RoomList.this,
+                        RFIDActivity.class);
+            }
             myIntent.putExtra("selectedFacilName", selectedFacilName);
             myIntent.putExtra("selectedFacil", selectedFacil+"");
+            myIntent.putExtra("decodedData", decodedData+"");
             myIntent.putExtra("user_id", user_id);
             myIntent.putExtra("site_id", loggedinUserSiteId);
             myIntent.putExtra("token", request_token);

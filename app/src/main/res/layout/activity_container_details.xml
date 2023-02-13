@@ -13,7 +13,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ContainerDetailsActivity">
-
     <TextView
         android:id="@+id/barcodelabel"
         android:layout_width="0dp"
@@ -303,6 +302,66 @@
         app:layout_constraintEnd_toEndOf="@+id/unitlabel"
         app:layout_constraintStart_toStartOf="@+id/unitlabel"
         app:layout_constraintTop_toBottomOf="@+id/unitlabel" />
+    <TextView
+        android:id="@+id/concentrationLabel"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:text="Concentration"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        app:layout_constraintEnd_toEndOf="@+id/volumeMassUnit"
+        app:layout_constraintStart_toStartOf="@+id/volumeMassUnit"
+        app:layout_constraintTop_toBottomOf="@+id/volumeMassUnit" />
+    <EditText
+        android:id="@+id/concentration"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_corner"
+        android:drawablePadding="10dp"
+        android:ems="10"
+        android:hint="Concentration"
+        android:inputType="number"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="Concentration"
+        app:layout_constraintEnd_toEndOf="@+id/concentrationLabel"
+        app:layout_constraintStart_toStartOf="@+id/concentrationLabel"
+        app:layout_constraintTop_toBottomOf="@+id/concentrationLabel" />
+    <TextView
+        android:id="@+id/concunitlabel"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginTop="20dp"
+        android:text="Concentration Unit"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        app:layout_constraintEnd_toEndOf="@+id/concentration"
+        app:layout_constraintStart_toStartOf="@+id/concentration"
+        app:layout_constraintTop_toBottomOf="@+id/concentration" />
+
+    <EditText
+        android:id="@+id/concUnit"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_corner"
+        android:drawableRight="@drawable/ic_chevron_right_24px"
+        android:drawablePadding="10dp"
+        android:editable="false"
+        android:ems="10"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:hint="Concentration Unit"
+        android:inputType="textPersonName"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text="Concentration Unit"
+        app:layout_constraintEnd_toEndOf="@+id/concunitlabel"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/concunitlabel"
+        app:layout_constraintTop_toBottomOf="@+id/concunitlabel" />
 
     <Button
         android:id="@+id/uploadToWeb"
@@ -317,8 +376,8 @@
         android:textSize="14dp"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/volumeMassUnit"
-        app:layout_constraintStart_toStartOf="@+id/volumeMassUnit"
-        app:layout_constraintTop_toBottomOf="@+id/volumeMassUnit" />
+        app:layout_constraintEnd_toEndOf="@+id/concUnit"
+        app:layout_constraintStart_toStartOf="@+id/concUnit"
+        app:layout_constraintTop_toBottomOf="@+id/concUnit" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

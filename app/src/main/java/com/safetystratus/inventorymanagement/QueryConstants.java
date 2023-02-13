@@ -16,6 +16,8 @@ public class QueryConstants {
     public static final String TABLE_NAME_MENU_CATEGORIES = "menu_categories";
     public static final String TABLE_NAME_MENU_ITEMS = "menu_items";
     public static final String TABLE_NAME_SCANNED_JSON_DATA = "scanned_json_data";
+    public static final String TABLE_NAME_UOM = "units_of_measure";
+    public static final String TABLE_NAME_INV_STATUS = "inventory_status";
 
     public static String SQL_CREATE_CHEMICAL_INVENTORY = "CREATE TABLE IF NOT EXISTS chemical_inventory\n" +
             "(id integer PRIMARY KEY NOT NULL,\n" +
@@ -30,12 +32,20 @@ public class QueryConstants {
             "    \tcomment text,\n" +
             "    \tobject_id integer,\n" +
             "    \tquantity integer,\n" +
+            "    \tconcentration integer,\n" +
             "    \t room_id integer,\n" +
+            "    \t status_id integer,\n" +
+            "    \t facil_id integer,\n" +
+            "    \t loc_id integer,\n" +
+            "    \t quantity_unit_abbreviation_id integer,\n" +
+            "    \t concentration_unit_abbrevation_id integer,\n" +
             "        object_table text ,\n" +
             "        quantity_unit_abbreviation text ,\n" +
+            "        concentration_unit_abbrevation text ,\n" +
             "        cas_number text ,\n" +
             "        status text ,\n" +
             "        loc text ,\n" +
+            "        room text ,\n" +
             "    \tmodified_user_id numeric,\n" +
             "        modified_date text,\n" +
             "        lot text ,\n" +
@@ -52,6 +62,21 @@ public class QueryConstants {
             "    id integer PRIMARY KEY NOT NULL,\n" +
             "    name character varying(64),\n" +
             "    sort integer DEFAULT 0\n" +
+            ")";
+    public static String SQL_CREATE_UNITS_OF_MEASURE = "CREATE TABLE IF NOT EXISTS units_of_measure\n" +
+            "(\n" +
+            "    id integer PRIMARY KEY NOT NULL,\n" +
+            "    label text,\n" +
+            "    type text,\n" +
+            "    status text,\n" +
+            "    abbreviation text,\n" +
+            "    conversion_multiplier integer \n" +
+            ")";
+    public static String SQL_CREATE_INVENTORY_STATUS = "CREATE TABLE IF NOT EXISTS inventory_status\n" +
+            "(\n" +
+            "    id integer PRIMARY KEY NOT NULL,\n" +
+            "    status character varying(64),\n" +
+            "    active integer DEFAULT 0\n" +
             ")";
     public static String SQL_CREATE_TABLE_MENU_ITEMS = "CREATE TABLE IF NOT EXISTS menu_items\n" +
             "(\n" +

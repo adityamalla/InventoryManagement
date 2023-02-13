@@ -270,7 +270,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String name = cursor.getString(cursor.getColumnIndex("name"));
                 String cas = cursor.getString(cursor.getColumnIndex("cas_number"));
                 String status = cursor.getString(cursor.getColumnIndex("status"));
-                String location = cursor.getString(cursor.getColumnIndex("loc"));
+                String status_id = cursor.getString(cursor.getColumnIndex("status_id"));
+                String room = cursor.getString(cursor.getColumnIndex("room"));
+                String room_id = cursor.getString(cursor.getColumnIndex("room_id"));
+                String facil_id = cursor.getString(cursor.getColumnIndex("facil_id"));
                 String object_id = cursor.getString(cursor.getColumnIndex("object_id"));
                 String object_table = cursor.getString(cursor.getColumnIndex("object_table"));
                 String owner = cursor.getString(cursor.getColumnIndex("owner"));
@@ -278,8 +281,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String comments = cursor.getString(cursor.getColumnIndex("comment"));
                 String volume_mass = cursor.getString(cursor.getColumnIndex("quantity"));
                 String volume_mass_units = cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
+                String volume_mass_units_id = cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation_id"));
+                String concentration = cursor.getString(cursor.getColumnIndex("concentration"));
+                String concentration_unit_abbrevation = cursor.getString(cursor.getColumnIndex("concentration_unit_abbrevation"));
+                String concentration_unit_abbrevation_id = cursor.getString(cursor.getColumnIndex("concentration_unit_abbrevation_id"));
                 String rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
-                inv = new InventoryModel(id, code,name,cas,status,location,owner,notes,comments,volume_mass,volume_mass_units,rfidCode);
+                inv = new InventoryModel(id, code,name,cas,status_id,status,facil_id,room_id,room,owner,notes,comments,volume_mass,volume_mass_units_id,volume_mass_units,rfidCode,concentration,concentration_unit_abbrevation_id,concentration_unit_abbrevation);
                 cursor.moveToNext();
             }
         }
