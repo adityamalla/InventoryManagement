@@ -18,6 +18,7 @@ public class QueryConstants {
     public static final String TABLE_NAME_SCANNED_JSON_DATA = "scanned_json_data";
     public static final String TABLE_NAME_UOM = "units_of_measure";
     public static final String TABLE_NAME_INV_STATUS = "inventory_status";
+    public static final String TABLE_NAME_SCANNED_JSON_DATA_BARCODE = "scanned_json_data_barcode";
 
     public static String SQL_CREATE_CHEMICAL_INVENTORY = "CREATE TABLE IF NOT EXISTS chemical_inventory\n" +
             "(id integer PRIMARY KEY NOT NULL,\n" +
@@ -160,6 +161,13 @@ public class QueryConstants {
             "    user_id integer NOT NULL,\n" +
             "    location_id integer NOT NULL,\n" +
             "    room_id integer NOT NULL,\n" +
+            "    json_data text\n" +
+            ")";
+    public static String SQL_CREATE_TABLE_SCANNED_BARCODE_JSON_DATA = "CREATE TABLE IF NOT EXISTS scanned_json_data_barcode\n" +
+            "(\n" +
+            "    id integer PRIMARY KEY NOT NULL ,\n" +
+            "    user_id integer NOT NULL,\n" +
+            "    code text,\n" +
             "    json_data text\n" +
             ")";
 

@@ -44,6 +44,10 @@ public class RoomList extends AppCompatActivity {
     String selectedFacil = "";
     String selectedRoomName = "";
     String selectedRoom = "";
+    String note = "";
+    String comment="";
+    String conc_val="";
+    String quan_val="";
     String empName = "";
     String decodedData = "";
     String selectedStatusName = "";
@@ -89,6 +93,18 @@ public class RoomList extends AppCompatActivity {
         }
         if(intent.getStringExtra("decodedData")!=null) {
             decodedData = intent.getStringExtra("decodedData");
+        }
+        if(intent.getStringExtra("note")!=null) {
+            note = intent.getStringExtra("note");
+        }
+        if(intent.getStringExtra("comment")!=null) {
+            comment = intent.getStringExtra("comment");
+        }
+        if(intent.getStringExtra("conc_val")!=null) {
+            conc_val = intent.getStringExtra("conc_val");
+        }
+        if(intent.getStringExtra("quan_val")!=null) {
+            quan_val = intent.getStringExtra("quan_val");
         }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
@@ -210,6 +226,10 @@ public class RoomList extends AppCompatActivity {
                     myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                     myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                     myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                    myIntent.putExtra("quan_val", quan_val+"");
+                    myIntent.putExtra("conc_val", conc_val+"");
+                    myIntent.putExtra("note", note+"");
+                    myIntent.putExtra("comment", comment+"");
                     startActivity(myIntent);
                 }
             });
@@ -309,6 +329,10 @@ public class RoomList extends AppCompatActivity {
                             myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                             myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                             myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                            myIntent.putExtra("quan_val", quan_val+"");
+                            myIntent.putExtra("conc_val", conc_val+"");
+                            myIntent.putExtra("note", note+"");
+                            myIntent.putExtra("comment", comment+"");
                             startActivity(myIntent);
                         }
                     });
@@ -354,6 +378,10 @@ public class RoomList extends AppCompatActivity {
             myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
             myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
             myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+            myIntent.putExtra("quan_val", quan_val+"");
+            myIntent.putExtra("conc_val", conc_val+"");
+            myIntent.putExtra("note", note+"");
+            myIntent.putExtra("comment", comment+"");
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);

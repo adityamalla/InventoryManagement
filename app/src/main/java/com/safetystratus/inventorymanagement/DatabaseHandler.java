@@ -43,6 +43,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_SCANNED_JSON_DATA);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_INVENTORY_STATUS);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_UNITS_OF_MEASURE);
+        sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_SCANNED_BARCODE_JSON_DATA);
     }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
@@ -307,6 +308,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void insertScannedInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
         sqLiteDatabase.delete("scanned_json_data", "room_id=? and location_id=? and user_id=?", new String[]{cv.getAsString("room_id"),cv.getAsString("location_id"),cv.getAsString("user_id")});
         sqLiteDatabase.insert("scanned_json_data", null, cv);
+    }
+    public void saveBarcodeInventoryDetails(SQLiteDatabase sqLiteDatabase, ContentValues cv){
+        sqLiteDatabase.delete("scanned_json_data_barcode", "code=?", new String[]{cv.getAsString("code")});
+        sqLiteDatabase.insert("scanned_json_data_barcode", null, cv);
+    }
+    public void deleteBarcodeInventoryDetails(SQLiteDatabase sqLiteDatabase, String code){
+        sqLiteDatabase.delete("scanned_json_data_barcode", "code=?", new String[]{code});
     }
     @SuppressLint("Range")
     public ArrayList<MyObject> getSavedJsonData(SQLiteDatabase sqLiteDatabase){
@@ -644,6 +652,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor2.close();
         // return the list of records
         return ObjectItemData;
+    }
+    public void updateInventoryDetails(SQLiteDatabase sqLiteDatabase, ContentValues cv){
+        sqLiteDatabase.update(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, cv, "code=?", new String[]{cv.getAsString("code")});
     }
 
 }

@@ -27,6 +27,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.GridLayout;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -72,6 +73,8 @@ public class PostSuccess extends AppCompatActivity {
     TextView badge_notification;
     Button postScanData;
     Button startAnotherInv;
+    String fromBarcodeScan="";
+    EditText defaultText;
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(PostSuccess.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
@@ -122,43 +125,69 @@ public class PostSuccess extends AppCompatActivity {
         if (intent.getStringExtra("selectedFacil") != null) {
             selectedFacil = intent.getStringExtra("selectedFacil");
         }
+        if (intent.getStringExtra("fromBarcodeScan") != null) {
+            fromBarcodeScan = intent.getStringExtra("fromBarcodeScan");
+        }
+
+        int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
         badge_notification = findViewById(R.id.badge_notification);
         postScanData = findViewById(R.id.postScan);
-        int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
-        if(scannedJsonData > 0){
-            postScanData.setVisibility(View.VISIBLE);
-            ConstraintLayout constraintLayout = findViewById(R.id.successLayout);
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.clone(constraintLayout);
-            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.START,R.id.postScan,ConstraintSet.START,0);
-            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.END,R.id.postScan,ConstraintSet.END,0);
-            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.TOP,R.id.postScan,ConstraintSet.BOTTOM,0);
-            constraintSet.applyTo(constraintLayout);
-            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) startAnotherInv.getLayoutParams();
-            newLayoutParams.topMargin = 10;
-            newLayoutParams.leftMargin = 20;
-            newLayoutParams.rightMargin = 20;
-            newLayoutParams.bottomMargin = 0;
-            startAnotherInv.setLayoutParams(newLayoutParams);
-            badge_notification.setVisibility(View.VISIBLE);
-            badge_notification.setText(String.valueOf(scannedJsonData));
-        }else{
+        defaultText = findViewById(R.id.defaultText);
+        if (fromBarcodeScan.trim().length()>0){
             postScanData.setVisibility(View.GONE);
-            ConstraintLayout constraintLayout = findViewById(R.id.successLayout);
-            ConstraintSet constraintSet = new ConstraintSet();
-            constraintSet.clone(constraintLayout);
-            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.START,R.id.defaultText,ConstraintSet.START,0);
-            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.END,R.id.defaultText,ConstraintSet.END,0);
-            constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.TOP,R.id.defaultText,ConstraintSet.BOTTOM,0);
-            constraintSet.applyTo(constraintLayout);
-            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) startAnotherInv.getLayoutParams();
-            newLayoutParams.topMargin = 10;
-            newLayoutParams.leftMargin = 20;
-            newLayoutParams.rightMargin = 20;
-            newLayoutParams.bottomMargin = 0;
-            startAnotherInv.setLayoutParams(newLayoutParams);
+            startAnotherInv.setVisibility(View.GONE);
             badge_notification.setVisibility(View.GONE);
             badge_notification.setText("");
+            defaultText.setText("Data Updated Successfully");
+            ConstraintLayout constraintLayout = findViewById(R.id.successLayout);
+            ConstraintSet constraintSet = new ConstraintSet();
+            constraintSet.clone(constraintLayout);
+            constraintSet.connect(R.id.gotohome,ConstraintSet.START,R.id.defaultText,ConstraintSet.START,0);
+            constraintSet.connect(R.id.gotohome,ConstraintSet.END,R.id.defaultText,ConstraintSet.END,0);
+            constraintSet.connect(R.id.gotohome,ConstraintSet.TOP,R.id.defaultText,ConstraintSet.BOTTOM,0);
+            constraintSet.applyTo(constraintLayout);
+            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) gotohome.getLayoutParams();
+            newLayoutParams.topMargin = 10;
+            newLayoutParams.leftMargin = 20;
+            newLayoutParams.rightMargin = 20;
+            newLayoutParams.bottomMargin = 0;
+            gotohome.setLayoutParams(newLayoutParams);
+        }else{
+            if(scannedJsonData > 0){
+                postScanData.setVisibility(View.VISIBLE);
+                ConstraintLayout constraintLayout = findViewById(R.id.successLayout);
+                ConstraintSet constraintSet = new ConstraintSet();
+                constraintSet.clone(constraintLayout);
+                constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.START,R.id.postScan,ConstraintSet.START,0);
+                constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.END,R.id.postScan,ConstraintSet.END,0);
+                constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.TOP,R.id.postScan,ConstraintSet.BOTTOM,0);
+                constraintSet.applyTo(constraintLayout);
+                ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) startAnotherInv.getLayoutParams();
+                newLayoutParams.topMargin = 10;
+                newLayoutParams.leftMargin = 20;
+                newLayoutParams.rightMargin = 20;
+                newLayoutParams.bottomMargin = 0;
+                startAnotherInv.setLayoutParams(newLayoutParams);
+                badge_notification.setVisibility(View.VISIBLE);
+                badge_notification.setText(String.valueOf(scannedJsonData));
+            }else{
+                postScanData.setVisibility(View.GONE);
+                ConstraintLayout constraintLayout = findViewById(R.id.successLayout);
+                ConstraintSet constraintSet = new ConstraintSet();
+                constraintSet.clone(constraintLayout);
+                constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.START,R.id.defaultText,ConstraintSet.START,0);
+                constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.END,R.id.defaultText,ConstraintSet.END,0);
+                constraintSet.connect(R.id.startAnotherInvScan,ConstraintSet.TOP,R.id.defaultText,ConstraintSet.BOTTOM,0);
+                constraintSet.applyTo(constraintLayout);
+                ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) startAnotherInv.getLayoutParams();
+                newLayoutParams.topMargin = 10;
+                newLayoutParams.leftMargin = 20;
+                newLayoutParams.rightMargin = 20;
+                newLayoutParams.bottomMargin = 0;
+                startAnotherInv.setLayoutParams(newLayoutParams);
+                badge_notification.setVisibility(View.GONE);
+                badge_notification.setText("");
+            }
         }
         postScanData.setOnClickListener(new View.OnClickListener() {
             @Override

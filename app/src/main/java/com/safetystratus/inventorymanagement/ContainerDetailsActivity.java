@@ -6,6 +6,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,7 +26,18 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import net.sqlcipher.database.SQLiteDatabase;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -41,7 +53,12 @@ public class ContainerDetailsActivity extends AppCompatActivity {
     String site_name = "";
     String token="";
     Button uploadData;
+    Button save;
     String empName = "";
+    String note = "";
+    String comment="";
+    String conc_val="";
+    String quan_val="";
     String decodedData = "";
     String selectedFacilName = "";
     String selectedFacil = "";
@@ -119,6 +136,18 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         if(intent.getStringExtra("decodedData")!=null) {
             decodedData = intent.getStringExtra("decodedData");
         }
+        if(intent.getStringExtra("note")!=null) {
+            note = intent.getStringExtra("note");
+        }
+        if(intent.getStringExtra("comment")!=null) {
+            comment = intent.getStringExtra("comment");
+        }
+        if(intent.getStringExtra("conc_val")!=null) {
+            conc_val = intent.getStringExtra("conc_val");
+        }
+        if(intent.getStringExtra("quan_val")!=null) {
+            quan_val = intent.getStringExtra("quan_val");
+        }
         if (intent.getStringExtra("selectedFacilName") != null) {
             selectedFacilName = intent.getStringExtra("selectedFacilName");
         }
@@ -159,6 +188,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
         uploadData = (Button) findViewById(R.id.uploadToWeb);
+        save = (Button) findViewById(R.id.saveLocal);
         name = (EditText)findViewById(R.id.productName);
         cas = (EditText)findViewById(R.id.cas);
         code = (EditText)findViewById(R.id.barcode);
@@ -176,11 +206,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             name.setText(inv.getProductName());
             cas.setText(inv.getCas_number());
             code.setText(inv.getCode());
-            comments.setText(inv.getComments());
-            notes.setText(inv.getNotes());
             owner.setText(inv.getOwner());
-            quantity.setText(inv.getVolume_mass());
-            concentration.setText(inv.getConcentration());
             if(selectedFacil.trim().length()==0){
                 selectedFacil = inv.getFacil_id();
             }
@@ -200,6 +226,18 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 selectedQuanUnit = inv.getVolume_mass_unit_id();
                 selectedQuanUnitName = inv.getVolume_mass_unit();
             }
+            if(quan_val.trim().length()==0){
+                quan_val = inv.getVolume_mass();
+            }
+            if(conc_val.trim().length()==0){
+                conc_val = inv.getConcentration();
+            }
+            if(note.trim().length()==0){
+                note = inv.getNotes();
+            }
+            if(comment.trim().length()==0){
+                comment = inv.getComments();
+            }
         }else{
             name.setText("");
             cas.setText("");
@@ -218,10 +256,18 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         status.setText(selectedStatusName);
         concentrationUnit.setText(selectedConcUnitName);
         unit.setText(selectedQuanUnitName);
+        quantity.setText(quan_val);
+        concentration.setText(conc_val);
+        notes.setText(note);
+        comments.setText(comment);
         location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                     try {
+                        quan_val = quantity.getText().toString();
+                        conc_val = concentration.getText().toString();
+                        note = notes.getText().toString();
+                        comment = comments.getText().toString();
                         ArrayList<MyObject> roomlist = databaseHandler.getRoomList(db,selectedFacil);
                         final Intent myIntent = new Intent(ContainerDetailsActivity.this,
                                 RoomList.class);
@@ -243,6 +289,10 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                         myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                         myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                         myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                        myIntent.putExtra("quan_val", quan_val+"");
+                        myIntent.putExtra("conc_val", conc_val+"");
+                        myIntent.putExtra("note", note+"");
+                        myIntent.putExtra("comment", comment+"");
                         myIntent.putExtra("empName", empName);
                         startActivity(myIntent);
                     }catch (Exception e){
@@ -260,6 +310,10 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    quan_val = quantity.getText().toString();
+                    conc_val = concentration.getText().toString();
+                    note = notes.getText().toString();
+                    comment = comments.getText().toString();
                     ArrayList<MyObject> statusList = databaseHandler.getStatusList(db);
                     final Intent myIntent = new Intent(ContainerDetailsActivity.this,
                             StatusList.class);
@@ -281,6 +335,10 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                     myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                     myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                    myIntent.putExtra("quan_val", quan_val+"");
+                    myIntent.putExtra("conc_val", conc_val+"");
+                    myIntent.putExtra("note", note+"");
+                    myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("empName", empName);
                     startActivity(myIntent);
                 }catch (Exception e){
@@ -298,6 +356,10 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    quan_val = quantity.getText().toString();
+                    conc_val = concentration.getText().toString();
+                    note = notes.getText().toString();
+                    comment = comments.getText().toString();
                     ArrayList<MyObject> unitList = databaseHandler.getUnitList(db);
                     final Intent myIntent = new Intent(ContainerDetailsActivity.this,
                             UnitsList.class);
@@ -320,6 +382,10 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                     myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
                     myIntent.putExtra("empName", empName);
+                    myIntent.putExtra("quan_val", quan_val+"");
+                    myIntent.putExtra("conc_val", conc_val+"");
+                    myIntent.putExtra("note", note+"");
+                    myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("fromUnit", "yes");
                     startActivity(myIntent);
                 }catch (Exception e){
@@ -337,6 +403,10 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
+                    quan_val = quantity.getText().toString();
+                    conc_val = concentration.getText().toString();
+                    note = notes.getText().toString();
+                    comment = comments.getText().toString();
                     ArrayList<MyObject> unitList = databaseHandler.getUnitList(db);
                     final Intent myIntent = new Intent(ContainerDetailsActivity.this,
                             UnitsList.class);
@@ -358,6 +428,10 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                     myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                     myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                    myIntent.putExtra("quan_val", quan_val+"");
+                    myIntent.putExtra("conc_val", conc_val+"");
+                    myIntent.putExtra("note", note+"");
+                    myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("empName", empName);
                     startActivity(myIntent);
                 }catch (Exception e){
@@ -368,6 +442,192 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     if (databaseHandler != null) {
                         databaseHandler.close();
                     }
+                }
+            }
+        });
+        uploadData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                quan_val = quantity.getText().toString();
+                conc_val = concentration.getText().toString();
+                note = notes.getText().toString();
+                comment = comments.getText().toString();
+                ContentValues cv = new ContentValues();
+                cv.put("code", code.getText().toString());
+                cv.put("room_id", Integer.parseInt(selectedRoom));
+                cv.put("room", selectedRoomName);
+                cv.put("status_id", Integer.parseInt(selectedStatus));
+                cv.put("status", selectedStatus);
+                cv.put("notes", note);
+                cv.put("comment", comment);
+                cv.put("quantity_unit_abbreviation", selectedQuanUnitName);
+                cv.put("concentration_unit_abbrevation", selectedConcUnitName);
+                cv.put("quantity", Integer.parseInt(quan_val));
+                cv.put("concentration", Integer.parseInt(conc_val));
+                cv.put("quantity_unit_abbreviation_id", Integer.parseInt(selectedQuanUnit));
+                cv.put("concentration_unit_abbrevation_id", Integer.parseInt(selectedConcUnit));
+                databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString());
+                BracodeScanAPIObject obj = new BracodeScanAPIObject(
+                        selectedUserId,token,loggedinUserSiteId,code.getText().toString(),
+                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val
+                );
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonString = "";
+                try {
+                    jsonString = mapper.writeValueAsString(obj);
+                    Log.e("TESTJSON>>",jsonString);
+                    if (connected) {
+                        String finalJsonString = jsonString;
+                        String URL = ApiConstants.syncbarcodeScannedData;
+                        RequestQueue requestQueue = Volley.newRequestQueue(ContainerDetailsActivity.this);
+                        JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
+                                new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        //Process os success response
+                                        String res = response.toString();
+                                        Log.e("res from complete>>", res + "**");
+                                        databaseHandler.deleteBarcodeInventoryDetails(db,code.getText().toString());
+                                        final Intent myIntent = new Intent(ContainerDetailsActivity.this,
+                                                PostSuccess.class);
+                                        myIntent.putExtra("user_id", selectedUserId);
+                                        myIntent.putExtra("site_id", loggedinUserSiteId);
+                                        myIntent.putExtra("token", token);
+                                        myIntent.putExtra("sso", sso);
+                                        myIntent.putExtra("md5pwd", md5Pwd);
+                                        myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                        myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                        myIntent.putExtra("site_name", site_name);
+                                        myIntent.putExtra("empName", empName);
+                                        myIntent.putExtra("fromBarcodeScan", "yes");
+                                        startActivity(myIntent);
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                error.printStackTrace();
+                                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ContainerDetailsActivity.this);
+                                dlgAlert.setTitle("Safety Stratus");
+                                dlgAlert.setMessage("Error response: Request timed out! Your data is saved offline");
+                                dlgAlert.setPositiveButton("Ok",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                ContentValues cv_save = new ContentValues();
+                                                cv_save.put("code", code.getText().toString());
+                                                cv_save.put("user_id", Integer.parseInt(selectedUserId));
+                                                cv_save.put("json_data", finalJsonString);
+                                                databaseHandler.saveBarcodeInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
+                                                final Intent myIntent = new Intent(ContainerDetailsActivity.this,
+                                                        PostSuccess.class);
+                                                myIntent.putExtra("user_id", selectedUserId);
+                                                myIntent.putExtra("site_id", loggedinUserSiteId);
+                                                myIntent.putExtra("token", token);
+                                                myIntent.putExtra("sso", sso);
+                                                myIntent.putExtra("md5pwd", md5Pwd);
+                                                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                                myIntent.putExtra("site_name", site_name);
+                                                myIntent.putExtra("empName", empName);
+                                                myIntent.putExtra("fromBarcodeScan", "yes");
+                                                startActivity(myIntent);
+                                                return;
+                                            }
+                                        });
+                                dlgAlert.create().show();
+                            }
+                        });
+                        int socketTimeout = 60000;//30 seconds - change to what you want
+                        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, 2, 2);
+                        request_json.setRetryPolicy(policy);
+                        // add the request object to the queue to be executed
+                        requestQueue.add(request_json);
+                    }
+                    else{
+                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ContainerDetailsActivity.this);
+                        dlgAlert.setTitle("Safety Stratus");
+                        dlgAlert.setMessage("No Internet!! Your data is saved offline");
+                        String finalJsonString1 = jsonString;
+                        dlgAlert.setPositiveButton("Ok",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                ContentValues cv_save = new ContentValues();
+                                                cv_save.put("code", code.getText().toString());
+                                                cv_save.put("user_id", Integer.parseInt(selectedUserId));
+                                                cv_save.put("json_data", finalJsonString1);
+                                                databaseHandler.saveBarcodeInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
+                                                final Intent myIntent = new Intent(ContainerDetailsActivity.this,
+                                                        PostSuccess.class);
+                                                myIntent.putExtra("user_id", selectedUserId);
+                                                myIntent.putExtra("site_id", loggedinUserSiteId);
+                                                myIntent.putExtra("token", token);
+                                                myIntent.putExtra("sso", sso);
+                                                myIntent.putExtra("md5pwd", md5Pwd);
+                                                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                                myIntent.putExtra("site_name", site_name);
+                                                myIntent.putExtra("empName", empName);
+                                                myIntent.putExtra("fromBarcodeScan", "yes");
+                                                startActivity(myIntent);
+                                                return;
+                                            }
+                                        });
+                                dlgAlert.create().show();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                quan_val = quantity.getText().toString();
+                conc_val = concentration.getText().toString();
+                note = notes.getText().toString();
+                comment = comments.getText().toString();
+                ContentValues cv = new ContentValues();
+                cv.put("code", code.getText().toString());
+                cv.put("room_id", Integer.parseInt(selectedRoom));
+                cv.put("room", selectedRoomName);
+                cv.put("status_id", Integer.parseInt(selectedStatus));
+                cv.put("status", selectedStatus);
+                cv.put("notes", note);
+                cv.put("comment", comment);
+                cv.put("quantity_unit_abbreviation", selectedQuanUnitName);
+                cv.put("concentration_unit_abbrevation", selectedConcUnitName);
+                cv.put("quantity", Integer.parseInt(quan_val));
+                cv.put("concentration", Integer.parseInt(conc_val));
+                cv.put("quantity_unit_abbreviation_id", Integer.parseInt(selectedQuanUnit));
+                cv.put("concentration_unit_abbrevation_id", Integer.parseInt(selectedConcUnit));
+                databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString());
+                BracodeScanAPIObject obj = new BracodeScanAPIObject(
+                        selectedUserId,loggedinUserSiteId,token,code.getText().toString(),
+                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val
+                );
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonString = "";
+                try {
+                    jsonString = mapper.writeValueAsString(obj);
+                    Log.e("TESTJSON>>",jsonString);
+                    ContentValues cv_save = new ContentValues();
+                    cv_save.put("code", code.getText().toString());
+                    cv_save.put("user_id", Integer.parseInt(selectedUserId));
+                    cv_save.put("json_data", jsonString);
+                    databaseHandler.saveBarcodeInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ContainerDetailsActivity.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Data saved successfully!");
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
+                }catch (Exception e){
+                    e.printStackTrace();
                 }
             }
         });

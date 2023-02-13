@@ -407,7 +407,21 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/concunitlabel"
         app:layout_constraintTop_toBottomOf="@+id/concunitlabel" />
-
+    <Button
+        android:id="@+id/saveLocal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/sign_out_border"
+        android:text="Save"
+        android:textAllCaps="false"
+        android:textColor="#15BAB6"
+        android:textSize="14dp"
+        app:backgroundTint="@null"
+        app:layout_constraintEnd_toEndOf="@+id/concUnit"
+        app:layout_constraintStart_toStartOf="@+id/concUnit"
+        app:layout_constraintTop_toBottomOf="@+id/concUnit" />
     <Button
         android:id="@+id/uploadToWeb"
         android:layout_width="0dp"
@@ -421,8 +435,8 @@
         android:textSize="14dp"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/concUnit"
-        app:layout_constraintStart_toStartOf="@+id/concUnit"
-        app:layout_constraintTop_toBottomOf="@+id/concUnit" />
+        app:layout_constraintEnd_toEndOf="@+id/saveLocal"
+        app:layout_constraintStart_toStartOf="@+id/saveLocal"
+        app:layout_constraintTop_toBottomOf="@+id/saveLocal" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
