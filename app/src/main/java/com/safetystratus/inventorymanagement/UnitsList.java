@@ -1,8 +1,5 @@
 package com.safetystratus.inventorymanagement;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Intent;
@@ -15,7 +12,6 @@ import android.graphics.drawable.shapes.RectShape;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,17 +20,21 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
+
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 
-public class RoomList extends AppCompatActivity {
+public class UnitsList extends AppCompatActivity {
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     boolean connected = false;
     String loggedinUsername = "";
     String loggedinUserSiteId = "";
     String md5Pwd = "";
     String user_id = "";
+    String fromUnit = "";
     String selectedSearchValue = "";
     String lastCompletedInspectionSiteInfo = "";
     String sso = "";
@@ -44,13 +44,13 @@ public class RoomList extends AppCompatActivity {
     String selectedFacil = "";
     String selectedRoomName = "";
     String selectedRoom = "";
-    String empName = "";
-    String decodedData = "";
     String selectedStatusName = "";
     String selectedStatus = "";
-    ArrayList<MyObject> roomlist=null;
+    String empName = "";
+    String decodedData = "";
+    ArrayList<MyObject> unitList=null;
     ConstraintLayout header;
-    EditText roomSearch;
+    EditText unitSearch;
     String selectedConcUnitName = "";
     String selectedConcUnit = "";
     String selectedQuanUnitName = "";
@@ -59,7 +59,7 @@ public class RoomList extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_room_list);
+        setContentView(R.layout.activity_unit_list);
         SQLiteDatabase.loadLibs(this);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
@@ -74,10 +74,10 @@ public class RoomList extends AppCompatActivity {
         shape.getPaint().setColor(Color.RED);
         shape.getPaint().setStyle(Paint.Style.STROKE);
         shape.getPaint().setStrokeWidth(3);
-        tv.setText("Rooms");
+        tv.setText("Status");
         tv.setTextSize(20);
         tv.setVisibility(View.VISIBLE);
-        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RoomList.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(UnitsList.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
@@ -89,6 +89,27 @@ public class RoomList extends AppCompatActivity {
         }
         if(intent.getStringExtra("decodedData")!=null) {
             decodedData = intent.getStringExtra("decodedData");
+        }
+        if(intent.getStringExtra("selectedStatusName")!=null) {
+            selectedStatusName = intent.getStringExtra("selectedStatusName");
+        }
+        if(intent.getStringExtra("selectedStatus")!=null) {
+            selectedStatus = intent.getStringExtra("selectedStatus");
+        }
+        if (intent.getStringExtra("selectedConcUnitName") != null) {
+            selectedConcUnitName = intent.getStringExtra("selectedConcUnitName");
+        }
+        if (intent.getStringExtra("selectedConcUnit") != null) {
+            selectedConcUnit = intent.getStringExtra("selectedConcUnit");
+        }
+        if (intent.getStringExtra("selectedQuanUnitName") != null) {
+            selectedQuanUnitName = intent.getStringExtra("selectedQuanUnitName");
+        }
+        if (intent.getStringExtra("selectedQuanUnit") != null) {
+            selectedQuanUnit = intent.getStringExtra("selectedQuanUnit");
+        }
+        if (intent.getStringExtra("fromUnit") != null) {
+            fromUnit = intent.getStringExtra("fromUnit");
         }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
@@ -111,62 +132,50 @@ public class RoomList extends AppCompatActivity {
         if (intent.getStringExtra("selectedRoomName") != null) {
             selectedRoomName = intent.getStringExtra("selectedRoomName");
         }
-        if (intent.getStringExtra("selectedStatusName") != null) {
-            selectedStatusName = intent.getStringExtra("selectedStatusName");
-        }
-        if (intent.getStringExtra("selectedStatus") != null) {
-            selectedStatus = intent.getStringExtra("selectedStatus");
-        }
-        if (intent.getStringExtra("selectedConcUnitName") != null) {
-            selectedConcUnitName = intent.getStringExtra("selectedConcUnitName");
-        }
-        if (intent.getStringExtra("selectedConcUnit") != null) {
-            selectedConcUnit = intent.getStringExtra("selectedConcUnit");
-        }
-        if (intent.getStringExtra("selectedQuanUnitName") != null) {
-            selectedQuanUnitName = intent.getStringExtra("selectedQuanUnitName");
-        }
-        if (intent.getStringExtra("selectedQuanUnit") != null) {
-            selectedQuanUnit = intent.getStringExtra("selectedQuanUnit");
-        }
-        roomlist = new ArrayList<MyObject>();
-        if(intent.getSerializableExtra("roomlist")!=null)
-            roomlist = (ArrayList<MyObject>) intent.getSerializableExtra("roomlist");
-        TableLayout tableRooms = (TableLayout) findViewById(R.id.tableRooms);
-        roomSearch = (EditText) findViewById(R.id.room_search);
-        for (int i = 0; i < roomlist.size(); i++) {
-            final TextView roomName = new TextView(this);
-            roomName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+        unitList = new ArrayList<MyObject>();
+        if(intent.getSerializableExtra("unitList")!=null)
+            unitList = (ArrayList<MyObject>) intent.getSerializableExtra("unitList");
+        TableLayout tableUnits = (TableLayout) findViewById(R.id.tableUnit);
+        unitSearch = (EditText) findViewById(R.id.unit_search);
+        for (int i = 0; i < unitList.size(); i++) {
+            final TextView unitName = new TextView(this);
+            unitName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
                     100,5));
-            roomName.setGravity(Gravity.LEFT);
-            roomName.setPadding(5, 30, 0, 0);
-            roomName.setBackgroundResource(R.drawable.cell_shape_child);
-            roomName.setText(roomlist.get(i).getObjectName());
-            roomName.setId(Integer.parseInt(roomlist.get(i).getObjectId()));
-            roomName.setTextSize(16);
-            roomName.setTextColor(Color.parseColor("#000000"));
-            roomName.setBackgroundColor(Color.parseColor("#FFFFFF"));
-            if(selectedRoom.length()>0){
-                if(Integer.parseInt(roomlist.get(i).getObjectId()) == Integer.parseInt(selectedRoom)){
+            unitName.setGravity(Gravity.LEFT);
+            unitName.setPadding(5, 30, 0, 0);
+            unitName.setBackgroundResource(R.drawable.cell_shape_child);
+            unitName.setText(unitList.get(i).getObjectName());
+            unitName.setId(Integer.parseInt(unitList.get(i).getObjectId()));
+            unitName.setTextSize(16);
+            unitName.setTextColor(Color.parseColor("#000000"));
+            unitName.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            String unit_id = "";
+            if(fromUnit.trim().length()>0){
+                unit_id = selectedQuanUnit;
+            }else{
+                unit_id = selectedConcUnit;
+            }
+            if(unit_id.trim().length()>0){
+                if(Integer.parseInt(unitList.get(i).getObjectId()) == Integer.parseInt(unit_id)){
                     Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                     img.setBounds(0, 0, 60, 60);
-                    roomName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                    unitName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
                 }
             }
-            final TableRow trRoom = new TableRow(this);
-            trRoom.setId(Integer.parseInt(roomlist.get(i).getObjectId()));
+            final TableRow trUnit = new TableRow(this);
+            trUnit.setId(Integer.parseInt(unitList.get(i).getObjectId()));
             TableLayout.LayoutParams trParamsRosters = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
                     TableLayout.LayoutParams.WRAP_CONTENT);
-            trRoom.setBackgroundResource(R.drawable.table_tr_border);
+            trUnit.setBackgroundResource(R.drawable.table_tr_border);
             //trParams.setMargins(10, 10, 10, 10);
-            trRoom.setLayoutParams(trParamsRosters);
-            trRoom.addView(roomName);
-            tableRooms.addView(trRoom, trParamsRosters);
-            roomName.setOnClickListener(new View.OnClickListener() {
+            trUnit.setLayoutParams(trParamsRosters);
+            trUnit.addView(unitName);
+            tableUnits.addView(trUnit, trParamsRosters);
+            unitName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    for (int p = 0; p < tableRooms.getChildCount(); p++) {
-                        View o1 = tableRooms.getChildAt(p);
+                    for (int p = 0; p < tableUnits.getChildCount(); p++) {
+                        View o1 = tableUnits.getChildAt(p);
                         if (o1 instanceof TableRow) {
                             for (int j=0;j<((TableRow) o1).getChildCount();j++){
                                 View u1 = ((TableRow) o1).getChildAt(j);
@@ -179,19 +188,24 @@ public class RoomList extends AppCompatActivity {
                     }
                     Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                     img.setBounds(0, 0, 60, 60);
-                    roomName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                    Intent myIntent = null;
-                    if(decodedData.trim().length()>0){
-                        myIntent = new Intent(RoomList.this, ContainerDetailsActivity.class);
-                    }else{
-                        myIntent = new Intent(RoomList.this,
-                                RFIDActivity.class);
-                    }
+                    unitName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                    Intent myIntent = new Intent(UnitsList.this, ContainerDetailsActivity.class);
                     myIntent.putExtra("selectedFacilName", selectedFacilName);
+                    myIntent.putExtra("selectedRoomName", selectedRoomName);
+                    myIntent.putExtra("selectedRoom", selectedRoom+"");
                     myIntent.putExtra("selectedStatusName", selectedStatusName);
-                    myIntent.putExtra("selectedStatus", selectedStatus);
-                    myIntent.putExtra("selectedRoomName", roomName.getText());
-                    myIntent.putExtra("selectedRoom", roomName.getId()+"");
+                    myIntent.putExtra("selectedStatus", selectedStatus+"");
+                    if(fromUnit.trim().length()>0){
+                        myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
+                        myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
+                        myIntent.putExtra("selectedQuanUnit", unitName.getId()+"");
+                        myIntent.putExtra("selectedQuanUnitName", unitName.getText());
+                    }else{
+                        myIntent.putExtra("selectedConcUnitName", unitName.getText());
+                        myIntent.putExtra("selectedConcUnit", unitName.getId()+"");
+                        myIntent.putExtra("selectedQuanUnit", selectedQuanUnit);
+                        myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName+"");
+                    }
                     myIntent.putExtra("decodedData", decodedData+"");
                     myIntent.putExtra("selectedFacil", selectedFacil+"");
                     myIntent.putExtra("user_id", user_id);
@@ -203,18 +217,14 @@ public class RoomList extends AppCompatActivity {
                     myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                     myIntent.putExtra("site_name", site_name);
                     myIntent.putExtra("fromRoom", "fromRoom");
-                    myIntent.putExtra("roomlist",roomlist);
+                    myIntent.putExtra("unitList",unitList);
                     myIntent.putExtra("pageLoadTemp", "-1");
                     myIntent.putExtra("empName", empName);
-                    myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
-                    myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
-                    myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
-                    myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
                     startActivity(myIntent);
                 }
             });
         }
-        roomSearch.addTextChangedListener(new TextWatcher() {
+        unitSearch.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void afterTextChanged(Editable s) {}
@@ -232,40 +242,46 @@ public class RoomList extends AppCompatActivity {
                 //{
                 MyObject[] myObjects = null;
                 myObjects = getItemsFromDb(String.valueOf(s));
-                tableRooms.removeAllViews();
+                tableUnits.removeAllViews();
                 for (int i = 0;i<myObjects.length;i++) {
-                    final TextView roomName = new TextView(RoomList.this);
-                    roomName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+                    final TextView unitName = new TextView(UnitsList.this);
+                    unitName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
                             100, 5));
-                    roomName.setGravity(Gravity.LEFT);
-                    roomName.setPadding(5, 30, 0, 0);
-                    roomName.setBackgroundResource(R.drawable.cell_shape_child);
-                    roomName.setText(myObjects[i].getObjectName());
-                    roomName.setId(Integer.parseInt(myObjects[i].getObjectId()));
-                    roomName.setTextSize(16);
-                    roomName.setTextColor(Color.parseColor("#000000"));
-                    roomName.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                    if (selectedRoom.length() > 0) {
-                        if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(selectedRoom)) {
+                    unitName.setGravity(Gravity.LEFT);
+                    unitName.setPadding(5, 30, 0, 0);
+                    unitName.setBackgroundResource(R.drawable.cell_shape_child);
+                    unitName.setText(myObjects[i].getObjectName());
+                    unitName.setId(Integer.parseInt(myObjects[i].getObjectId()));
+                    unitName.setTextSize(16);
+                    unitName.setTextColor(Color.parseColor("#000000"));
+                    unitName.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    String unit_id = "";
+                    if(fromUnit.trim().length()>0){
+                        unit_id = selectedQuanUnit;
+                    }else{
+                        unit_id = selectedConcUnit;
+                    }
+                    if (unit_id.length() > 0) {
+                        if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(unit_id)) {
                             Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                             img.setBounds(0, 0, 60, 60);
-                            roomName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                            unitName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
                         }
                     }
-                    final TableRow trRoom = new TableRow(RoomList.this);
-                    trRoom.setId(Integer.parseInt(myObjects[i].getObjectId()));
+                    final TableRow trUnit = new TableRow(UnitsList.this);
+                    trUnit.setId(Integer.parseInt(myObjects[i].getObjectId()));
                     TableLayout.LayoutParams trParamsRosters = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
                             TableLayout.LayoutParams.WRAP_CONTENT);
-                    trRoom.setBackgroundResource(R.drawable.table_tr_border);
+                    trUnit.setBackgroundResource(R.drawable.table_tr_border);
                     //trParams.setMargins(10, 10, 10, 10);
-                    trRoom.setLayoutParams(trParamsRosters);
-                    trRoom.addView(roomName);
-                    tableRooms.addView(trRoom, trParamsRosters);
-                    roomName.setOnClickListener(new View.OnClickListener() {
+                    trUnit.setLayoutParams(trParamsRosters);
+                    trUnit.addView(unitName);
+                    tableUnits.addView(trUnit, trParamsRosters);
+                    unitName.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            for (int p = 0; p < tableRooms.getChildCount(); p++) {
-                                View o1 = tableRooms.getChildAt(p);
+                            for (int p = 0; p < tableUnits.getChildCount(); p++) {
+                                View o1 = tableUnits.getChildAt(p);
                                 if (o1 instanceof TableRow) {
                                     for (int j = 0; j < ((TableRow) o1).getChildCount(); j++) {
                                         View u1 = ((TableRow) o1).getChildAt(j);
@@ -278,19 +294,13 @@ public class RoomList extends AppCompatActivity {
                             }
                             Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                             img.setBounds(0, 0, 60, 60);
-                            roomName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                            Intent myIntent = null;
-                            if(decodedData.trim().length()>0){
-                                myIntent = new Intent(RoomList.this, ContainerDetailsActivity.class);
-                            }else{
-                                myIntent = new Intent(RoomList.this,
-                                        RFIDActivity.class);
-                            }
+                            unitName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                            Intent myIntent = new Intent(UnitsList.this, ContainerDetailsActivity.class);
                             myIntent.putExtra("selectedFacilName", selectedFacilName);
+                            myIntent.putExtra("selectedRoomName", selectedRoomName);
+                            myIntent.putExtra("selectedRoom", selectedRoom+"");
                             myIntent.putExtra("selectedStatusName", selectedStatusName);
-                            myIntent.putExtra("selectedStatus", selectedStatus);
-                            myIntent.putExtra("selectedRoomName", roomName.getText());
-                            myIntent.putExtra("selectedRoom", roomName.getId()+"");
+                            myIntent.putExtra("selectedStatus", selectedStatus+"");
                             myIntent.putExtra("selectedFacil", selectedFacil+"");
                             myIntent.putExtra("decodedData", decodedData+"");
                             myIntent.putExtra("user_id", user_id);
@@ -302,13 +312,20 @@ public class RoomList extends AppCompatActivity {
                             myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                             myIntent.putExtra("site_name", site_name);
                             myIntent.putExtra("fromRoom", "fromRoom");
-                            myIntent.putExtra("roomlist",roomlist);
+                            myIntent.putExtra("unitList",unitList);
                             myIntent.putExtra("pageLoadTemp", "-1");
                             myIntent.putExtra("empName", empName);
-                            myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
-                            myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
-                            myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
-                            myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                            if(fromUnit.trim().length()>0){
+                                myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
+                                myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
+                                myIntent.putExtra("selectedQuanUnit", unitName.getId()+"");
+                                myIntent.putExtra("selectedQuanUnitName", unitName.getText());
+                            }else{
+                                myIntent.putExtra("selectedConcUnitName", unitName.getText());
+                                myIntent.putExtra("selectedConcUnit", unitName.getId()+"");
+                                myIntent.putExtra("selectedQuanUnit", selectedQuanUnit);
+                                myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName+"");
+                            }
                             startActivity(myIntent);
                         }
                     });
@@ -324,16 +341,8 @@ public class RoomList extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            Intent myIntent = null;
-            if(decodedData.trim().length()>0){
-                myIntent = new Intent(RoomList.this, ContainerDetailsActivity.class);
-            }else{
-                myIntent = new Intent(RoomList.this,
-                        RFIDActivity.class);
-            }
+            Intent myIntent= new Intent(UnitsList.this, ContainerDetailsActivity.class);
             myIntent.putExtra("selectedFacilName", selectedFacilName);
-            myIntent.putExtra("selectedStatusName", selectedStatusName);
-            myIntent.putExtra("selectedStatus", selectedStatus);
             myIntent.putExtra("selectedFacil", selectedFacil+"");
             myIntent.putExtra("decodedData", decodedData+"");
             myIntent.putExtra("user_id", user_id);
@@ -344,11 +353,12 @@ public class RoomList extends AppCompatActivity {
             myIntent.putExtra("loggedinUsername", loggedinUsername);
             myIntent.putExtra("selectedSearchValue", selectedSearchValue);
             myIntent.putExtra("site_name", site_name);
-            myIntent.putExtra("fromFacil", "fromFacil");
-            myIntent.putExtra("roomlist",roomlist);
+            myIntent.putExtra("unitList",unitList);
             myIntent.putExtra("pageLoadTemp", "-1");
             myIntent.putExtra("selectedRoomName", selectedRoomName);
             myIntent.putExtra("selectedRoom", selectedRoom+"");
+            myIntent.putExtra("selectedStatusName", selectedStatusName);
+            myIntent.putExtra("selectedStatus", selectedStatus+"");
             myIntent.putExtra("empName", empName);
             myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
             myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
@@ -359,11 +369,11 @@ public class RoomList extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
     public MyObject[] getItemsFromDb(String searchTerm) {
-        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RoomList.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(UnitsList.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         MyObject[] myObject = null;
         try {
-            myObject = databaseHandler.getAutoSearchStatusData(db, searchTerm);
+            myObject = databaseHandler.getAutoSearchUnitData(db, searchTerm);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

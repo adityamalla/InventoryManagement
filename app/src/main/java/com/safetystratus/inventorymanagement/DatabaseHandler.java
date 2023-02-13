@@ -41,6 +41,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_FI_ROOM_ROSTER);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_SCANNED_DATA);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_SCANNED_JSON_DATA);
+        sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_INVENTORY_STATUS);
+        sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_UNITS_OF_MEASURE);
     }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
@@ -323,6 +325,38 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return jsonList;
     }
     @SuppressLint("Range")
+    public ArrayList<MyObject> getStatusList(SQLiteDatabase sqLiteDatabase){
+        int count = 0;
+        ArrayList<MyObject> statusList = new ArrayList<MyObject>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,status FROM inventory_status"), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                statusList.add(new MyObject(cursor.getString(cursor.getColumnIndex("status")).trim(),
+                        cursor.getString(cursor.getColumnIndex("id")))
+                );
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return statusList;
+    }
+    @SuppressLint("Range")
+    public ArrayList<MyObject> getUnitList(SQLiteDatabase sqLiteDatabase){
+        int count = 0;
+        ArrayList<MyObject> unitList = new ArrayList<MyObject>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,abbreviation FROM units_of_measure"), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                unitList.add(new MyObject(cursor.getString(cursor.getColumnIndex("abbreviation")).trim(),
+                        cursor.getString(cursor.getColumnIndex("id")))
+                );
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return unitList;
+    }
+    @SuppressLint("Range")
     public int checkScannedDataCount(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id){
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+room_id+"" +
                 " and location_id="+loc_id), null);
@@ -554,6 +588,52 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor2.moveToFirst()) {
             do {
                 String objectName = cursor2.getString(cursor2.getColumnIndex("room"));
+                String objectId = cursor2.getString(cursor2.getColumnIndex("id"));
+                MyObject myObject = new MyObject(objectName, objectId);
+                ObjectItemData[x] = myObject;
+                x++;
+                Log.e("Count>>",x+"");
+            } while (cursor2.moveToNext());
+        }
+        cursor2.close();
+        // return the list of records
+        return ObjectItemData;
+    }
+    @SuppressLint("Range")
+    public MyObject[] getAutoSearchStatusData(SQLiteDatabase sqLiteDatabase, String searchTerm) {
+        String sql = "SELECT status,id FROM inventory_status where status like '%"+searchTerm+"%'";
+        Log.e("TESTSQL>",sql);
+        Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
+        int recCount = cursor2.getCount();
+        MyObject[] ObjectItemData = new MyObject[recCount];
+        int x = 0;
+        // looping through all rows and adding to list
+        if (cursor2.moveToFirst()) {
+            do {
+                String objectName = cursor2.getString(cursor2.getColumnIndex("status"));
+                String objectId = cursor2.getString(cursor2.getColumnIndex("id"));
+                MyObject myObject = new MyObject(objectName, objectId);
+                ObjectItemData[x] = myObject;
+                x++;
+                Log.e("Count>>",x+"");
+            } while (cursor2.moveToNext());
+        }
+        cursor2.close();
+        // return the list of records
+        return ObjectItemData;
+    }
+    @SuppressLint("Range")
+    public MyObject[] getAutoSearchUnitData(SQLiteDatabase sqLiteDatabase, String searchTerm) {
+        String sql = "SELECT abbreviation,id FROM units_of_measure where abbreviation like '%"+searchTerm+"%'";
+        Log.e("TESTSQL>",sql);
+        Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
+        int recCount = cursor2.getCount();
+        MyObject[] ObjectItemData = new MyObject[recCount];
+        int x = 0;
+        // looping through all rows and adding to list
+        if (cursor2.moveToFirst()) {
+            do {
+                String objectName = cursor2.getString(cursor2.getColumnIndex("abbreviation"));
                 String objectId = cursor2.getString(cursor2.getColumnIndex("id"));
                 MyObject myObject = new MyObject(objectName, objectId);
                 ObjectItemData[x] = myObject;

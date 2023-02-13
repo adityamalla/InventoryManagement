@@ -75,8 +75,7 @@ public class QueryConstants {
     public static String SQL_CREATE_INVENTORY_STATUS = "CREATE TABLE IF NOT EXISTS inventory_status\n" +
             "(\n" +
             "    id integer PRIMARY KEY NOT NULL,\n" +
-            "    status character varying(64),\n" +
-            "    active integer DEFAULT 0\n" +
+            "    status character varying(64)\n" +
             ")";
     public static String SQL_CREATE_TABLE_MENU_ITEMS = "CREATE TABLE IF NOT EXISTS menu_items\n" +
             "(\n" +

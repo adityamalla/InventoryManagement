@@ -611,7 +611,6 @@ public class HomeActivity extends AppCompatActivity {
                 if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_INV_STATUS, "id", id) == 0) {
                     values.put("id", id);
                     values.put("status", objectInArray.getString("status"));
-                    values.put("active", objectInArray.getString("active"));
                     db.insert(QueryConstants.TABLE_NAME_INV_STATUS, null, values);
                     values.clear();
                 }
