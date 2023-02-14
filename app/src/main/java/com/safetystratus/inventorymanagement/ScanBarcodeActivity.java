@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,7 +41,8 @@ public class ScanBarcodeActivity extends AppCompatActivity {
     String sso = "";
     String site_name = "";
     String token="";
-    TextView scanBarcode;
+    EditText enteredBarcode;
+    Button viewBarcodeDetails;
     String empName = "";
     ConstraintLayout header;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(ScanBarcodeActivity.this);
@@ -102,11 +104,57 @@ public class ScanBarcodeActivity extends AppCompatActivity {
         if (intent.getStringExtra("selectedSearchValue") != null) {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
-        scanBarcode = (TextView)findViewById(R.id.scanBarcodeBtn);
+        enteredBarcode = (EditText) findViewById(R.id.barcode);
+        viewBarcodeDetails = (Button) findViewById(R.id.viewData);
         IntentFilter filter = new IntentFilter();
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         filter.addAction(getResources().getString(R.string.activity_intent_filter_action));
         registerReceiver(myBroadcastReceiver, filter);
+        viewBarcodeDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(enteredBarcode.getText().toString().trim().length()==0){
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Please enter barcode details and click on view button or scan the barcode directly to view the details!");
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
+                }else{
+                    if(databaseHandler.checkScannedBarcodeDataAvailable(db,enteredBarcode.getText().toString().trim())){
+                        unregisterReceiver(myBroadcastReceiver);
+                        final Intent myIntent = new Intent(ScanBarcodeActivity.this,
+                                ContainerDetailsActivity.class);
+                        myIntent.putExtra("user_id", selectedUserId);
+                        myIntent.putExtra("site_id", loggedinUserSiteId);
+                        myIntent.putExtra("token", token);
+                        myIntent.putExtra("sso", sso);
+                        myIntent.putExtra("md5pwd", md5Pwd);
+                        myIntent.putExtra("loggedinUsername", loggedinUsername);
+                        myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                        myIntent.putExtra("site_name", site_name);
+                        myIntent.putExtra("decodedData", enteredBarcode.getText().toString().trim());
+                        myIntent.putExtra("empName", empName);
+                        startActivity(myIntent);
+                    }else{
+                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
+                        dlgAlert.setTitle("Safety Stratus");
+                        dlgAlert.setMessage("Information for the container is not available on this device!");
+                        dlgAlert.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        return;
+                                    }
+                                });
+                        dlgAlert.create().show();
+                    }
+                }
+            }
+        });
     }
     @Override
     public void onBackPressed() {
