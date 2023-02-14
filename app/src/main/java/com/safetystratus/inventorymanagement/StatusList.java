@@ -58,6 +58,8 @@ public class StatusList extends AppCompatActivity {
         String selectedConcUnit = "";
         String selectedQuanUnitName = "";
         String selectedQuanUnit = "";
+        String selectedOwnerName = "";
+        String selectedOwner = "";
         @SuppressLint("WrongConstant")
         @Override
         protected void onCreate(Bundle savedInstanceState) {
@@ -144,6 +146,12 @@ public class StatusList extends AppCompatActivity {
             if (intent.getStringExtra("selectedRoomName") != null) {
                 selectedRoomName = intent.getStringExtra("selectedRoomName");
             }
+            if (intent.getStringExtra("selectedOwner") != null) {
+                selectedOwner = intent.getStringExtra("selectedOwner");
+            }
+            if (intent.getStringExtra("selectedOwnerName") != null) {
+                selectedOwnerName = intent.getStringExtra("selectedOwnerName");
+            }
             statusList = new ArrayList<MyObject>();
             if(intent.getSerializableExtra("statusList")!=null)
                 statusList = (ArrayList<MyObject>) intent.getSerializableExtra("statusList");
@@ -219,6 +227,8 @@ public class StatusList extends AppCompatActivity {
                         myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                         myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                         myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                        myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                        myIntent.putExtra("selectedOwner", selectedOwner+"");
                         myIntent.putExtra("quan_val", quan_val+"");
                         myIntent.putExtra("conc_val", conc_val+"");
                         myIntent.putExtra("note", note+"");
@@ -316,6 +326,8 @@ public class StatusList extends AppCompatActivity {
                                 myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                                 myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                                 myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                                myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                                myIntent.putExtra("selectedOwner", selectedOwner+"");
                                 myIntent.putExtra("quan_val", quan_val+"");
                                 myIntent.putExtra("conc_val", conc_val+"");
                                 myIntent.putExtra("note", note+"");
@@ -358,6 +370,8 @@ public class StatusList extends AppCompatActivity {
                 myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                 myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                 myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                myIntent.putExtra("selectedOwner", selectedOwner+"");
                 myIntent.putExtra("quan_val", quan_val+"");
                 myIntent.putExtra("conc_val", conc_val+"");
                 myIntent.putExtra("note", note+"");

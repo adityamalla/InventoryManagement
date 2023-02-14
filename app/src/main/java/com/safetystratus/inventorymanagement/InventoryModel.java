@@ -22,9 +22,12 @@ public class InventoryModel  implements Serializable {
     public String concentration;
     public String concentration_unit_abbrevation_id;
     public String concentration_unit_abbrevation;
+    public String object_id;
+    public String object_table;
 
     public InventoryModel(String inv_id, String code, String productName, String cas_number, String status_id,String status, String facil_id, String room_id, String room, String owner,
-                          String notes, String comments, String volume_mass, String volume_mass_unit_id,String volume_mass_unit, String rfidCode, String concentration, String concentration_unit_abbrevation_id, String concentration_unit_abbrevation) {
+                          String notes, String comments, String volume_mass, String volume_mass_unit_id,String volume_mass_unit, String rfidCode, String concentration,
+                          String concentration_unit_abbrevation_id, String concentration_unit_abbrevation, String object_id, String object_table) {
         this.inv_id = inv_id;
         this.code = code;
         this.productName = productName;
@@ -44,6 +47,24 @@ public class InventoryModel  implements Serializable {
         this.concentration = concentration;
         this.concentration_unit_abbrevation_id = concentration_unit_abbrevation_id;
         this.concentration_unit_abbrevation = concentration_unit_abbrevation;
+        this.object_id = object_id;
+        this.object_table = object_table;
+    }
+
+    public String getObject_id() {
+        return object_id;
+    }
+
+    public void setObject_id(String object_id) {
+        this.object_id = object_id;
+    }
+
+    public String getObject_table() {
+        return object_table;
+    }
+
+    public void setObject_table(String object_table) {
+        this.object_table = object_table;
     }
 
     public String getVolume_mass_unit_id() {

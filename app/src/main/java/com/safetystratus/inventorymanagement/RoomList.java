@@ -59,6 +59,8 @@ public class RoomList extends AppCompatActivity {
     String selectedConcUnit = "";
     String selectedQuanUnitName = "";
     String selectedQuanUnit = "";
+    String selectedOwnerName = "";
+    String selectedOwner = "";
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,6 +147,12 @@ public class RoomList extends AppCompatActivity {
         if (intent.getStringExtra("selectedQuanUnit") != null) {
             selectedQuanUnit = intent.getStringExtra("selectedQuanUnit");
         }
+        if (intent.getStringExtra("selectedOwner") != null) {
+            selectedOwner = intent.getStringExtra("selectedOwner");
+        }
+        if (intent.getStringExtra("selectedOwnerName") != null) {
+            selectedOwnerName = intent.getStringExtra("selectedOwnerName");
+        }
         roomlist = new ArrayList<MyObject>();
         if(intent.getSerializableExtra("roomlist")!=null)
             roomlist = (ArrayList<MyObject>) intent.getSerializableExtra("roomlist");
@@ -226,6 +234,8 @@ public class RoomList extends AppCompatActivity {
                     myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                     myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                     myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                    myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                    myIntent.putExtra("selectedOwner", selectedOwner+"");
                     myIntent.putExtra("quan_val", quan_val+"");
                     myIntent.putExtra("conc_val", conc_val+"");
                     myIntent.putExtra("note", note+"");
@@ -329,6 +339,8 @@ public class RoomList extends AppCompatActivity {
                             myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                             myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                             myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                            myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                            myIntent.putExtra("selectedOwner", selectedOwner+"");
                             myIntent.putExtra("quan_val", quan_val+"");
                             myIntent.putExtra("conc_val", conc_val+"");
                             myIntent.putExtra("note", note+"");
@@ -378,6 +390,8 @@ public class RoomList extends AppCompatActivity {
             myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
             myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
             myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+            myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+            myIntent.putExtra("selectedOwner", selectedOwner+"");
             myIntent.putExtra("quan_val", quan_val+"");
             myIntent.putExtra("conc_val", conc_val+"");
             myIntent.putExtra("note", note+"");

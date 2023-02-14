@@ -289,7 +289,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String concentration_unit_abbrevation = cursor.getString(cursor.getColumnIndex("concentration_unit_abbrevation"));
                 String concentration_unit_abbrevation_id = cursor.getString(cursor.getColumnIndex("concentration_unit_abbrevation_id"));
                 String rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
-                inv = new InventoryModel(id, code,name,cas,status_id,status,facil_id,room_id,room,owner,notes,comments,volume_mass,volume_mass_units_id,volume_mass_units,rfidCode,concentration,concentration_unit_abbrevation_id,concentration_unit_abbrevation);
+                inv = new InventoryModel(id, code,name,cas,status_id,status,facil_id,room_id,room,owner,notes,comments,volume_mass,volume_mass_units_id,volume_mass_units,rfidCode,concentration,concentration_unit_abbrevation_id,concentration_unit_abbrevation,object_id,object_table);
                 cursor.moveToNext();
             }
         }
@@ -347,6 +347,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         return statusList;
+    }
+    @SuppressLint("Range")
+    public ArrayList<MyObject> getOwnerList(SQLiteDatabase sqLiteDatabase){
+        int count = 0;
+        ArrayList<MyObject> ownerList = new ArrayList<MyObject>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select owner , object_id from chemical_inventory where object_table='site_users'"), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                ownerList.add(new MyObject(cursor.getString(cursor.getColumnIndex("owner")).trim(),
+                        cursor.getString(cursor.getColumnIndex("object_id")))
+                );
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return ownerList;
     }
     @SuppressLint("Range")
     public ArrayList<MyObject> getUnitList(SQLiteDatabase sqLiteDatabase){
@@ -620,6 +636,29 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             do {
                 String objectName = cursor2.getString(cursor2.getColumnIndex("status"));
                 String objectId = cursor2.getString(cursor2.getColumnIndex("id"));
+                MyObject myObject = new MyObject(objectName, objectId);
+                ObjectItemData[x] = myObject;
+                x++;
+                Log.e("Count>>",x+"");
+            } while (cursor2.moveToNext());
+        }
+        cursor2.close();
+        // return the list of records
+        return ObjectItemData;
+    }
+    @SuppressLint("Range")
+    public MyObject[] getAutoSearchOwnerData(SQLiteDatabase sqLiteDatabase, String searchTerm) {
+        String sql = "SELECT owner,object_id FROM chemical_inventory where owner like '%"+searchTerm+"%' and object_table='site_users'";
+        Log.e("TESTSQL>",sql);
+        Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
+        int recCount = cursor2.getCount();
+        MyObject[] ObjectItemData = new MyObject[recCount];
+        int x = 0;
+        // looping through all rows and adding to list
+        if (cursor2.moveToFirst()) {
+            do {
+                String objectName = cursor2.getString(cursor2.getColumnIndex("owner"));
+                String objectId = cursor2.getString(cursor2.getColumnIndex("object_id"));
                 MyObject myObject = new MyObject(objectName, objectId);
                 ObjectItemData[x] = myObject;
                 x++;

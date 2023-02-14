@@ -58,6 +58,9 @@
             android:name=".StatusList"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".OwnerList"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".RFIDActivity"
             android:screenOrientation="portrait" />
         <activity

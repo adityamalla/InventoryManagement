@@ -70,6 +70,8 @@ public class ContainerDetailsActivity extends AppCompatActivity {
     String selectedConcUnit = "";
     String selectedQuanUnitName = "";
     String selectedQuanUnit = "";
+    String selectedOwnerName = "";
+    String selectedOwner = "";
     EditText name;
     EditText code;
     EditText cas;
@@ -178,6 +180,12 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         if (intent.getStringExtra("selectedQuanUnit") != null) {
             selectedQuanUnit = intent.getStringExtra("selectedQuanUnit");
         }
+        if (intent.getStringExtra("selectedOwner") != null) {
+            selectedOwner = intent.getStringExtra("selectedOwner");
+        }
+        if (intent.getStringExtra("selectedOwnerName") != null) {
+            selectedOwnerName = intent.getStringExtra("selectedOwnerName");
+        }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
@@ -206,7 +214,6 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             name.setText(inv.getProductName());
             cas.setText(inv.getCas_number());
             code.setText(inv.getCode());
-            owner.setText(inv.getOwner());
             if(selectedFacil.trim().length()==0){
                 selectedFacil = inv.getFacil_id();
             }
@@ -238,6 +245,12 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             if(comment.trim().length()==0){
                 comment = inv.getComments();
             }
+            if (selectedOwner.trim().length()==0){
+                if(inv.getOwner().trim().length()>0) {
+                    selectedOwnerName = inv.getOwner();
+                    selectedOwner = inv.getObject_id();
+                }
+            }
         }else{
             name.setText("");
             cas.setText("");
@@ -260,6 +273,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         concentration.setText(conc_val);
         notes.setText(note);
         comments.setText(comment);
+        owner.setText(selectedOwnerName);
         location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -289,6 +303,8 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                         myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                         myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                         myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                        myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                        myIntent.putExtra("selectedOwner", selectedOwner+"");
                         myIntent.putExtra("quan_val", quan_val+"");
                         myIntent.putExtra("conc_val", conc_val+"");
                         myIntent.putExtra("note", note+"");
@@ -335,6 +351,8 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                     myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                     myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                    myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                    myIntent.putExtra("selectedOwner", selectedOwner+"");
                     myIntent.putExtra("quan_val", quan_val+"");
                     myIntent.putExtra("conc_val", conc_val+"");
                     myIntent.putExtra("note", note+"");
@@ -381,6 +399,8 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                     myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                     myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                    myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                    myIntent.putExtra("selectedOwner", selectedOwner+"");
                     myIntent.putExtra("empName", empName);
                     myIntent.putExtra("quan_val", quan_val+"");
                     myIntent.putExtra("conc_val", conc_val+"");
@@ -428,6 +448,56 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                     myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                     myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                    myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                    myIntent.putExtra("selectedOwner", selectedOwner+"");
+                    myIntent.putExtra("quan_val", quan_val+"");
+                    myIntent.putExtra("conc_val", conc_val+"");
+                    myIntent.putExtra("note", note+"");
+                    myIntent.putExtra("comment", comment+"");
+                    myIntent.putExtra("empName", empName);
+                    startActivity(myIntent);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    // progress.dismiss();
+                    db.close();
+                    if (databaseHandler != null) {
+                        databaseHandler.close();
+                    }
+                }
+            }
+        });
+        owner.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    quan_val = quantity.getText().toString();
+                    conc_val = concentration.getText().toString();
+                    note = notes.getText().toString();
+                    comment = comments.getText().toString();
+                    ArrayList<MyObject> ownerList = databaseHandler.getOwnerList(db);
+                    final Intent myIntent = new Intent(ContainerDetailsActivity.this,
+                            OwnerList.class);
+                    myIntent.putExtra("user_id", selectedUserId);
+                    myIntent.putExtra("site_id", loggedinUserSiteId);
+                    myIntent.putExtra("token", token);
+                    myIntent.putExtra("sso", sso);
+                    myIntent.putExtra("md5pwd", md5Pwd);
+                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                    myIntent.putExtra("site_name", site_name);
+                    myIntent.putExtra("ownerList",ownerList);
+                    myIntent.putExtra("decodedData", decodedData);
+                    myIntent.putExtra("selectedRoomName", selectedRoomName);
+                    myIntent.putExtra("selectedRoom", selectedRoom+"");
+                    myIntent.putExtra("selectedStatusName", selectedStatusName);
+                    myIntent.putExtra("selectedStatus", selectedStatus+"");
+                    myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
+                    myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
+                    myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
+                    myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                    myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                    myIntent.putExtra("selectedOwner", selectedOwner+"");
                     myIntent.putExtra("quan_val", quan_val+"");
                     myIntent.putExtra("conc_val", conc_val+"");
                     myIntent.putExtra("note", note+"");

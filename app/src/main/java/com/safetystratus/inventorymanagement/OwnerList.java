@@ -27,7 +27,7 @@ import net.sqlcipher.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 
-public class UnitsList extends AppCompatActivity {
+public class OwnerList extends AppCompatActivity {
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     boolean connected = false;
     String loggedinUsername = "";
@@ -48,9 +48,9 @@ public class UnitsList extends AppCompatActivity {
     String selectedStatus = "";
     String empName = "";
     String decodedData = "";
-    ArrayList<MyObject> unitList=null;
+    ArrayList<MyObject> ownerList=null;
     ConstraintLayout header;
-    EditText unitSearch;
+    EditText ownerSearch;
     String selectedConcUnitName = "";
     String selectedConcUnit = "";
     String selectedQuanUnitName = "";
@@ -65,7 +65,7 @@ public class UnitsList extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_unit_list);
+        setContentView(R.layout.activity_owner_list);
         SQLiteDatabase.loadLibs(this);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
@@ -80,10 +80,10 @@ public class UnitsList extends AppCompatActivity {
         shape.getPaint().setColor(Color.RED);
         shape.getPaint().setStyle(Paint.Style.STROKE);
         shape.getPaint().setStrokeWidth(3);
-        tv.setText("Status");
+        tv.setText("Owners");
         tv.setTextSize(20);
         tv.setVisibility(View.VISIBLE);
-        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(UnitsList.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(OwnerList.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
@@ -156,50 +156,44 @@ public class UnitsList extends AppCompatActivity {
         if (intent.getStringExtra("selectedRoomName") != null) {
             selectedRoomName = intent.getStringExtra("selectedRoomName");
         }
-        unitList = new ArrayList<MyObject>();
-        if(intent.getSerializableExtra("unitList")!=null)
-            unitList = (ArrayList<MyObject>) intent.getSerializableExtra("unitList");
-        TableLayout tableUnits = (TableLayout) findViewById(R.id.tableUnit);
-        unitSearch = (EditText) findViewById(R.id.unit_search);
-        for (int i = 0; i < unitList.size(); i++) {
-            final TextView unitName = new TextView(this);
-            unitName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+        ownerList = new ArrayList<MyObject>();
+        if(intent.getSerializableExtra("ownerList")!=null)
+            ownerList = (ArrayList<MyObject>) intent.getSerializableExtra("ownerList");
+        TableLayout tableOwner = (TableLayout) findViewById(R.id.tableOwner);
+        ownerSearch = (EditText) findViewById(R.id.owner_search);
+        for (int i = 0; i < ownerList.size(); i++) {
+            final TextView ownerName = new TextView(this);
+            ownerName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
                     100,5));
-            unitName.setGravity(Gravity.LEFT);
-            unitName.setPadding(5, 30, 0, 0);
-            unitName.setBackgroundResource(R.drawable.cell_shape_child);
-            unitName.setText(unitList.get(i).getObjectName());
-            unitName.setId(Integer.parseInt(unitList.get(i).getObjectId()));
-            unitName.setTextSize(16);
-            unitName.setTextColor(Color.parseColor("#000000"));
-            unitName.setBackgroundColor(Color.parseColor("#FFFFFF"));
-            String unit_id = "";
-            if(fromUnit.trim().length()>0){
-                unit_id = selectedQuanUnit;
-            }else{
-                unit_id = selectedConcUnit;
-            }
-            if(unit_id.trim().length()>0){
-                if(Integer.parseInt(unitList.get(i).getObjectId()) == Integer.parseInt(unit_id)){
+            ownerName.setGravity(Gravity.LEFT);
+            ownerName.setPadding(5, 30, 0, 0);
+            ownerName.setBackgroundResource(R.drawable.cell_shape_child);
+            ownerName.setText(ownerList.get(i).getObjectName());
+            ownerName.setId(Integer.parseInt(ownerList.get(i).getObjectId()));
+            ownerName.setTextSize(16);
+            ownerName.setTextColor(Color.parseColor("#000000"));
+            ownerName.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            if(selectedOwner.trim().length()>0){
+                if(Integer.parseInt(ownerList.get(i).getObjectId()) == Integer.parseInt(selectedOwner)){
                     Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                     img.setBounds(0, 0, 60, 60);
-                    unitName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                    ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
                 }
             }
-            final TableRow trUnit = new TableRow(this);
-            trUnit.setId(Integer.parseInt(unitList.get(i).getObjectId()));
+            final TableRow trOwner = new TableRow(this);
+            trOwner.setId(Integer.parseInt(ownerList.get(i).getObjectId()));
             TableLayout.LayoutParams trParamsRosters = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
                     TableLayout.LayoutParams.WRAP_CONTENT);
-            trUnit.setBackgroundResource(R.drawable.table_tr_border);
+            trOwner.setBackgroundResource(R.drawable.table_tr_border);
             //trParams.setMargins(10, 10, 10, 10);
-            trUnit.setLayoutParams(trParamsRosters);
-            trUnit.addView(unitName);
-            tableUnits.addView(trUnit, trParamsRosters);
-            unitName.setOnClickListener(new View.OnClickListener() {
+            trOwner.setLayoutParams(trParamsRosters);
+            trOwner.addView(ownerName);
+            tableOwner.addView(trOwner, trParamsRosters);
+            ownerName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    for (int p = 0; p < tableUnits.getChildCount(); p++) {
-                        View o1 = tableUnits.getChildAt(p);
+                    for (int p = 0; p < tableOwner.getChildCount(); p++) {
+                        View o1 = tableOwner.getChildAt(p);
                         if (o1 instanceof TableRow) {
                             for (int j=0;j<((TableRow) o1).getChildCount();j++){
                                 View u1 = ((TableRow) o1).getChildAt(j);
@@ -212,24 +206,17 @@ public class UnitsList extends AppCompatActivity {
                     }
                     Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                     img.setBounds(0, 0, 60, 60);
-                    unitName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                    Intent myIntent = new Intent(UnitsList.this, ContainerDetailsActivity.class);
+                    ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                    Intent myIntent = new Intent(OwnerList.this, ContainerDetailsActivity.class);
                     myIntent.putExtra("selectedFacilName", selectedFacilName);
                     myIntent.putExtra("selectedRoomName", selectedRoomName);
                     myIntent.putExtra("selectedRoom", selectedRoom+"");
                     myIntent.putExtra("selectedStatusName", selectedStatusName);
                     myIntent.putExtra("selectedStatus", selectedStatus+"");
-                    if(fromUnit.trim().length()>0){
-                        myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
-                        myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
-                        myIntent.putExtra("selectedQuanUnit", unitName.getId()+"");
-                        myIntent.putExtra("selectedQuanUnitName", unitName.getText());
-                    }else{
-                        myIntent.putExtra("selectedConcUnitName", unitName.getText());
-                        myIntent.putExtra("selectedConcUnit", unitName.getId()+"");
-                        myIntent.putExtra("selectedQuanUnit", selectedQuanUnit);
-                        myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName+"");
-                    }
+                    myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
+                    myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
+                    myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
+                    myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                     myIntent.putExtra("decodedData", decodedData+"");
                     myIntent.putExtra("selectedFacil", selectedFacil+"");
                     myIntent.putExtra("user_id", user_id);
@@ -239,11 +226,10 @@ public class UnitsList extends AppCompatActivity {
                     myIntent.putExtra("md5pwd", md5Pwd);
                     myIntent.putExtra("loggedinUsername", loggedinUsername);
                     myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-                    myIntent.putExtra("selectedOwnerName", selectedOwnerName);
-                    myIntent.putExtra("selectedOwner", selectedOwner+"");
+                    myIntent.putExtra("selectedOwnerName", ownerName.getText().toString());
+                    myIntent.putExtra("selectedOwner", ownerName.getId()+"");
                     myIntent.putExtra("site_name", site_name);
-                    myIntent.putExtra("fromRoom", "fromRoom");
-                    myIntent.putExtra("unitList",unitList);
+                    myIntent.putExtra("ownerList",ownerList);
                     myIntent.putExtra("pageLoadTemp", "-1");
                     myIntent.putExtra("empName", empName);
                     myIntent.putExtra("quan_val", quan_val+"");
@@ -254,7 +240,7 @@ public class UnitsList extends AppCompatActivity {
                 }
             });
         }
-        unitSearch.addTextChangedListener(new TextWatcher() {
+        ownerSearch.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void afterTextChanged(Editable s) {}
@@ -272,46 +258,40 @@ public class UnitsList extends AppCompatActivity {
                 //{
                 MyObject[] myObjects = null;
                 myObjects = getItemsFromDb(String.valueOf(s));
-                tableUnits.removeAllViews();
+                tableOwner.removeAllViews();
                 for (int i = 0;i<myObjects.length;i++) {
-                    final TextView unitName = new TextView(UnitsList.this);
-                    unitName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+                    final TextView ownerName = new TextView(OwnerList.this);
+                    ownerName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
                             100, 5));
-                    unitName.setGravity(Gravity.LEFT);
-                    unitName.setPadding(5, 30, 0, 0);
-                    unitName.setBackgroundResource(R.drawable.cell_shape_child);
-                    unitName.setText(myObjects[i].getObjectName());
-                    unitName.setId(Integer.parseInt(myObjects[i].getObjectId()));
-                    unitName.setTextSize(16);
-                    unitName.setTextColor(Color.parseColor("#000000"));
-                    unitName.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                    String unit_id = "";
-                    if(fromUnit.trim().length()>0){
-                        unit_id = selectedQuanUnit;
-                    }else{
-                        unit_id = selectedConcUnit;
-                    }
-                    if (unit_id.length() > 0) {
-                        if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(unit_id)) {
+                    ownerName.setGravity(Gravity.LEFT);
+                    ownerName.setPadding(5, 30, 0, 0);
+                    ownerName.setBackgroundResource(R.drawable.cell_shape_child);
+                    ownerName.setText(myObjects[i].getObjectName());
+                    ownerName.setId(Integer.parseInt(myObjects[i].getObjectId()));
+                    ownerName.setTextSize(16);
+                    ownerName.setTextColor(Color.parseColor("#000000"));
+                    ownerName.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                    if (selectedOwner.length() > 0) {
+                        if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(selectedOwner)) {
                             Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                             img.setBounds(0, 0, 60, 60);
-                            unitName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                            ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
                         }
                     }
-                    final TableRow trUnit = new TableRow(UnitsList.this);
-                    trUnit.setId(Integer.parseInt(myObjects[i].getObjectId()));
+                    final TableRow trOwner = new TableRow(OwnerList.this);
+                    trOwner.setId(Integer.parseInt(myObjects[i].getObjectId()));
                     TableLayout.LayoutParams trParamsRosters = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
                             TableLayout.LayoutParams.WRAP_CONTENT);
-                    trUnit.setBackgroundResource(R.drawable.table_tr_border);
+                    trOwner.setBackgroundResource(R.drawable.table_tr_border);
                     //trParams.setMargins(10, 10, 10, 10);
-                    trUnit.setLayoutParams(trParamsRosters);
-                    trUnit.addView(unitName);
-                    tableUnits.addView(trUnit, trParamsRosters);
-                    unitName.setOnClickListener(new View.OnClickListener() {
+                    trOwner.setLayoutParams(trParamsRosters);
+                    trOwner.addView(ownerName);
+                    tableOwner.addView(trOwner, trParamsRosters);
+                    ownerName.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            for (int p = 0; p < tableUnits.getChildCount(); p++) {
-                                View o1 = tableUnits.getChildAt(p);
+                            for (int p = 0; p < tableOwner.getChildCount(); p++) {
+                                View o1 = tableOwner.getChildAt(p);
                                 if (o1 instanceof TableRow) {
                                     for (int j = 0; j < ((TableRow) o1).getChildCount(); j++) {
                                         View u1 = ((TableRow) o1).getChildAt(j);
@@ -324,8 +304,8 @@ public class UnitsList extends AppCompatActivity {
                             }
                             Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                             img.setBounds(0, 0, 60, 60);
-                            unitName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                            Intent myIntent = new Intent(UnitsList.this, ContainerDetailsActivity.class);
+                            ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                            Intent myIntent = new Intent(OwnerList.this, ContainerDetailsActivity.class);
                             myIntent.putExtra("selectedFacilName", selectedFacilName);
                             myIntent.putExtra("selectedRoomName", selectedRoomName);
                             myIntent.putExtra("selectedRoom", selectedRoom+"");
@@ -341,27 +321,19 @@ public class UnitsList extends AppCompatActivity {
                             myIntent.putExtra("loggedinUsername", loggedinUsername);
                             myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                             myIntent.putExtra("site_name", site_name);
-                            myIntent.putExtra("fromRoom", "fromRoom");
-                            myIntent.putExtra("unitList",unitList);
+                            myIntent.putExtra("ownerList",ownerList);
                             myIntent.putExtra("pageLoadTemp", "-1");
                             myIntent.putExtra("empName", empName);
-                            if(fromUnit.trim().length()>0){
-                                myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
-                                myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
-                                myIntent.putExtra("selectedQuanUnit", unitName.getId()+"");
-                                myIntent.putExtra("selectedQuanUnitName", unitName.getText());
-                            }else{
-                                myIntent.putExtra("selectedConcUnitName", unitName.getText());
-                                myIntent.putExtra("selectedConcUnit", unitName.getId()+"");
-                                myIntent.putExtra("selectedQuanUnit", selectedQuanUnit);
-                                myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName+"");
-                            }
+                            myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
+                            myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
+                            myIntent.putExtra("selectedQuanUnit", selectedQuanUnit);
+                            myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName+"");
                             myIntent.putExtra("quan_val", quan_val+"");
                             myIntent.putExtra("conc_val", conc_val+"");
                             myIntent.putExtra("note", note+"");
                             myIntent.putExtra("comment", comment+"");
-                            myIntent.putExtra("selectedOwnerName", selectedOwnerName);
-                            myIntent.putExtra("selectedOwner", selectedOwner+"");
+                            myIntent.putExtra("selectedOwnerName", ownerName.getText().toString());
+                            myIntent.putExtra("selectedOwner", ownerName.getId()+"");
                             startActivity(myIntent);
                         }
                     });
@@ -377,7 +349,7 @@ public class UnitsList extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            Intent myIntent= new Intent(UnitsList.this, ContainerDetailsActivity.class);
+            Intent myIntent= new Intent(OwnerList.this, ContainerDetailsActivity.class);
             myIntent.putExtra("selectedFacilName", selectedFacilName);
             myIntent.putExtra("selectedFacil", selectedFacil+"");
             myIntent.putExtra("decodedData", decodedData+"");
@@ -389,7 +361,7 @@ public class UnitsList extends AppCompatActivity {
             myIntent.putExtra("loggedinUsername", loggedinUsername);
             myIntent.putExtra("selectedSearchValue", selectedSearchValue);
             myIntent.putExtra("site_name", site_name);
-            myIntent.putExtra("unitList",unitList);
+            myIntent.putExtra("ownerList",ownerList);
             myIntent.putExtra("pageLoadTemp", "-1");
             myIntent.putExtra("selectedRoomName", selectedRoomName);
             myIntent.putExtra("selectedRoom", selectedRoom+"");
@@ -411,11 +383,11 @@ public class UnitsList extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
     public MyObject[] getItemsFromDb(String searchTerm) {
-        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(UnitsList.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(OwnerList.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         MyObject[] myObject = null;
         try {
-            myObject = databaseHandler.getAutoSearchUnitData(db, searchTerm);
+            myObject = databaseHandler.getAutoSearchOwnerData(db, searchTerm);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
