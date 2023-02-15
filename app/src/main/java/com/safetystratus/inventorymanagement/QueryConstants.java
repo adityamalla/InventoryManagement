@@ -161,6 +161,7 @@ public class QueryConstants {
             "    user_id integer NOT NULL,\n" +
             "    location_id integer NOT NULL,\n" +
             "    room_id integer NOT NULL,\n" +
+            "    scan_type text," +
             "    json_data text\n" +
             ")";
     public static String SQL_CREATE_TABLE_SCANNED_BARCODE_JSON_DATA = "CREATE TABLE IF NOT EXISTS scanned_json_data_barcode\n" +
@@ -168,6 +169,7 @@ public class QueryConstants {
             "    id integer PRIMARY KEY NOT NULL ,\n" +
             "    user_id integer NOT NULL,\n" +
             "    code text,\n" +
+            "    scan_type text,\n" +
             "    json_data text\n" +
             ")";
 

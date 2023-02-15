@@ -516,6 +516,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                         cv.put("location_id", selectedFacil);
                         cv.put("user_id", selectedUserId);
                         cv.put("room_id", selectedRoom);
+                        cv.put("scan_type", "rfid");
                         databaseHandler.insertScannedInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                         AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDScannerActivity.this);
                         dlgAlert.setTitle("Safety Stratus");
@@ -568,6 +569,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     cv.put("location_id", selectedFacil);
                     cv.put("room_id", selectedRoom);
                     cv.put("user_id", selectedUserId);
+                    cv.put("scan_type", "rfid");
                     databaseHandler.insertScannedInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                     if(connected){
                         String URL = ApiConstants.syncpostscanneddata;

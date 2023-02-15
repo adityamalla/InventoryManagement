@@ -589,6 +589,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                                                 ContentValues cv_save = new ContentValues();
                                                 cv_save.put("code", code.getText().toString());
                                                 cv_save.put("user_id", Integer.parseInt(selectedUserId));
+                                                cv_save.put("scan_type", "barcode");
                                                 cv_save.put("json_data", finalJsonString);
                                                 databaseHandler.saveBarcodeInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                                                 final Intent myIntent = new Intent(ContainerDetailsActivity.this,
@@ -628,6 +629,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                                                 cv_save.put("code", code.getText().toString());
                                                 cv_save.put("user_id", Integer.parseInt(selectedUserId));
                                                 cv_save.put("json_data", finalJsonString1);
+                                                cv_save.put("scan_type", "barcode");
                                                 databaseHandler.saveBarcodeInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                                                 final Intent myIntent = new Intent(ContainerDetailsActivity.this,
                                                         PostSuccess.class);
@@ -686,10 +688,10 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 String jsonString = "";
                 try {
                     jsonString = mapper.writeValueAsString(obj);
-                    Log.e("TESTJSON>>",jsonString);
                     ContentValues cv_save = new ContentValues();
                     cv_save.put("code", code.getText().toString());
                     cv_save.put("user_id", Integer.parseInt(selectedUserId));
+                    cv_save.put("scan_type", "barcode");
                     cv_save.put("json_data", jsonString);
                     databaseHandler.saveBarcodeInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ContainerDetailsActivity.this);
