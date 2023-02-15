@@ -352,7 +352,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<MyObject> getOwnerList(SQLiteDatabase sqLiteDatabase){
         int count = 0;
         ArrayList<MyObject> ownerList = new ArrayList<MyObject>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select owner , object_id from chemical_inventory where object_table='site_users'"), null);
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select distinct object_id, owner from chemical_inventory where object_table='site_users'"), null);
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 ownerList.add(new MyObject(cursor.getString(cursor.getColumnIndex("owner")).trim(),
