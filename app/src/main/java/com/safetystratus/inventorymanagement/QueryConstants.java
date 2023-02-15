@@ -161,6 +161,7 @@ public class QueryConstants {
             "    user_id integer NOT NULL,\n" +
             "    location_id integer NOT NULL,\n" +
             "    room_id integer NOT NULL,\n" +
+            "    code text,\n" +
             "    scan_type text," +
             "    json_data text\n" +
             ")";

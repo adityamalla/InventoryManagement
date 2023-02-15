@@ -225,6 +225,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return count;
     }
+    @SuppressLint("Range")
+    public int getSavedBarcodeDataCount(SQLiteDatabase sqLiteDatabase){
+        int count = 0;
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data where scan_type='barcode'"), null);
+        count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
 
     @SuppressLint("Range")
     public ArrayList<InventoryObject> getInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
@@ -309,9 +317,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.delete("scanned_json_data", "room_id=? and location_id=? and user_id=?", new String[]{cv.getAsString("room_id"),cv.getAsString("location_id"),cv.getAsString("user_id")});
         sqLiteDatabase.insert("scanned_json_data", null, cv);
     }
-    public void saveBarcodeInventoryDetails(SQLiteDatabase sqLiteDatabase, ContentValues cv){
-        sqLiteDatabase.delete("scanned_json_data_barcode", "code=?", new String[]{cv.getAsString("code")});
-        sqLiteDatabase.insert("scanned_json_data_barcode", null, cv);
+    public void insertScannedBarcodeInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
+        sqLiteDatabase.delete("scanned_json_data", "code=?", new String[]{cv.getAsString("code")});
+        sqLiteDatabase.insert("scanned_json_data", null, cv);
     }
     public void deleteBarcodeInventoryDetails(SQLiteDatabase sqLiteDatabase, String code){
         sqLiteDatabase.delete("scanned_json_data_barcode", "code=?", new String[]{code});
@@ -565,6 +573,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor2.close();
         return facilName;
+    }
+    @SuppressLint("Range")
+    public String getScanType(SQLiteDatabase sqLiteDatabase, String id){
+        String sql = "SELECT scan_type FROM scanned_json_data " +
+                "where id = "+id;
+        Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
+        String scan_type="";
+        // looping through all rows and adding to list
+        if (cursor2.moveToFirst()) {
+            do {
+                scan_type = cursor2.getString(cursor2.getColumnIndex("scan_type"));
+            } while (cursor2.moveToNext());
+        }
+        cursor2.close();
+        return scan_type;
     }
     public void delAllSavedScanData(SQLiteDatabase sqLiteDatabase, String room_id){
         sqLiteDatabase.delete("scanned_data", "room_id=?", new String[]{room_id});

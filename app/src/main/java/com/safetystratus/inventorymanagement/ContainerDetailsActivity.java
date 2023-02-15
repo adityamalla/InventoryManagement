@@ -85,6 +85,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
     EditText concentration;
     EditText concentrationUnit;
     ConstraintLayout header;
+    TextView badge_notification;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(ContainerDetailsActivity.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
     @SuppressLint("WrongConstant")
@@ -209,6 +210,15 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         status = (EditText)findViewById(R.id.status);
         concentration = (EditText)findViewById(R.id.concentration);
         concentrationUnit = (EditText)findViewById(R.id.concUnit);
+        badge_notification = findViewById(R.id.badge_notification);
+        int scannedJsonData = databaseHandler.getSavedBarcodeDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
+        if(scannedJsonData>0){
+            badge_notification.setVisibility(View.VISIBLE);
+            badge_notification.setText(String.valueOf(scannedJsonData));
+        }else{
+            badge_notification.setVisibility(View.GONE);
+            badge_notification.setText("");
+        }
         if (decodedData.trim().length()>0){
             InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,decodedData);
             name.setText(inv.getProductName());
@@ -549,9 +559,15 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 String jsonString = "";
                 try {
                     jsonString = mapper.writeValueAsString(obj);
-                    Log.e("TESTJSON>>",jsonString);
+                    ContentValues cv_save = new ContentValues();
+                    cv_save.put("code", code.getText().toString());
+                    cv_save.put("user_id", Integer.parseInt(selectedUserId));
+                    cv_save.put("location_id", Integer.parseInt(selectedFacil));
+                    cv_save.put("room_id", Integer.parseInt(selectedRoom));
+                    cv_save.put("scan_type", "barcode");
+                    cv_save.put("json_data", jsonString);
+                    databaseHandler.insertScannedBarcodeInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                     if (connected) {
-                        String finalJsonString = jsonString;
                         String URL = ApiConstants.syncbarcodeScannedData;
                         RequestQueue requestQueue = Volley.newRequestQueue(ContainerDetailsActivity.this);
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
@@ -586,12 +602,6 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                                 dlgAlert.setPositiveButton("Ok",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
-                                                ContentValues cv_save = new ContentValues();
-                                                cv_save.put("code", code.getText().toString());
-                                                cv_save.put("user_id", Integer.parseInt(selectedUserId));
-                                                cv_save.put("scan_type", "barcode");
-                                                cv_save.put("json_data", finalJsonString);
-                                                databaseHandler.saveBarcodeInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                                                 final Intent myIntent = new Intent(ContainerDetailsActivity.this,
                                                         PostSuccess.class);
                                                 myIntent.putExtra("user_id", selectedUserId);
@@ -625,12 +635,6 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                         dlgAlert.setPositiveButton("Ok",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
-                                                ContentValues cv_save = new ContentValues();
-                                                cv_save.put("code", code.getText().toString());
-                                                cv_save.put("user_id", Integer.parseInt(selectedUserId));
-                                                cv_save.put("json_data", finalJsonString1);
-                                                cv_save.put("scan_type", "barcode");
-                                                databaseHandler.saveBarcodeInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                                                 final Intent myIntent = new Intent(ContainerDetailsActivity.this,
                                                         PostSuccess.class);
                                                 myIntent.putExtra("user_id", selectedUserId);
@@ -691,15 +695,25 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     ContentValues cv_save = new ContentValues();
                     cv_save.put("code", code.getText().toString());
                     cv_save.put("user_id", Integer.parseInt(selectedUserId));
+                    cv_save.put("location_id", Integer.parseInt(selectedFacil));
+                    cv_save.put("room_id", Integer.parseInt(selectedRoom));
                     cv_save.put("scan_type", "barcode");
                     cv_save.put("json_data", jsonString);
-                    databaseHandler.saveBarcodeInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
+                    databaseHandler.insertScannedBarcodeInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ContainerDetailsActivity.this);
                     dlgAlert.setTitle("Safety Stratus");
                     dlgAlert.setMessage("Data saved successfully!");
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
+                                    int scannedJsonData = databaseHandler.getSavedBarcodeDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
+                                    if(scannedJsonData>0){
+                                        badge_notification.setVisibility(View.VISIBLE);
+                                        badge_notification.setText(String.valueOf(scannedJsonData));
+                                    }else{
+                                        badge_notification.setVisibility(View.GONE);
+                                        badge_notification.setText("");
+                                    }
                                     return;
                                 }
                             });

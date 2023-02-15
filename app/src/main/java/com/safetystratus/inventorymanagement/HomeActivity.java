@@ -302,11 +302,17 @@ public class HomeActivity extends AppCompatActivity {
             progressSync.setCancelable(false);
             progressSync.show();
             progressSync.getWindow().setLayout(400, 200);
-            String URL = ApiConstants.syncpostscanneddata;
             RequestQueue requestQueue = Volley.newRequestQueue(HomeActivity.this);
             for (int k=0;k<jsonList.size();k++){
                 int finalK = k;
                 Log.e("JSON>>>",jsonList.get(k).getObjectName()+"**");
+                String URL = "";
+                String scan_type = databaseHandler.getScanType(db,jsonList.get(k).getObjectId());
+                if(scan_type.trim().equalsIgnoreCase("barcode")){
+                    URL = ApiConstants.syncbarcodeScannedData;
+                }else{
+                    URL = ApiConstants.syncpostscanneddata;
+                }
                 JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonList.get(k).getObjectName()),
                         new Response.Listener<JSONObject>() {
                             @Override
@@ -316,7 +322,6 @@ public class HomeActivity extends AppCompatActivity {
                                 Log.e("res>>>>",res);
                                 databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
                                 ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
-                                Log.e("size******",jsonListModified.size()+"***");
                                 if (jsonListModified.size()==0){
                                     progressSync.dismiss();
                                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(HomeActivity.this);

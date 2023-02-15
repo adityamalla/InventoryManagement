@@ -128,16 +128,18 @@ public class PostSuccess extends AppCompatActivity {
         if (intent.getStringExtra("fromBarcodeScan") != null) {
             fromBarcodeScan = intent.getStringExtra("fromBarcodeScan");
         }
-
-        int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
         badge_notification = findViewById(R.id.badge_notification);
         postScanData = findViewById(R.id.postScan);
         defaultText = findViewById(R.id.defaultText);
-        if (fromBarcodeScan.trim().length()>0){
-            postScanData.setVisibility(View.GONE);
+
+        /*if (fromBarcodeScan.trim().length()>0){
+            int scannedJsonData = databaseHandler.getSavedBarcodeDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            postScanData.setVisibility(View.VISIBLE);
             startAnotherInv.setVisibility(View.GONE);
-            badge_notification.setVisibility(View.GONE);
-            badge_notification.setText("");
+            if(scannedJsonData>0) {
+                badge_notification.setVisibility(View.VISIBLE);
+                badge_notification.setText(scannedJsonData);
+            }
             defaultText.setText("Data Updated Successfully");
             ConstraintLayout constraintLayout = findViewById(R.id.successLayout);
             ConstraintSet constraintSet = new ConstraintSet();
@@ -152,7 +154,8 @@ public class PostSuccess extends AppCompatActivity {
             newLayoutParams.rightMargin = 20;
             newLayoutParams.bottomMargin = 0;
             gotohome.setLayoutParams(newLayoutParams);
-        }else{
+        }else{*/
+            int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
             if(scannedJsonData > 0){
                 postScanData.setVisibility(View.VISIBLE);
                 ConstraintLayout constraintLayout = findViewById(R.id.successLayout);
@@ -170,6 +173,21 @@ public class PostSuccess extends AppCompatActivity {
                 startAnotherInv.setLayoutParams(newLayoutParams);
                 badge_notification.setVisibility(View.VISIBLE);
                 badge_notification.setText(String.valueOf(scannedJsonData));
+                if (fromBarcodeScan.trim().length()>0){
+                    startAnotherInv.setVisibility(View.GONE);
+                    defaultText.setText("Data Updated Successfully");
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(R.id.gotohome,ConstraintSet.START,R.id.postScan,ConstraintSet.START,0);
+                    constraintSet.connect(R.id.gotohome,ConstraintSet.END,R.id.postScan,ConstraintSet.END,0);
+                    constraintSet.connect(R.id.gotohome,ConstraintSet.TOP,R.id.postScan,ConstraintSet.BOTTOM,0);
+                    constraintSet.applyTo(constraintLayout);
+                    ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) gotohome.getLayoutParams();
+                    newLayoutParams1.topMargin = 10;
+                    newLayoutParams1.leftMargin = 20;
+                    newLayoutParams1.rightMargin = 20;
+                    newLayoutParams1.bottomMargin = 0;
+                    gotohome.setLayoutParams(newLayoutParams1);
+                }
             }else{
                 postScanData.setVisibility(View.GONE);
                 ConstraintLayout constraintLayout = findViewById(R.id.successLayout);
@@ -187,8 +205,23 @@ public class PostSuccess extends AppCompatActivity {
                 startAnotherInv.setLayoutParams(newLayoutParams);
                 badge_notification.setVisibility(View.GONE);
                 badge_notification.setText("");
+                if (fromBarcodeScan.trim().length()>0){
+                    startAnotherInv.setVisibility(View.GONE);
+                    defaultText.setText("Data Updated Successfully");
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(R.id.gotohome,ConstraintSet.START,R.id.defaultText,ConstraintSet.START,0);
+                    constraintSet.connect(R.id.gotohome,ConstraintSet.END,R.id.defaultText,ConstraintSet.END,0);
+                    constraintSet.connect(R.id.gotohome,ConstraintSet.TOP,R.id.defaultText,ConstraintSet.BOTTOM,0);
+                    constraintSet.applyTo(constraintLayout);
+                    ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) gotohome.getLayoutParams();
+                    newLayoutParams1.topMargin = 10;
+                    newLayoutParams1.leftMargin = 20;
+                    newLayoutParams1.rightMargin = 20;
+                    newLayoutParams1.bottomMargin = 0;
+                    gotohome.setLayoutParams(newLayoutParams1);
+                }
             }
-        }
+        //}
         postScanData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -281,16 +314,23 @@ public class PostSuccess extends AppCompatActivity {
                     progressSync.setCancelable(false);
                     progressSync.show();
                     progressSync.getWindow().setLayout(400, 200);
-                    String URL = ApiConstants.syncpostscanneddata;
                     RequestQueue requestQueue = Volley.newRequestQueue(PostSuccess.this);
                     for (int k=0;k<jsonList.size();k++){
                         int finalK = k;
+                        String URL = "";
+                        String scan_type = databaseHandler.getScanType(db,jsonList.get(k).getObjectId());
+                        if(scan_type.trim().equalsIgnoreCase("barcode")){
+                            URL = ApiConstants.syncbarcodeScannedData;
+                        }else{
+                            URL = ApiConstants.syncpostscanneddata;
+                        }
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonList.get(k).getObjectName()),
                                 new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject response) {
                                         //Process os success response
                                         String res = response.toString();
+                                        Log.e("res>>>>>>",res);
                                         databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
                                         ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                                         if (jsonListModified.size()==0){
