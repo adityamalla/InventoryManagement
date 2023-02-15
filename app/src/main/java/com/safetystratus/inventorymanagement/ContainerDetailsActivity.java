@@ -673,7 +673,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 cv.put("owner", selectedOwnerName);
                 cv.put("room", selectedRoomName);
                 cv.put("status_id", Integer.parseInt(selectedStatus));
-                cv.put("status", selectedStatus);
+                cv.put("status", selectedStatusName);
                 cv.put("notes", note);
                 cv.put("comment", comment);
                 cv.put("quantity_unit_abbreviation", selectedQuanUnitName);
@@ -685,7 +685,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString());
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(
-                        selectedUserId,loggedinUserSiteId,token,code.getText().toString(),
+                        selectedUserId,token,loggedinUserSiteId,code.getText().toString(),
                         selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val, selectedOwner,"site_users"
                 );
                 ObjectMapper mapper = new ObjectMapper();

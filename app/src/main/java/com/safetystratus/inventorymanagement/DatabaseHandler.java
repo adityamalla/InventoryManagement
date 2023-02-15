@@ -322,7 +322,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.insert("scanned_json_data", null, cv);
     }
     public void deleteBarcodeInventoryDetails(SQLiteDatabase sqLiteDatabase, String code){
-        sqLiteDatabase.delete("scanned_json_data_barcode", "code=?", new String[]{code});
+        sqLiteDatabase.delete("scanned_json_data", "code=?", new String[]{code});
     }
     @SuppressLint("Range")
     public ArrayList<MyObject> getSavedJsonData(SQLiteDatabase sqLiteDatabase){
