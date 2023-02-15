@@ -525,6 +525,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 ContentValues cv = new ContentValues();
                 cv.put("code", code.getText().toString());
                 cv.put("room_id", Integer.parseInt(selectedRoom));
+                cv.put("object_id", Integer.parseInt(selectedOwner));
+                cv.put("object_table", "site_users");
+                cv.put("owner", selectedOwnerName);
                 cv.put("room", selectedRoomName);
                 cv.put("status_id", Integer.parseInt(selectedStatus));
                 cv.put("status", selectedStatus);
@@ -540,7 +543,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString());
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(
                         selectedUserId,token,loggedinUserSiteId,code.getText().toString(),
-                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val
+                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val,selectedOwner,"site_users"
                 );
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";
@@ -659,6 +662,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 ContentValues cv = new ContentValues();
                 cv.put("code", code.getText().toString());
                 cv.put("room_id", Integer.parseInt(selectedRoom));
+                cv.put("object_id", Integer.parseInt(selectedOwner));
+                cv.put("object_table", "site_users");
+                cv.put("owner", selectedOwnerName);
                 cv.put("room", selectedRoomName);
                 cv.put("status_id", Integer.parseInt(selectedStatus));
                 cv.put("status", selectedStatus);
@@ -674,7 +680,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString());
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(
                         selectedUserId,loggedinUserSiteId,token,code.getText().toString(),
-                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val
+                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val, selectedOwner,"site_users"
                 );
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";
