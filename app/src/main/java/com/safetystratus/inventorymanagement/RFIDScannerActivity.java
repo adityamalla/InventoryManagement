@@ -110,6 +110,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     ProgressBar spinner;
     Button backToHome;
     ArrayList<String> scannedListfromContinue = new ArrayList<String>();
+    ArrayList<String> scannedOutOflocationListfromContinue = new ArrayList<String>();
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDScannerActivity.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
     @SuppressLint("WrongConstant")
@@ -193,6 +194,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         rfidHandler.onCreate(this);
         all.setChecked(true);
         ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+        ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
         tableInv = (TableLayout) findViewById(R.id.tableInv);
         spinner = (ProgressBar)findViewById(R.id.progressBar1);
         invScrollview = (NestedScrollView)findViewById(R.id.invList);
@@ -203,7 +205,11 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 int n = inventory_details.length();
                 for (int i = 0; i < n; ++i) {
                     JSONObject details = inventory_details.getJSONObject(i);
-                    scannedListfromContinue.add(String.valueOf(details.getInt("inventory_id")));
+                    if(details.getInt("inventory_id")==-1){
+                        scannedOutOflocationListfromContinue.add(String.valueOf(details.getString("rfid_code")));
+                    }else{
+                        scannedListfromContinue.add(String.valueOf(details.getInt("inventory_id")));
+                    }
                 }
             }catch (Exception e){
                 e.printStackTrace();
@@ -314,6 +320,55 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             trInv.setLayoutParams(trParams);
             trInv.addView(invName);
             trInv.addView(invRFIDCode);
+            trInv.addView(invCode);
+            tableInv.addView(trInv, trParams);
+        }
+        for (int i = 0; i < scannedOutOflocationListfromContinue.size(); i++) {
+            final TextView invName = new TextView(RFIDScannerActivity.this);
+            invName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+                    80, 5));
+            invName.setGravity(Gravity.CENTER);
+            invName.setMaxWidth(300);
+            invName.setPadding(10, 40, 0, 0);
+            invName.setText("");
+            //invName.setBackgroundResource(R.drawable.tab_border);
+            invName.setId(i);
+            invName.setTextSize(16);
+            invName.setMinLines(2);
+            invName.setSingleLine(true);
+            invName.setEllipsize(TextUtils.TruncateAt.END);
+            invName.setTextColor(Color.parseColor("#000000"));
+            final TextView invRFIDCode = new TextView(RFIDScannerActivity.this);
+            invRFIDCode.setLayoutParams(new TableRow.LayoutParams(200,
+                    80, 5));
+            invRFIDCode.setGravity(Gravity.CENTER);
+            invRFIDCode.setPadding(5, 40, 20, 0);
+            invRFIDCode.setText(scannedOutOflocationListfromContinue.get(i));
+            invRFIDCode.setId(i + 1);
+            //invRFIDCode.setBackgroundResource(R.drawable.tab_border);
+            invRFIDCode.setTextSize(16);
+            invRFIDCode.setTextColor(Color.parseColor("#000000"));
+            final TextView invCode = new TextView(RFIDScannerActivity.this);
+            invCode.setLayoutParams(new TableRow.LayoutParams(200,
+                    80, 5));
+            invCode.setGravity(Gravity.CENTER);
+            invCode.setPadding(5, 40, 20, 0);
+            invCode.setText("");
+            invCode.setId(i + 1);
+            //invCode.setBackgroundResource(R.drawable.tab_border);
+            invCode.setTextSize(16);
+            invCode.setTextColor(Color.parseColor("#000000"));
+            invName.setBackgroundResource(R.drawable.inv_scan_success);
+            invRFIDCode.setBackgroundResource(R.drawable.inv_scan_success);
+            invCode.setBackgroundResource(R.drawable.inv_scan_success);
+            final TableRow trInv = new TableRow(RFIDScannerActivity.this);
+            TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                    TableLayout.LayoutParams.WRAP_CONTENT);
+            //trParams.setMargins(10, 10, 10, 10);
+            trInv.setLayoutParams(trParams);
+            trInv.addView(invName);
+            trInv.addView(invRFIDCode);
+            trInv.setBackgroundResource(R.drawable.table_tr_border);
             trInv.addView(invCode);
             tableInv.addView(trInv, trParams);
         }
@@ -859,7 +914,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     //invCode.setBackgroundResource(R.drawable.tab_border);
                     invCode.setTextSize(16);
                     invCode.setTextColor(Color.parseColor("#000000"));
-                    if (newList.contains(invList.get(i).getRfidCode())) {
+                    if (newList.contains(invList.get(i).getRfidCode()) || scannedListfromContinue.contains(invList.get(i).getInv_id())) {
                         invName.setBackgroundResource(R.drawable.inv_scan_success);
                         invRFIDCode.setBackgroundResource(R.drawable.inv_scan_success);
                         invCode.setBackgroundResource(R.drawable.inv_scan_success);
@@ -870,11 +925,10 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                         cv.put("scanned_by", selectedUserId);
                         cv.put("scanned", 1);
                         databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                    } else {
+                    }else {
                         invName.setBackgroundResource(R.drawable.tab_border);
                         invRFIDCode.setBackgroundResource(R.drawable.tab_border);
                         invCode.setBackgroundResource(R.drawable.tab_border);
-
                     }
                     final TableRow trInv = new TableRow(RFIDScannerActivity.this);
                     TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
@@ -894,6 +948,128 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     trInv.setBackgroundResource(R.drawable.table_tr_border);
                     trInv.addView(invCode);
                     tableInv.addView(trInv, trParams);
+                }
+                ArrayList<String> cmsMatchedInventories = new ArrayList<String>();
+                for (int l = 0; l < invList.size(); l++) {
+                    cmsMatchedInventories.add(invList.get(l).getRfidCode());
+                }
+                for (int i = 0; i < scannedOutOflocationListfromContinue.size(); i++) {
+                    cmsMatchedInventories.add(scannedOutOflocationListfromContinue.get(i));
+                    final TextView invName = new TextView(RFIDScannerActivity.this);
+                    invName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+                            80, 5));
+                    invName.setGravity(Gravity.CENTER);
+                    invName.setMaxWidth(300);
+                    invName.setPadding(10, 40, 0, 0);
+                    invName.setText("");
+                    //invName.setBackgroundResource(R.drawable.tab_border);
+                    invName.setId(i);
+                    invName.setTextSize(16);
+                    invName.setMinLines(2);
+                    invName.setSingleLine(true);
+                    invName.setEllipsize(TextUtils.TruncateAt.END);
+                    invName.setTextColor(Color.parseColor("#000000"));
+                    final TextView invRFIDCode = new TextView(RFIDScannerActivity.this);
+                    invRFIDCode.setLayoutParams(new TableRow.LayoutParams(200,
+                            80, 5));
+                    invRFIDCode.setGravity(Gravity.CENTER);
+                    invRFIDCode.setPadding(5, 40, 20, 0);
+                    invRFIDCode.setText(scannedOutOflocationListfromContinue.get(i));
+                    invRFIDCode.setId(i + 1);
+                    //invRFIDCode.setBackgroundResource(R.drawable.tab_border);
+                    invRFIDCode.setTextSize(16);
+                    invRFIDCode.setTextColor(Color.parseColor("#000000"));
+                    final TextView invCode = new TextView(RFIDScannerActivity.this);
+                    invCode.setLayoutParams(new TableRow.LayoutParams(200,
+                            80, 5));
+                    invCode.setGravity(Gravity.CENTER);
+                    invCode.setPadding(5, 40, 20, 0);
+                    invCode.setText("");
+                    invCode.setId(i + 1);
+                    //invCode.setBackgroundResource(R.drawable.tab_border);
+                    invCode.setTextSize(16);
+                    invCode.setTextColor(Color.parseColor("#000000"));
+                    invName.setBackgroundResource(R.drawable.inv_scan_success);
+                    invRFIDCode.setBackgroundResource(R.drawable.inv_scan_success);
+                    invCode.setBackgroundResource(R.drawable.inv_scan_success);
+                    final TableRow trInv = new TableRow(RFIDScannerActivity.this);
+                    TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                            TableLayout.LayoutParams.WRAP_CONTENT);
+                    //trParams.setMargins(10, 10, 10, 10);
+                    trInv.setLayoutParams(trParams);
+                    trInv.addView(invName);
+                    trInv.addView(invRFIDCode);
+                    trInv.setBackgroundResource(R.drawable.table_tr_border);
+                    trInv.addView(invCode);
+                    tableInv.addView(trInv, trParams);
+                    ContentValues cv = new ContentValues();
+                    cv.put("location_id", selectedFacil);
+                    cv.put("room_id", selectedRoom);
+                    cv.put("inventory_id", -1);
+                    cv.put("scanned_by", selectedUserId);
+                    cv.put("rfid_code", newList.get(i));
+                    cv.put("scanned", 1);
+                    databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                }
+
+                for (int i = 0; i < newList.size(); i++) {
+                    if (!cmsMatchedInventories.contains(newList.get(i))){
+                        final TextView invName = new TextView(RFIDScannerActivity.this);
+                        invName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+                                80, 5));
+                        invName.setGravity(Gravity.CENTER);
+                        invName.setMaxWidth(300);
+                        invName.setPadding(10, 40, 0, 0);
+                        invName.setText("");
+                        //invName.setBackgroundResource(R.drawable.tab_border);
+                        invName.setId(i);
+                        invName.setTextSize(16);
+                        invName.setMinLines(2);
+                        invName.setSingleLine(true);
+                        invName.setEllipsize(TextUtils.TruncateAt.END);
+                        invName.setTextColor(Color.parseColor("#000000"));
+                        final TextView invRFIDCode = new TextView(RFIDScannerActivity.this);
+                        invRFIDCode.setLayoutParams(new TableRow.LayoutParams(200,
+                                80, 5));
+                        invRFIDCode.setGravity(Gravity.CENTER);
+                        invRFIDCode.setPadding(5, 40, 20, 0);
+                        invRFIDCode.setText(newList.get(i));
+                        invRFIDCode.setId(i + 1);
+                        //invRFIDCode.setBackgroundResource(R.drawable.tab_border);
+                        invRFIDCode.setTextSize(16);
+                        invRFIDCode.setTextColor(Color.parseColor("#000000"));
+                        final TextView invCode = new TextView(RFIDScannerActivity.this);
+                        invCode.setLayoutParams(new TableRow.LayoutParams(200,
+                                80, 5));
+                        invCode.setGravity(Gravity.CENTER);
+                        invCode.setPadding(5, 40, 20, 0);
+                        invCode.setText("");
+                        invCode.setId(i + 1);
+                        //invCode.setBackgroundResource(R.drawable.tab_border);
+                        invCode.setTextSize(16);
+                        invCode.setTextColor(Color.parseColor("#000000"));
+                        invName.setBackgroundResource(R.drawable.inv_scan_success);
+                        invRFIDCode.setBackgroundResource(R.drawable.inv_scan_success);
+                        invCode.setBackgroundResource(R.drawable.inv_scan_success);
+                        final TableRow trInv = new TableRow(RFIDScannerActivity.this);
+                        TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                                TableLayout.LayoutParams.WRAP_CONTENT);
+                        //trParams.setMargins(10, 10, 10, 10);
+                        trInv.setLayoutParams(trParams);
+                        trInv.addView(invName);
+                        trInv.addView(invRFIDCode);
+                        trInv.setBackgroundResource(R.drawable.table_tr_border);
+                        trInv.addView(invCode);
+                        tableInv.addView(trInv, trParams);
+                        ContentValues cv = new ContentValues();
+                        cv.put("location_id", selectedFacil);
+                        cv.put("room_id", selectedRoom);
+                        cv.put("inventory_id", -1);
+                        cv.put("scanned_by", selectedUserId);
+                        cv.put("rfid_code", newList.get(i));
+                        cv.put("scanned", 1);
+                        databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                    }
                 }
                 spinner.setVisibility(View.GONE);
                 invScrollview.setVisibility(View.VISIBLE);
@@ -956,153 +1132,5 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     }*/
     @Override
     public void onBackPressed() {
-    }
-    class SyncInvTable extends AsyncTask<String, String, String> {
-
-        private ProgressDialog progressSync = new ProgressDialog(RFIDScannerActivity.this);
-        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDScannerActivity.this);
-        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
-
-        @Override
-        protected void onPreExecute() {
-            // TODO Auto-generated method stub
-            // disable dismiss by tapping outside of the dialog
-            progressSync.setTitle("");
-            progressSync.setMessage("Uploading..");
-            progressSync.setCancelable(false);
-            progressSync.show();
-            progressSync.getWindow().setLayout(400, 200);
-            super.onPreExecute();
-        }
-        @SuppressLint("WrongThread")
-        @Override
-        protected String doInBackground(String... params) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    tableInv.removeAllViews();
-                    final TextView invNameHeader = new TextView(RFIDScannerActivity.this);
-                    invNameHeader.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
-                            80, 5));
-                    invNameHeader.setGravity(Gravity.CENTER);
-                    invNameHeader.setMaxWidth(300);
-                    invNameHeader.setPadding(15, 30, 0, 0);
-                    invNameHeader.setBackgroundResource(R.drawable.table_header_border);
-                    invNameHeader.setText("Product Name");
-                    invNameHeader.setTextSize(16);
-                    invNameHeader.setTextColor(Color.parseColor("#FFFFFF"));
-                    final TextView invRFIDCodeHeader = new TextView(RFIDScannerActivity.this);
-                    invRFIDCodeHeader.setLayoutParams(new TableRow.LayoutParams(200,
-                            80, 5));
-                    invRFIDCodeHeader.setGravity(Gravity.CENTER);
-                    invRFIDCodeHeader.setPadding(5, 30, 20, 0);
-                    invRFIDCodeHeader.setBackgroundResource(R.drawable.table_header_border);
-                    invRFIDCodeHeader.setText("RFID Code");
-                    invRFIDCodeHeader.setTextSize(16);
-                    invRFIDCodeHeader.setTextColor(Color.parseColor("#FFFFFF"));
-                    final TextView invRFIDCodeHeader1 = new TextView(RFIDScannerActivity.this);
-                    invRFIDCodeHeader1.setLayoutParams(new TableRow.LayoutParams(200,
-                            80, 5));
-                    invRFIDCodeHeader1.setGravity(Gravity.CENTER);
-                    invRFIDCodeHeader1.setPadding(5, 30, 20, 0);
-                    invRFIDCodeHeader1.setBackgroundResource(R.drawable.table_header_border);
-                    invRFIDCodeHeader1.setText("Code");
-                    invRFIDCodeHeader1.setTextSize(16);
-                    invRFIDCodeHeader1.setTextColor(Color.parseColor("#FFFFFF"));
-                    final TableRow trInvHeader = new TableRow(RFIDScannerActivity.this);
-                    TableLayout.LayoutParams trParamsHeader = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                            TableLayout.LayoutParams.WRAP_CONTENT);
-                    trInvHeader.setBackgroundResource(R.drawable.table_tr_border);
-                    //trParams.setMargins(10, 10, 10, 10);
-                    trInvHeader.setLayoutParams(trParamsHeader);
-                    trInvHeader.addView(invNameHeader);
-                    trInvHeader.addView(invRFIDCodeHeader);
-                    trInvHeader.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                    trInvHeader.addView(invRFIDCodeHeader1);
-                    tableInv.addView(trInvHeader, trParamsHeader);
-                    ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
-                    for (int i = 0; i < invList.size(); i++) {
-                        final TextView invName = new TextView(RFIDScannerActivity.this);
-                        invName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
-                                80, 5));
-                        invName.setGravity(Gravity.CENTER);
-                        invName.setMaxWidth(300);
-                        invName.setPadding(10, 40, 0, 0);
-                        invName.setText(invList.get(i).getProductName());
-                        //invName.setBackgroundResource(R.drawable.tab_border);
-                        invName.setId(i);
-                        invName.setTextSize(16);
-                        invName.setMinLines(2);
-                        invName.setSingleLine(true);
-                        invName.setEllipsize(TextUtils.TruncateAt.END);
-                        invName.setTextColor(Color.parseColor("#000000"));
-                        final TextView invRFIDCode = new TextView(RFIDScannerActivity.this);
-                        invRFIDCode.setLayoutParams(new TableRow.LayoutParams(200,
-                                80, 5));
-                        invRFIDCode.setGravity(Gravity.CENTER);
-                        invRFIDCode.setPadding(5, 40, 20, 0);
-                        invRFIDCode.setText(invList.get(i).getRfidCode());
-                        invRFIDCode.setId(i + 1);
-                        //invRFIDCode.setBackgroundResource(R.drawable.tab_border);
-                        invRFIDCode.setTextSize(16);
-                        invRFIDCode.setTextColor(Color.parseColor("#000000"));
-                        final TextView invCode = new TextView(RFIDScannerActivity.this);
-                        invCode.setLayoutParams(new TableRow.LayoutParams(200,
-                                80, 5));
-                        invCode.setGravity(Gravity.CENTER);
-                        invCode.setPadding(5, 40, 20, 0);
-                        invCode.setText(invList.get(i).getCode());
-                        invCode.setId(i + 1);
-                        //invCode.setBackgroundResource(R.drawable.tab_border);
-                        invCode.setTextSize(16);
-                        invCode.setTextColor(Color.parseColor("#000000"));
-                        if (newList.contains(invList.get(i).getRfidCode())) {
-                            invName.setBackgroundResource(R.drawable.inv_scan_success);
-                            invRFIDCode.setBackgroundResource(R.drawable.inv_scan_success);
-                            invCode.setBackgroundResource(R.drawable.inv_scan_success);
-                            ContentValues cv = new ContentValues();
-                            cv.put("location_id", selectedFacil);
-                            cv.put("room_id", selectedRoom);
-                            cv.put("inventory_id", Integer.parseInt(invList.get(i).getInv_id()));
-                            cv.put("scanned_by", selectedUserId);
-                            cv.put("scanned", 1);
-                            databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                        } else {
-                            invName.setBackgroundResource(R.drawable.tab_border);
-                            invRFIDCode.setBackgroundResource(R.drawable.tab_border);
-                            invCode.setBackgroundResource(R.drawable.tab_border);
-
-                        }
-                        final TableRow trInv = new TableRow(RFIDScannerActivity.this);
-                        TableLayout.LayoutParams trParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                                TableLayout.LayoutParams.WRAP_CONTENT);
-                        trInv.setId(Integer.parseInt(invList.get(i).getInv_id()));
-                        //trParams.setMargins(10, 10, 10, 10);
-                        trInv.setLayoutParams(trParams);
-                        trInv.addView(invName);
-                        trInv.addView(invRFIDCode);
-                        /*if (newList.contains(invList.get(i).getRfidCode())) {
-                            Log.e("RFIDCONTAINS EXISTS>>",invList.get(i).getRfidCode()+"**");
-                            trInv.setBackgroundResource(R.drawable.inv_scan_success);
-                        } else {
-                            Log.e("RFIDCONTAINS DONT EXISTS>>",invList.get(i).getRfidCode()+"**");
-                            trInv.setBackgroundResource(R.drawable.table_tr_border);
-                        }*/
-                        trInv.setBackgroundResource(R.drawable.table_tr_border);
-                        trInv.addView(invCode);
-                        tableInv.addView(trInv, trParams);
-                    }
-                }
-            });
-            return "completed";
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            // TODO Auto-generated method stub
-            super.onPostExecute(result);
-            progressSync.dismiss();
-        }
-
     }
 }

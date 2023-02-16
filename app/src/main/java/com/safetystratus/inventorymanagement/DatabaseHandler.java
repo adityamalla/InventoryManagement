@@ -313,6 +313,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (count==0)
         sqLiteDatabase.insert("scanned_data", null, cv);
     }
+    public void insertScannedInvDataOutofLocationData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+cv.getAsString("room_id")+"" +
+                " and location_id="+cv.getAsString("location_id")+" and inventory_id="+cv.getAsString("inventory_id")+" and rfid_code='"+cv.getAsString("rfid_code")+"'"), null);
+        int count = cursor1.getCount();
+        cursor1.close();
+        if (count==0)
+            sqLiteDatabase.insert("scanned_data", null, cv);
+    }
     public void insertScannedInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
         sqLiteDatabase.delete("scanned_json_data", "room_id=? and location_id=? and user_id=?", new String[]{cv.getAsString("room_id"),cv.getAsString("location_id"),cv.getAsString("user_id")});
         sqLiteDatabase.insert("scanned_json_data", null, cv);

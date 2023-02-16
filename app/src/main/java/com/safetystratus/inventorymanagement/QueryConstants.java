@@ -149,6 +149,7 @@ public class QueryConstants {
             "    id integer PRIMARY KEY NOT NULL ,\n" +
             "    location_id integer NOT NULL,\n" +
             "    room_id integer NOT NULL,\n" +
+            "    rfid_code text,\n" +
             "    inventory_id integer NOT NULL,\n" +
             "    scanned integer NOT NULL,\n" +
             "    scanned_by integer NOT NULL,\n" +
