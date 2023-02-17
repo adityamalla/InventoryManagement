@@ -538,14 +538,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<RFIDScanDataObj> getALLInventoryScannedList(SQLiteDatabase sqLiteDatabase){
         ArrayList<RFIDScanDataObj> inv = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select inventory_id, scanned_by, scanned_date from scanned_data "), null);
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select inventory_id, scanned_by, scanned_date,rfid_code from scanned_data "), null);
         int count = 0;
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 String inventory_id = cursor.getString(cursor.getColumnIndex("inventory_id"));
                 String scanned_by = cursor.getString(cursor.getColumnIndex("scanned_by"));
+                String rfid_code = cursor.getString(cursor.getColumnIndex("rfid_code"));
                 String scanned_date = cursor.getString(cursor.getColumnIndex("scanned_date"));
-                inv.add(new RFIDScanDataObj(inventory_id, scanned_by,scanned_date));
+                inv.add(new RFIDScanDataObj(inventory_id, scanned_by,scanned_date,rfid_code));
                 cursor.moveToNext();
             }
         }
