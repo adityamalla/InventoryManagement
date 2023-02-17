@@ -399,7 +399,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public int checkScannedDataCount(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id){
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+room_id+"" +
-                " and location_id="+loc_id), null);
+                " and location_id="+loc_id+" and inventory_id > 0"), null);
         int count = cursor1.getCount();
         Log.e("scannedCount>>",count+"***");
         cursor1.close();
