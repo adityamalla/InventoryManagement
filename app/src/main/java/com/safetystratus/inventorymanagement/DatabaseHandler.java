@@ -454,14 +454,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("select rfid_code from scanned_data where room_id = "+room_id+" and inventory_id=-1"), null);
         if (cursor1.moveToFirst()) {
             while (!cursor1.isAfterLast()) {
-                String id = cursor1.getString(cursor1.getColumnIndex("id"));
+                String id = "-1";
                 String product_name = "";
                 String code = "";
-                String rfidCode = cursor.getString(cursor.getColumnIndex("rfid_code"));
+                String rfidCode = cursor1.getString(cursor1.getColumnIndex("rfid_code"));
                 inv.add(new InventoryObject(rfidCode, product_name,id,code,null));
-                cursor.moveToNext();
+                cursor1.moveToNext();
             }
         }
+        cursor1.close();
         return inv;
     }
     @SuppressLint("Range")
@@ -543,6 +544,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
         }
         cursor.close();
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("select rfid_code from scanned_data where room_id = "+room_id+" and inventory_id=-1"), null);
+        if (cursor1.moveToFirst()) {
+            while (!cursor1.isAfterLast()) {
+                String id = "-1";
+                String product_name = "";
+                String code = "";
+                String rfidCode = cursor1.getString(cursor1.getColumnIndex("rfid_code"));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null));
+                cursor1.moveToNext();
+            }
+        }
+        cursor1.close();
         return inv;
     }
 
