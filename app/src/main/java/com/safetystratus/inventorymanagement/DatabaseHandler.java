@@ -590,7 +590,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             while (!cursor.isAfterLast()) {
                 String inventory_id = cursor.getString(cursor.getColumnIndex("inventory_id"));
                 String scanned_by = cursor.getString(cursor.getColumnIndex("scanned_by"));
-                String rfid_code = cursor.getString(cursor.getColumnIndex("rfid_code"));
+                String rfid_code="";
+                if(cursor.getString(cursor.getColumnIndex("rfid_code"))!=null) {
+                    if (cursor.getString(cursor.getColumnIndex("rfid_code")).trim().length() > 0) {
+                        rfid_code = cursor.getString(cursor.getColumnIndex("rfid_code"));
+                    } else {
+                        rfid_code = "";
+                    }
+                } else {
+                    rfid_code = "";
+                }
                 String scanned_date = cursor.getString(cursor.getColumnIndex("scanned_date"));
                 inv.add(new RFIDScanDataObj(inventory_id, scanned_by,scanned_date,rfid_code));
                 cursor.moveToNext();

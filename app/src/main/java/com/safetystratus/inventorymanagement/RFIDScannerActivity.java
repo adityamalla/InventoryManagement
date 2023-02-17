@@ -560,7 +560,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                     String rfidJson = gson.toJson(rfidScanDataObjs);
                     RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
-                            token,loggedinUserSiteId,rfidJson
+                            token,loggedinUserSiteId,selectedRoom,rfidJson
                     );
                     ObjectMapper mapper = new ObjectMapper();
                     String jsonString = "";
@@ -595,7 +595,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 Gson gson = new Gson();
                 ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                 RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
-                        token,loggedinUserSiteId,gson.toJson(rfidScanDataObjs)
+                        token,loggedinUserSiteId,selectedRoom,gson.toJson(rfidScanDataObjs)
                 );
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";
