@@ -9,14 +9,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".BulkUpdateActivity">
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".BulkUpdateActivity">
 
-    <RadioGroup
+    <!---RadioGroup
         android:id="@+id/codeType"
         android:layout_width="0dp"
         android:layout_height="55dp"
@@ -46,7 +44,7 @@
             android:checked="false"
             android:text="Barcode"
             android:textSize="16dp" />
-    </RadioGroup>
+    </RadioGroup-->
 
     <TextView
         android:id="@+id/codeLabel"
@@ -56,26 +54,27 @@
         android:enabled="false"
         android:paddingTop="15dp"
         android:paddingBottom="10dp"
-        android:text=""
+        android:text="Scan or enter RFID code to edit container details"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#15BAB6"
         android:textSize="14dp"
         android:visibility="visible"
         app:backgroundTint="@null"
-        app:layout_constraintEnd_toEndOf="@+id/codeType"
-        app:layout_constraintStart_toStartOf="@+id/codeType"
-        app:layout_constraintTop_toBottomOf="@+id/codeType" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/enteredCodeValue"
         android:layout_width="210dp"
         android:layout_height="50dp"
+        android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:background="@drawable/rounded_corner"
         android:drawablePadding="10dp"
         android:ems="10"
-        android:hint=""
+        android:hint="Enter RFID details"
         android:inputType="textPersonName"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
@@ -98,11 +97,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/enteredCodeValue"
         app:layout_constraintTop_toTopOf="@+id/enteredCodeValue" />
-
+    <ProgressBar
+        android:id="@+id/progressBarBulkUpdate"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/addCodeToList"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/enteredCodeValue"
+        app:layout_constraintTop_toBottomOf="@+id/enteredCodeValue" />
     <ListView
         android:id="@+id/codeList"
         android:layout_width="300dp"
-        android:layout_height="300dp"
+        android:layout_height="120dp"
         android:layout_marginStart="10dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
@@ -111,5 +119,37 @@
         app:layout_constraintEnd_toEndOf="@+id/addCodeToList"
         app:layout_constraintStart_toStartOf="@+id/enteredCodeValue"
         app:layout_constraintTop_toBottomOf="@+id/enteredCodeValue"></ListView>
+
+    <Button
+        android:id="@+id/scanBarcode"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/sign_out_border"
+        android:text="Scan Barcode"
+        android:textAllCaps="false"
+        android:textColor="#15BAB6"
+        android:textSize="14dp"
+        app:backgroundTint="@null"
+        app:layout_constraintEnd_toEndOf="@+id/codeList"
+        app:layout_constraintStart_toStartOf="@+id/codeList"
+        app:layout_constraintTop_toBottomOf="@+id/codeList" />
+
+    <Button
+        android:id="@+id/update"
+        android:layout_width="0dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/sign_out_border"
+        android:text="Update Container"
+        android:textAllCaps="false"
+        android:textColor="#15BAB6"
+        android:textSize="14dp"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/scanBarcode"
+        app:layout_constraintStart_toStartOf="@+id/scanBarcode"
+        app:layout_constraintTop_toBottomOf="@+id/scanBarcode" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
