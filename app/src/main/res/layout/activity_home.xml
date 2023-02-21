@@ -198,5 +198,30 @@
         app:layout_constraintStart_toStartOf="@+id/viewContainer"
         app:layout_constraintTop_toBottomOf="@+id/viewContainer"
         tools:ignore="RtlCompat" />
+    <ImageView
+        android:id="@+id/bulkUpdate"
+        style="@style/DashboardButton"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="@+id/continueLabel"
+        app:layout_constraintStart_toStartOf="@+id/continueLabel"
+        app:layout_constraintTop_toBottomOf="@+id/continueLabel"
+        app:srcCompat="@drawable/ic_icons8_services" />
+
+    <TextView
+        android:id="@+id/bulkUpdateLabel"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:fontFamily="@font/roboto_regular"
+        android:text="Bulk Update"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:textColor="#000000"
+        android:textSize="14dp"
+        app:layout_constraintEnd_toEndOf="@+id/bulkUpdate"
+        app:layout_constraintStart_toStartOf="@+id/bulkUpdate"
+        app:layout_constraintTop_toBottomOf="@+id/bulkUpdate"
+        tools:ignore="RtlCompat" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

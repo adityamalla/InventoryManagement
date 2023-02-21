@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".BulkUpdateActivity">
+
+    <RadioGroup
+        android:id="@+id/codeType"
+        android:layout_width="0dp"
+        android:layout_height="55dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/rfidbtn"
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
+            android:text="RFID"
+            android:textSize="16dp" />
+
+        <RadioButton
+            android:id="@+id/barcodebtn"
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:layout_gravity="center_horizontal"
+            android:checked="false"
+            android:text="Barcode"
+            android:textSize="16dp" />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/codeLabel"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="5dp"
+        android:enabled="false"
+        android:paddingTop="15dp"
+        android:paddingBottom="10dp"
+        android:text=""
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="#15BAB6"
+        android:textSize="14dp"
+        android:visibility="visible"
+        app:backgroundTint="@null"
+        app:layout_constraintEnd_toEndOf="@+id/codeType"
+        app:layout_constraintStart_toStartOf="@+id/codeType"
+        app:layout_constraintTop_toBottomOf="@+id/codeType" />
+
+    <EditText
+        android:id="@+id/enteredCodeValue"
+        android:layout_width="210dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/rounded_corner"
+        android:drawablePadding="10dp"
+        android:ems="10"
+        android:hint=""
+        android:inputType="textPersonName"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:text=""
+        app:layout_constraintStart_toStartOf="@+id/codeLabel"
+        app:layout_constraintTop_toBottomOf="@+id/codeLabel" />
+
+    <Button
+        android:id="@+id/addCodeToList"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/sign_out_border"
+        android:text="Add"
+        android:textAllCaps="false"
+        android:textColor="#15BAB6"
+        android:textSize="14dp"
+        app:backgroundTint="@null"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/enteredCodeValue"
+        app:layout_constraintTop_toTopOf="@+id/enteredCodeValue" />
+</androidx.constraintlayout.widget.ConstraintLayout>

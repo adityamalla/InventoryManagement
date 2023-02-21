@@ -47,6 +47,7 @@ public class HomeActivity extends AppCompatActivity {
     ImageView sync;
     ImageView continueScan;
     ImageView viewContainer;
+    ImageView bulkUpdate;
     Boolean connected;
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     String loggedinUsername = "";
@@ -135,6 +136,7 @@ public class HomeActivity extends AppCompatActivity {
         sync = (ImageView) findViewById(R.id.downloadData);
         continueScan = (ImageView) findViewById(R.id.continueScan);
         viewContainer = (ImageView) findViewById(R.id.viewContainer);
+        bulkUpdate = (ImageView) findViewById(R.id.bulkUpdate);
         if (intent.getStringExtra("pageLoadTemp") == null ) {
             if (connected) {
                 progressSynStart = new ProgressDialog(HomeActivity.this);
@@ -237,6 +239,21 @@ public class HomeActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final Intent myIntent = new Intent(HomeActivity.this,
                         ContinueActivity.class);
+                myIntent.putExtra("user_id", user_id[0]);
+                myIntent.putExtra("site_id", site_id[0]);
+                myIntent.putExtra("token", token[0]);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("empName", empName);
+                startActivity(myIntent);
+            }});
+        bulkUpdate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Intent myIntent = new Intent(HomeActivity.this,
+                        BulkUpdateActivity.class);
                 myIntent.putExtra("user_id", user_id[0]);
                 myIntent.putExtra("site_id", site_id[0]);
                 myIntent.putExtra("token", token[0]);
