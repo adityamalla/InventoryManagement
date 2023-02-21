@@ -24,6 +24,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -49,6 +50,11 @@ public class BulkUpdateActivity extends AppCompatActivity {
     RadioButton barcode;
     TextView codeLabel;
     EditText enteredCodeValue;
+    ListView codeList;
+    Button addtoList;
+    CustomizedListViewBulkUpdate adapter;
+    //generate list
+    ArrayList<String> codestobeaddedtolist = new ArrayList<String>();
     ProgressDialog progressSynStart = null;
     @SuppressLint("WrongConstant")
     @Override
@@ -109,7 +115,9 @@ public class BulkUpdateActivity extends AppCompatActivity {
         rfid = findViewById(R.id.rfidbtn);
         barcode = findViewById(R.id.barcodebtn);
         codeLabel = findViewById(R.id.codeLabel);
+        codeList = findViewById(R.id.codeList);
         enteredCodeValue = findViewById(R.id.enteredCodeValue);
+        addtoList = findViewById(R.id.addCodeToList);
         rfid.setChecked(true);
         codeLabel.setText("Scan or enter RFID code to edit container details");
         enteredCodeValue.setHint("Enter RFID code");
@@ -129,6 +137,18 @@ public class BulkUpdateActivity extends AppCompatActivity {
                     codeLabel.setText("Scan or enter Barcode to edit container details");
                     enteredCodeValue.setHint("Enter Barcode details");
                 }
+            }
+        });
+        addtoList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String rfid = "1";
+                if(barcode.isChecked())
+                    rfid = "0";
+                codestobeaddedtolist.add(enteredCodeValue.getText().toString());
+                //instantiate custom adapter
+                CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codestobeaddedtolist, BulkUpdateActivity.this);
+                codeList.setAdapter(adapter);
             }
         });
     }
