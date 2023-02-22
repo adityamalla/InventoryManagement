@@ -44,6 +44,7 @@ public class RoomList extends AppCompatActivity {
     String selectedFacil = "";
     String selectedRoomName = "";
     String selectedRoom = "";
+    String fromBulkUpdate = "";
     String note = "";
     String comment="";
     String conc_val="";
@@ -107,6 +108,9 @@ public class RoomList extends AppCompatActivity {
         }
         if(intent.getStringExtra("quan_val")!=null) {
             quan_val = intent.getStringExtra("quan_val");
+        }
+        if(intent.getStringExtra("fromBulkUpdate")!=null) {
+            fromBulkUpdate = intent.getStringExtra("fromBulkUpdate");
         }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
@@ -207,6 +211,9 @@ public class RoomList extends AppCompatActivity {
                     Intent myIntent = null;
                     if(decodedData.trim().length()>0){
                         myIntent = new Intent(RoomList.this, ContainerDetailsActivity.class);
+                    }else if(fromBulkUpdate.trim().length()>0){
+                        myIntent = new Intent(RoomList.this,
+                                BulkContainerUpdate.class);
                     }else{
                         myIntent = new Intent(RoomList.this,
                                 RFIDActivity.class);
@@ -312,7 +319,12 @@ public class RoomList extends AppCompatActivity {
                             Intent myIntent = null;
                             if(decodedData.trim().length()>0){
                                 myIntent = new Intent(RoomList.this, ContainerDetailsActivity.class);
-                            }else{
+                            }
+                            else if(fromBulkUpdate.trim().length()>0){
+                                myIntent = new Intent(RoomList.this,
+                                        BulkContainerUpdate.class);
+                            }
+                            else{
                                 myIntent = new Intent(RoomList.this,
                                         RFIDActivity.class);
                             }
@@ -363,7 +375,12 @@ public class RoomList extends AppCompatActivity {
             Intent myIntent = null;
             if(decodedData.trim().length()>0){
                 myIntent = new Intent(RoomList.this, ContainerDetailsActivity.class);
-            }else{
+            }
+            else if(fromBulkUpdate.trim().length()>0){
+                myIntent = new Intent(RoomList.this,
+                        BulkContainerUpdate.class);
+            }
+            else{
                 myIntent = new Intent(RoomList.this,
                         RFIDActivity.class);
             }

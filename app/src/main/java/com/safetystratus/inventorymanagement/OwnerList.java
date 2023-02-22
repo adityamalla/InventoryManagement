@@ -48,6 +48,7 @@ public class OwnerList extends AppCompatActivity {
     String selectedStatus = "";
     String empName = "";
     String decodedData = "";
+    String fromBulkUpdate="";
     ArrayList<MyObject> ownerList=null;
     ConstraintLayout header;
     EditText ownerSearch;
@@ -135,6 +136,9 @@ public class OwnerList extends AppCompatActivity {
         if (intent.getStringExtra("selectedOwnerName") != null) {
             selectedOwnerName = intent.getStringExtra("selectedOwnerName");
         }
+        if(intent.getStringExtra("fromBulkUpdate")!=null) {
+            fromBulkUpdate = intent.getStringExtra("fromBulkUpdate");
+        }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         user_id = intent.getStringExtra("user_id");
@@ -207,7 +211,13 @@ public class OwnerList extends AppCompatActivity {
                     Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                     img.setBounds(0, 0, 60, 60);
                     ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                    Intent myIntent = new Intent(OwnerList.this, ContainerDetailsActivity.class);
+                    Intent myIntent = null;
+                    if(fromBulkUpdate.trim().length()>0){
+                        myIntent = new Intent(OwnerList.this,
+                                BulkContainerUpdate.class);
+                    }else{
+                        myIntent = new Intent(OwnerList.this, ContainerDetailsActivity.class);
+                    }
                     myIntent.putExtra("selectedFacilName", selectedFacilName);
                     myIntent.putExtra("selectedRoomName", selectedRoomName);
                     myIntent.putExtra("selectedRoom", selectedRoom+"");
@@ -305,7 +315,13 @@ public class OwnerList extends AppCompatActivity {
                             Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                             img.setBounds(0, 0, 60, 60);
                             ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                            Intent myIntent = new Intent(OwnerList.this, ContainerDetailsActivity.class);
+                            Intent myIntent = null;
+                            if(fromBulkUpdate.trim().length()>0){
+                                myIntent = new Intent(OwnerList.this,
+                                        BulkContainerUpdate.class);
+                            }else{
+                                myIntent = new Intent(OwnerList.this, ContainerDetailsActivity.class);
+                            }
                             myIntent.putExtra("selectedFacilName", selectedFacilName);
                             myIntent.putExtra("selectedRoomName", selectedRoomName);
                             myIntent.putExtra("selectedRoom", selectedRoom+"");
@@ -349,7 +365,13 @@ public class OwnerList extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            Intent myIntent= new Intent(OwnerList.this, ContainerDetailsActivity.class);
+            Intent myIntent = null;
+            if(fromBulkUpdate.trim().length()>0){
+                myIntent = new Intent(OwnerList.this,
+                        BulkContainerUpdate.class);
+            }else{
+                myIntent = new Intent(OwnerList.this, ContainerDetailsActivity.class);
+            }
             myIntent.putExtra("selectedFacilName", selectedFacilName);
             myIntent.putExtra("selectedFacil", selectedFacil+"");
             myIntent.putExtra("decodedData", decodedData+"");

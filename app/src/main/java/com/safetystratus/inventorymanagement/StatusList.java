@@ -31,6 +31,7 @@ public class StatusList extends AppCompatActivity {
         public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
         boolean connected = false;
         String loggedinUsername = "";
+        String fromBulkUpdate = "";
         String loggedinUserSiteId = "";
         String md5Pwd = "";
         String user_id = "";
@@ -125,6 +126,9 @@ public class StatusList extends AppCompatActivity {
             if(intent.getStringExtra("quan_val")!=null) {
                 quan_val = intent.getStringExtra("quan_val");
             }
+            if(intent.getStringExtra("fromBulkUpdate")!=null) {
+                fromBulkUpdate = intent.getStringExtra("fromBulkUpdate");
+            }
             site_name = intent.getStringExtra("site_name");
             loggedinUsername = intent.getStringExtra("loggedinUsername");
             user_id = intent.getStringExtra("user_id");
@@ -203,7 +207,13 @@ public class StatusList extends AppCompatActivity {
                         Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                         img.setBounds(0, 0, 60, 60);
                         statusName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                        Intent myIntent = new Intent(StatusList.this, ContainerDetailsActivity.class);
+                        Intent myIntent = null;
+                        if(fromBulkUpdate.trim().length()>0){
+                            myIntent = new Intent(StatusList.this,
+                                    BulkContainerUpdate.class);
+                        }else{
+                            myIntent = new Intent(StatusList.this, ContainerDetailsActivity.class);
+                        }
                         myIntent.putExtra("selectedFacilName", selectedFacilName);
                         myIntent.putExtra("selectedRoomName", selectedRoomName);
                         myIntent.putExtra("selectedRoom", selectedRoom+"");
@@ -302,7 +312,13 @@ public class StatusList extends AppCompatActivity {
                                 Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
                                 img.setBounds(0, 0, 60, 60);
                                 statusName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                                Intent myIntent = new Intent(StatusList.this, ContainerDetailsActivity.class);
+                                Intent myIntent = null;
+                                if(fromBulkUpdate.trim().length()>0){
+                                    myIntent = new Intent(StatusList.this,
+                                            BulkContainerUpdate.class);
+                                }else{
+                                    myIntent = new Intent(StatusList.this, ContainerDetailsActivity.class);
+                                }
                                 myIntent.putExtra("selectedFacilName", selectedFacilName);
                                 myIntent.putExtra("selectedRoomName", selectedRoomName);
                                 myIntent.putExtra("selectedRoom", selectedRoom+"");
@@ -347,7 +363,13 @@ public class StatusList extends AppCompatActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                Intent myIntent= new Intent(StatusList.this, ContainerDetailsActivity.class);
+                Intent myIntent = null;
+                if(fromBulkUpdate.trim().length()>0){
+                    myIntent = new Intent(StatusList.this,
+                            BulkContainerUpdate.class);
+                }else{
+                    myIntent = new Intent(StatusList.this, ContainerDetailsActivity.class);
+                }
                 myIntent.putExtra("selectedFacilName", selectedFacilName);
                 myIntent.putExtra("selectedFacil", selectedFacil+"");
                 myIntent.putExtra("decodedData", decodedData+"");

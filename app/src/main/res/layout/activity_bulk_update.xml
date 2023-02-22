@@ -14,6 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/bulkupdateConstraintLayout"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
         tools:context=".BulkUpdateActivity">
 
         <!---RadioGroup
@@ -77,6 +79,7 @@
             android:drawablePadding="10dp"
             android:ems="10"
             android:hint="Enter RFID details"
+            android:focusableInTouchMode="true"
             android:inputType="textPersonName"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"

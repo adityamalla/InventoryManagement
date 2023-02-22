@@ -64,6 +64,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
     ListView barcodeList;
     Button addtoList;
     Button scanRFID;
+    Button updateDetails;
     ArrayList<String> codelistfromIntent;
     CustomizedListViewBulkUpdate adapter;
     //generate list
@@ -135,6 +136,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
         enteredBarCodeValue = findViewById(R.id.enteredbarcodeValue);
         addtoList = findViewById(R.id.addBarCodeToList);
         scanRFID = findViewById(R.id.scanRFID);
+        updateDetails = findViewById(R.id.update);
         IntentFilter filter = new IntentFilter();
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         filter.addAction(getResources().getString(R.string.activity_intent_filter_action));
@@ -156,6 +158,38 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
                 myIntent.putExtra("empName", empName);
                 myIntent.putExtra("codelistfromIntent",codelistfromIntent);
                 startActivity(myIntent);
+            }
+        });
+        updateDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(codelistfromIntent.size()>0){
+                    final Intent myIntent = new Intent(ScanBarcodeBulkActivity.this,
+                            BulkContainerUpdate.class);
+                    myIntent.putExtra("user_id", selectedUserId);
+                    myIntent.putExtra("site_id", loggedinUserSiteId);
+                    myIntent.putExtra("token", token);
+                    myIntent.putExtra("sso", sso);
+                    myIntent.putExtra("md5pwd", md5Pwd);
+                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                    myIntent.putExtra("site_name", site_name);
+                    myIntent.putExtra("pageLoadTemp", "-1");
+                    myIntent.putExtra("pageLoadTemp", "-1");
+                    myIntent.putExtra("empName", empName);
+                    myIntent.putExtra("codelistfromIntent",codelistfromIntent);
+                    startActivity(myIntent);
+                }else{
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeBulkActivity.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Please scan the codes or enter the code details!");
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
+                }
             }
         });
         if(codelistfromIntent.size()>0){
@@ -183,26 +217,40 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
         addtoList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                codelistfromIntent.add(enteredBarCodeValue.getText().toString());
-                //instantiate custom adapter
-                CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, ScanBarcodeBulkActivity.this);
-                barcodeList.setAdapter(adapter);
-                if (barcodeList.getAdapter().getCount() > 0) {
-                    empty_list_text_view.setVisibility(View.GONE);
-                    barcodeList.setVisibility(View.VISIBLE);
-                    ConstraintLayout constraintLayout = findViewById(R.id.bulkupdatebarcodeConstraintLayout);
-                    ConstraintSet constraintSet = new ConstraintSet();
-                    constraintSet.clone(constraintLayout);
-                    constraintSet.connect(R.id.scanRFID,ConstraintSet.START,R.id.barcodeList,ConstraintSet.START,0);
-                    constraintSet.connect(R.id.scanRFID,ConstraintSet.END,R.id.barcodeList,ConstraintSet.END,0);
-                    constraintSet.connect(R.id.scanRFID,ConstraintSet.TOP,R.id.barcodeList,ConstraintSet.BOTTOM,0);
-                    constraintSet.applyTo(constraintLayout);
-                    ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) scanRFID.getLayoutParams();
-                    newLayoutParams.topMargin = 20;
-                    newLayoutParams.leftMargin = 0;
-                    newLayoutParams.rightMargin = 0;
-                    newLayoutParams.bottomMargin = 0;
-                    scanRFID.setLayoutParams(newLayoutParams);
+                if(enteredBarCodeValue.getText().toString().trim().length()>0){
+                    codelistfromIntent.add(enteredBarCodeValue.getText().toString());
+                    //instantiate custom adapter
+                    CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, ScanBarcodeBulkActivity.this);
+                    barcodeList.setAdapter(adapter);
+                    if (barcodeList.getAdapter().getCount() > 0) {
+                        empty_list_text_view.setVisibility(View.GONE);
+                        barcodeList.setVisibility(View.VISIBLE);
+                        ConstraintLayout constraintLayout = findViewById(R.id.bulkupdatebarcodeConstraintLayout);
+                        ConstraintSet constraintSet = new ConstraintSet();
+                        constraintSet.clone(constraintLayout);
+                        constraintSet.connect(R.id.scanRFID,ConstraintSet.START,R.id.barcodeList,ConstraintSet.START,0);
+                        constraintSet.connect(R.id.scanRFID,ConstraintSet.END,R.id.barcodeList,ConstraintSet.END,0);
+                        constraintSet.connect(R.id.scanRFID,ConstraintSet.TOP,R.id.barcodeList,ConstraintSet.BOTTOM,0);
+                        constraintSet.applyTo(constraintLayout);
+                        ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) scanRFID.getLayoutParams();
+                        newLayoutParams.topMargin = 20;
+                        newLayoutParams.leftMargin = 0;
+                        newLayoutParams.rightMargin = 0;
+                        newLayoutParams.bottomMargin = 0;
+                        scanRFID.setLayoutParams(newLayoutParams);
+                    }
+                }
+                else{
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeBulkActivity.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Please scan the codes or enter the code details!");
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
                 }
             }
         });
@@ -221,7 +269,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            //unregisterReceiver(myBroadcastReceiver);
+            unregisterReceiver(myBroadcastReceiver);
             final Intent myIntent = new Intent(ScanBarcodeBulkActivity.this,
                     BulkUpdateActivity.class);
             myIntent.putExtra("user_id", selectedUserId);

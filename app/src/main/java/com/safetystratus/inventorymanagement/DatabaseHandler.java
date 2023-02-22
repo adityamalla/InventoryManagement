@@ -194,9 +194,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<MyObject> getRoomList(SQLiteDatabase sqLiteDatabase,String facil_id){
         ArrayList<MyObject> rooms = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT room,id  \n" +
+        Cursor cursor = null;
+        if(facil_id.trim().length()>0)
+             cursor = sqLiteDatabase.rawQuery(String.format("SELECT room,id  \n" +
                 "FROM fi_facil_rooms where status = 'active' and facil_id="+facil_id), null);
-
+        else
+            cursor = sqLiteDatabase.rawQuery(String.format("SELECT room,id  \n" +
+                    "FROM fi_facil_rooms where status = 'active'"), null);
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 rooms.add(

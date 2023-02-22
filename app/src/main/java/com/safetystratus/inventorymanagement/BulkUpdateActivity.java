@@ -66,6 +66,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
     ListView codeList;
     Button addtoList;
     Button scanBarcode;
+    Button updateDetails;
     ProgressBar spinner;
     ArrayList<String> codelistfromIntent;
     CustomizedListViewBulkUpdate adapter;
@@ -140,25 +141,44 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         enteredCodeValue = findViewById(R.id.enteredCodeValue);
         addtoList = findViewById(R.id.addCodeToList);
         scanBarcode = findViewById(R.id.scanBarcode);
+        updateDetails = findViewById(R.id.update);
         spinner = (ProgressBar)findViewById(R.id.progressBarBulkUpdate);
-//        rfid.setChecked(true);
         rfidHandler = new RFIDHandlerBulkUpdate();
         rfidHandler.onCreate(this);
         codeLabel.setText("Scan or enter RFID code to edit container details");
         enteredCodeValue.setHint("Enter RFID code");
-        /*IntentFilter filter = new IntentFilter();
-        filter.addCategory(Intent.CATEGORY_DEFAULT);
-        filter.addAction(getResources().getString(R.string.activity_intent_filter_action));
-        registerReceiver(myBroadcastReceiver, filter);*/
-        /*rfid.setOnClickListener(new View.OnClickListener() {
+        updateDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(rfid.isChecked()){
-                    codeLabel.setText("Scan or enter RFID code to edit container details");
-                    enteredCodeValue.setHint("Enter RFID code");
+                if(codelistfromIntent.size()>0){
+                    final Intent myIntent = new Intent(BulkUpdateActivity.this,
+                            BulkContainerUpdate.class);
+                    myIntent.putExtra("user_id", selectedUserId);
+                    myIntent.putExtra("site_id", loggedinUserSiteId);
+                    myIntent.putExtra("token", token);
+                    myIntent.putExtra("sso", sso);
+                    myIntent.putExtra("md5pwd", md5Pwd);
+                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                    myIntent.putExtra("site_name", site_name);
+                    myIntent.putExtra("pageLoadTemp", "-1");
+                    myIntent.putExtra("pageLoadTemp", "-1");
+                    myIntent.putExtra("empName", empName);
+                    myIntent.putExtra("codelistfromIntent",codelistfromIntent);
+                    startActivity(myIntent);
+                }else{
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(BulkUpdateActivity.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Please scan the codes or enter the code details!");
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
                 }
             }
-        });*/
+        });
         scanBarcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -204,27 +224,40 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         addtoList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                codelistfromIntent.add(enteredCodeValue.getText().toString());
-                //instantiate custom adapter
-                CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, BulkUpdateActivity.this);
-                codeList.setAdapter(adapter);
-                if (codeList.getAdapter().getCount() > 0) {
-                    spinner.setVisibility(View.GONE);
-                    empty_list_text_view.setVisibility(View.GONE);
-                    codeList.setVisibility(View.VISIBLE);
-                    ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
-                    ConstraintSet constraintSet = new ConstraintSet();
-                    constraintSet.clone(constraintLayout);
-                    constraintSet.connect(R.id.scanBarcode,ConstraintSet.START,R.id.codeList,ConstraintSet.START,0);
-                    constraintSet.connect(R.id.scanBarcode,ConstraintSet.END,R.id.codeList,ConstraintSet.END,0);
-                    constraintSet.connect(R.id.scanBarcode,ConstraintSet.TOP,R.id.codeList,ConstraintSet.BOTTOM,0);
-                    constraintSet.applyTo(constraintLayout);
-                    ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) scanBarcode.getLayoutParams();
-                    newLayoutParams.topMargin = 20;
-                    newLayoutParams.leftMargin = 0;
-                    newLayoutParams.rightMargin = 0;
-                    newLayoutParams.bottomMargin = 0;
-                    scanBarcode.setLayoutParams(newLayoutParams);
+                if (enteredCodeValue.getText().toString().trim().length()>0){
+                    codelistfromIntent.add(enteredCodeValue.getText().toString());
+                    //instantiate custom adapter
+                    CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, BulkUpdateActivity.this);
+                    codeList.setAdapter(adapter);
+                    if (codeList.getAdapter().getCount() > 0) {
+                        spinner.setVisibility(View.GONE);
+                        empty_list_text_view.setVisibility(View.GONE);
+                        codeList.setVisibility(View.VISIBLE);
+                        ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
+                        ConstraintSet constraintSet = new ConstraintSet();
+                        constraintSet.clone(constraintLayout);
+                        constraintSet.connect(R.id.scanBarcode,ConstraintSet.START,R.id.codeList,ConstraintSet.START,0);
+                        constraintSet.connect(R.id.scanBarcode,ConstraintSet.END,R.id.codeList,ConstraintSet.END,0);
+                        constraintSet.connect(R.id.scanBarcode,ConstraintSet.TOP,R.id.codeList,ConstraintSet.BOTTOM,0);
+                        constraintSet.applyTo(constraintLayout);
+                        ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) scanBarcode.getLayoutParams();
+                        newLayoutParams.topMargin = 20;
+                        newLayoutParams.leftMargin = 0;
+                        newLayoutParams.rightMargin = 0;
+                        newLayoutParams.bottomMargin = 0;
+                        scanBarcode.setLayoutParams(newLayoutParams);
+                    }
+                }else{
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(BulkUpdateActivity.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Please scan the codes or enter the code details!");
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
                 }
             }
         });
