@@ -61,9 +61,11 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
     RadioButton rfid;
     RadioButton barcode;
     TextView codeLabel;
+    TextView empty_list_text_view;
     EditText enteredCodeValue;
     ListView codeList;
     Button addtoList;
+    Button scanBarcode;
     ProgressBar spinner;
     CustomizedListViewBulkUpdate adapter;
     //generate list
@@ -130,9 +132,11 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         //rfid = findViewById(R.id.rfidbtn);
         //barcode = findViewById(R.id.barcodebtn);
         codeLabel = findViewById(R.id.codeLabel);
+        empty_list_text_view = findViewById(R.id.empty_list_text_view);
         codeList = findViewById(R.id.codeList);
         enteredCodeValue = findViewById(R.id.enteredCodeValue);
         addtoList = findViewById(R.id.addCodeToList);
+        scanBarcode = findViewById(R.id.scanBarcode);
         spinner = (ProgressBar)findViewById(R.id.progressBarBulkUpdate);
 //        rfid.setChecked(true);
         rfidHandler = new RFIDHandlerBulkUpdate();
@@ -168,6 +172,24 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                 //instantiate custom adapter
                 CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codestobeaddedtolist, BulkUpdateActivity.this);
                 codeList.setAdapter(adapter);
+                if (codeList.getAdapter().getCount() > 0) {
+                    spinner.setVisibility(View.GONE);
+                    empty_list_text_view.setVisibility(View.GONE);
+                    codeList.setVisibility(View.VISIBLE);
+                    ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(R.id.scanBarcode,ConstraintSet.START,R.id.codeList,ConstraintSet.START,0);
+                    constraintSet.connect(R.id.scanBarcode,ConstraintSet.END,R.id.codeList,ConstraintSet.END,0);
+                    constraintSet.connect(R.id.scanBarcode,ConstraintSet.TOP,R.id.codeList,ConstraintSet.BOTTOM,0);
+                    constraintSet.applyTo(constraintLayout);
+                    ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) scanBarcode.getLayoutParams();
+                    newLayoutParams.topMargin = 20;
+                    newLayoutParams.leftMargin = 0;
+                    newLayoutParams.rightMargin = 0;
+                    newLayoutParams.bottomMargin = 0;
+                    scanBarcode.setLayoutParams(newLayoutParams);
+                }
             }
         });
     }
@@ -335,8 +357,24 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                 }
                 CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(finalList, BulkUpdateActivity.this);
                 codeList.setAdapter(adapter);
-                spinner.setVisibility(View.GONE);
-                Log.e("FINALLLLLL",finalList.toString());
+                if (codeList.getAdapter().getCount() > 0) {
+                    spinner.setVisibility(View.GONE);
+                    empty_list_text_view.setVisibility(View.GONE);
+                    codeList.setVisibility(View.VISIBLE);
+                    ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
+                    ConstraintSet constraintSet = new ConstraintSet();
+                    constraintSet.clone(constraintLayout);
+                    constraintSet.connect(R.id.scanBarcode,ConstraintSet.START,R.id.codeList,ConstraintSet.START,0);
+                    constraintSet.connect(R.id.scanBarcode,ConstraintSet.END,R.id.codeList,ConstraintSet.END,0);
+                    constraintSet.connect(R.id.scanBarcode,ConstraintSet.TOP,R.id.codeList,ConstraintSet.BOTTOM,0);
+                    constraintSet.applyTo(constraintLayout);
+                    ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) scanBarcode.getLayoutParams();
+                    newLayoutParams.topMargin = 20;
+                    newLayoutParams.leftMargin = 0;
+                    newLayoutParams.rightMargin = 0;
+                    newLayoutParams.bottomMargin = 0;
+                    scanBarcode.setLayoutParams(newLayoutParams);
+                }
             }
         });
     }
