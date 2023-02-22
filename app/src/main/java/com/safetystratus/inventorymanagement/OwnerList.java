@@ -62,6 +62,7 @@ public class OwnerList extends AppCompatActivity {
     String quan_val="";
     String selectedOwnerName = "";
     String selectedOwner = "";
+    ArrayList<String> codelistfromIntent=null;
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +104,9 @@ public class OwnerList extends AppCompatActivity {
         if(intent.getStringExtra("selectedStatus")!=null) {
             selectedStatus = intent.getStringExtra("selectedStatus");
         }
+        codelistfromIntent = new ArrayList<String>();
+        if(intent.getSerializableExtra("codelistfromIntent")!=null)
+            codelistfromIntent = (ArrayList<String>) intent.getSerializableExtra("codelistfromIntent");
         if (intent.getStringExtra("selectedConcUnitName") != null) {
             selectedConcUnitName = intent.getStringExtra("selectedConcUnitName");
         }
@@ -224,6 +228,7 @@ public class OwnerList extends AppCompatActivity {
                     myIntent.putExtra("selectedStatusName", selectedStatusName);
                     myIntent.putExtra("selectedStatus", selectedStatus+"");
                     myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
+                    myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                     myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                     myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
                     myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
@@ -335,6 +340,7 @@ public class OwnerList extends AppCompatActivity {
                             myIntent.putExtra("sso", sso);
                             myIntent.putExtra("md5pwd", md5Pwd);
                             myIntent.putExtra("loggedinUsername", loggedinUsername);
+                            myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                             myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                             myIntent.putExtra("site_name", site_name);
                             myIntent.putExtra("ownerList",ownerList);
@@ -382,6 +388,7 @@ public class OwnerList extends AppCompatActivity {
             myIntent.putExtra("md5pwd", md5Pwd);
             myIntent.putExtra("loggedinUsername", loggedinUsername);
             myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+            myIntent.putExtra("codelistfromIntent", codelistfromIntent);
             myIntent.putExtra("site_name", site_name);
             myIntent.putExtra("ownerList",ownerList);
             myIntent.putExtra("pageLoadTemp", "-1");

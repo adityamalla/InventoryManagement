@@ -61,7 +61,8 @@ public class StatusList extends AppCompatActivity {
         String selectedQuanUnit = "";
         String selectedOwnerName = "";
         String selectedOwner = "";
-        @SuppressLint("WrongConstant")
+        ArrayList<String> codelistfromIntent=null;
+    @SuppressLint("WrongConstant")
         @Override
         protected void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
@@ -129,6 +130,9 @@ public class StatusList extends AppCompatActivity {
             if(intent.getStringExtra("fromBulkUpdate")!=null) {
                 fromBulkUpdate = intent.getStringExtra("fromBulkUpdate");
             }
+            codelistfromIntent = new ArrayList<String>();
+            if(intent.getSerializableExtra("codelistfromIntent")!=null)
+                codelistfromIntent = (ArrayList<String>) intent.getSerializableExtra("codelistfromIntent");
             site_name = intent.getStringExtra("site_name");
             loggedinUsername = intent.getStringExtra("loggedinUsername");
             user_id = intent.getStringExtra("user_id");
@@ -223,6 +227,7 @@ public class StatusList extends AppCompatActivity {
                         myIntent.putExtra("selectedFacil", selectedFacil+"");
                         myIntent.putExtra("user_id", user_id);
                         myIntent.putExtra("site_id", loggedinUserSiteId);
+                        myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                         myIntent.putExtra("token", request_token);
                         myIntent.putExtra("sso", sso);
                         myIntent.putExtra("md5pwd", md5Pwd);
@@ -338,6 +343,7 @@ public class StatusList extends AppCompatActivity {
                                 myIntent.putExtra("statusList",statusList);
                                 myIntent.putExtra("pageLoadTemp", "-1");
                                 myIntent.putExtra("empName", empName);
+                                myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                                 myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
                                 myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                                 myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
@@ -388,6 +394,7 @@ public class StatusList extends AppCompatActivity {
                 myIntent.putExtra("selectedStatusName", selectedStatusName);
                 myIntent.putExtra("selectedStatus", selectedStatus+"");
                 myIntent.putExtra("empName", empName);
+                myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                 myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
                 myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
                 myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);

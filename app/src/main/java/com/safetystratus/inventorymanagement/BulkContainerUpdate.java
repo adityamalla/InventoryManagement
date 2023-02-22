@@ -199,6 +199,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     myIntent.putExtra("selectedStatusName", selectedStatusName);
                     myIntent.putExtra("selectedStatus", selectedStatus+"");
                     myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                    myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                     myIntent.putExtra("selectedOwner", selectedOwner+"");
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
@@ -239,6 +240,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     myIntent.putExtra("selectedStatusName", selectedStatusName);
                     myIntent.putExtra("selectedStatus", selectedStatus+"");
                     myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                    myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                     myIntent.putExtra("selectedOwner", selectedOwner+"");
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
@@ -272,6 +274,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     myIntent.putExtra("md5pwd", md5Pwd);
                     myIntent.putExtra("loggedinUsername", loggedinUsername);
                     myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                    myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                     myIntent.putExtra("site_name", site_name);
                     myIntent.putExtra("ownerList",ownerList);
                     myIntent.putExtra("selectedRoomName", selectedRoomName);

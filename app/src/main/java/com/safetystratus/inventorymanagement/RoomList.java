@@ -62,6 +62,7 @@ public class RoomList extends AppCompatActivity {
     String selectedQuanUnit = "";
     String selectedOwnerName = "";
     String selectedOwner = "";
+    ArrayList<String> codelistfromIntent=null;
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,6 +113,9 @@ public class RoomList extends AppCompatActivity {
         if(intent.getStringExtra("fromBulkUpdate")!=null) {
             fromBulkUpdate = intent.getStringExtra("fromBulkUpdate");
         }
+        codelistfromIntent = new ArrayList<String>();
+        if(intent.getSerializableExtra("codelistfromIntent")!=null)
+            codelistfromIntent = (ArrayList<String>) intent.getSerializableExtra("codelistfromIntent");
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         user_id = intent.getStringExtra("user_id");
@@ -232,6 +236,7 @@ public class RoomList extends AppCompatActivity {
                     myIntent.putExtra("md5pwd", md5Pwd);
                     myIntent.putExtra("loggedinUsername", loggedinUsername);
                     myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                    myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                     myIntent.putExtra("site_name", site_name);
                     myIntent.putExtra("fromRoom", "fromRoom");
                     myIntent.putExtra("roomlist",roomlist);
@@ -341,6 +346,7 @@ public class RoomList extends AppCompatActivity {
                             myIntent.putExtra("sso", sso);
                             myIntent.putExtra("md5pwd", md5Pwd);
                             myIntent.putExtra("loggedinUsername", loggedinUsername);
+                            myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                             myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                             myIntent.putExtra("site_name", site_name);
                             myIntent.putExtra("fromRoom", "fromRoom");
@@ -413,6 +419,7 @@ public class RoomList extends AppCompatActivity {
             myIntent.putExtra("conc_val", conc_val+"");
             myIntent.putExtra("note", note+"");
             myIntent.putExtra("comment", comment+"");
+            myIntent.putExtra("codelistfromIntent", codelistfromIntent);
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);
