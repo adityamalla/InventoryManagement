@@ -70,7 +70,21 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/enteredbarcodeValue"
             app:layout_constraintTop_toTopOf="@+id/enteredbarcodeValue" />
-
+        <Button
+            android:id="@+id/clearListBarcodePage"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/sign_out_border"
+            android:text="Clear All"
+            android:visibility="gone"
+            android:textAllCaps="false"
+            android:textColor="#15BAB6"
+            android:textSize="14dp"
+            app:backgroundTint="@null"
+            app:layout_constraintEnd_toEndOf="@+id/addBarCodeToList"
+            app:layout_constraintStart_toStartOf="@+id/enteredbarcodeValue"
+            app:layout_constraintTop_toBottomOf="@+id/enteredbarcodeValue" />
         <TextView
             android:id="@+id/empty_barcodelist_text_view"
             android:layout_width="0dp"
@@ -97,9 +111,9 @@
             android:divider="#FF9900"
             android:dividerHeight="0.5px"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="@+id/addBarCodeToList"
-            app:layout_constraintStart_toStartOf="@+id/enteredbarcodeValue"
-            app:layout_constraintTop_toBottomOf="@+id/enteredbarcodeValue"
+            app:layout_constraintEnd_toEndOf="@+id/clearListBarcodePage"
+            app:layout_constraintStart_toStartOf="@+id/clearListBarcodePage"
+            app:layout_constraintTop_toBottomOf="@+id/clearListBarcodePage"
             />
 
         <Button

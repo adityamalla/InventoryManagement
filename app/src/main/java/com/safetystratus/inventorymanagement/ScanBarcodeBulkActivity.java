@@ -65,6 +65,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
     Button addtoList;
     Button scanRFID;
     Button updateDetails;
+    Button clearAll;
     ArrayList<String> codelistfromIntent;
     CustomizedListViewBulkUpdate adapter;
     //generate list
@@ -137,6 +138,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
         addtoList = findViewById(R.id.addBarCodeToList);
         scanRFID = findViewById(R.id.scanRFID);
         updateDetails = findViewById(R.id.update);
+        clearAll = findViewById(R.id.clearListBarcodePage);
         IntentFilter filter = new IntentFilter();
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         filter.addAction(getResources().getString(R.string.activity_intent_filter_action));
@@ -158,6 +160,33 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
                 myIntent.putExtra("empName", empName);
                 myIntent.putExtra("codelistfromIntent",codelistfromIntent);
                 startActivity(myIntent);
+            }
+        });
+        clearAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //codeList.setAdapter(null);
+                CustomizedListViewBulkUpdate adapter = (CustomizedListViewBulkUpdate)barcodeList.getAdapter();
+                barcodeList.removeAllViewsInLayout();
+                adapter.notifyDataSetChanged();
+                codelistfromIntent.clear();
+                enteredBarCodeValue.setText("");
+                barcodeList.setVisibility(View.GONE);
+                empty_list_text_view.setVisibility(View.VISIBLE);
+                clearAll.setVisibility(View.GONE);
+                ConstraintLayout constraintLayout = findViewById(R.id.bulkupdatebarcodeConstraintLayout);
+                ConstraintSet constraintSet1 = new ConstraintSet();
+                constraintSet1.clone(constraintLayout);
+                constraintSet1.connect(R.id.scanRFID,ConstraintSet.START,R.id.empty_barcodelist_text_view,ConstraintSet.START,0);
+                constraintSet1.connect(R.id.scanRFID,ConstraintSet.END,R.id.empty_barcodelist_text_view,ConstraintSet.END,0);
+                constraintSet1.connect(R.id.scanRFID,ConstraintSet.TOP,R.id.empty_barcodelist_text_view,ConstraintSet.BOTTOM,0);
+                constraintSet1.applyTo(constraintLayout);
+                ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) scanRFID.getLayoutParams();
+                newLayoutParams1.topMargin = 20;
+                newLayoutParams1.leftMargin = 0;
+                newLayoutParams1.rightMargin = 0;
+                newLayoutParams1.bottomMargin = 0;
+                scanRFID.setLayoutParams(newLayoutParams1);
             }
         });
         updateDetails.setOnClickListener(new View.OnClickListener() {
@@ -199,6 +228,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
             if (barcodeList.getAdapter().getCount() > 0) {
                 empty_list_text_view.setVisibility(View.GONE);
                 barcodeList.setVisibility(View.VISIBLE);
+                clearAll.setVisibility(View.VISIBLE);
                 ConstraintLayout constraintLayout = findViewById(R.id.bulkupdatebarcodeConstraintLayout);
                 ConstraintSet constraintSet = new ConstraintSet();
                 constraintSet.clone(constraintLayout);
@@ -225,6 +255,8 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
                     if (barcodeList.getAdapter().getCount() > 0) {
                         empty_list_text_view.setVisibility(View.GONE);
                         barcodeList.setVisibility(View.VISIBLE);
+                        clearAll.setVisibility(View.VISIBLE);
+                        enteredBarCodeValue.setText("");
                         ConstraintLayout constraintLayout = findViewById(R.id.bulkupdatebarcodeConstraintLayout);
                         ConstraintSet constraintSet = new ConstraintSet();
                         constraintSet.clone(constraintLayout);
@@ -269,7 +301,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            unregisterReceiver(myBroadcastReceiver);
+            //unregisterReceiver(myBroadcastReceiver);
             final Intent myIntent = new Intent(ScanBarcodeBulkActivity.this,
                     BulkUpdateActivity.class);
             myIntent.putExtra("user_id", selectedUserId);
@@ -333,6 +365,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
         if (barcodeList.getAdapter().getCount() > 0) {
             empty_list_text_view.setVisibility(View.GONE);
             barcodeList.setVisibility(View.VISIBLE);
+            clearAll.setVisibility(View.VISIBLE);
             ConstraintLayout constraintLayout = findViewById(R.id.bulkupdatebarcodeConstraintLayout);
             ConstraintSet constraintSet = new ConstraintSet();
             constraintSet.clone(constraintLayout);

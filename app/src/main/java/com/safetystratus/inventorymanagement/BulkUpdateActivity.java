@@ -28,6 +28,7 @@ import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -67,6 +68,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
     Button addtoList;
     Button scanBarcode;
     Button updateDetails;
+    Button clearAll;
     ProgressBar spinner;
     ArrayList<String> codelistfromIntent;
     CustomizedListViewBulkUpdate adapter;
@@ -142,6 +144,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         addtoList = findViewById(R.id.addCodeToList);
         scanBarcode = findViewById(R.id.scanBarcode);
         updateDetails = findViewById(R.id.update);
+        clearAll = findViewById(R.id.clearList);
         spinner = (ProgressBar)findViewById(R.id.progressBarBulkUpdate);
         rfidHandler = new RFIDHandlerBulkUpdate();
         rfidHandler.onCreate(this);
@@ -198,6 +201,33 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                 startActivity(myIntent);
             }
         });
+        clearAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //codeList.setAdapter(null);
+                CustomizedListViewBulkUpdate adapter = (CustomizedListViewBulkUpdate)codeList.getAdapter();
+                codeList.removeAllViewsInLayout();
+                adapter.notifyDataSetChanged();
+                codelistfromIntent.clear();
+                enteredCodeValue.setText("");
+                codeList.setVisibility(View.GONE);
+                empty_list_text_view.setVisibility(View.VISIBLE);
+                clearAll.setVisibility(View.GONE);
+                ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
+                ConstraintSet constraintSet1 = new ConstraintSet();
+                constraintSet1.clone(constraintLayout);
+                constraintSet1.connect(R.id.scanBarcode,ConstraintSet.START,R.id.empty_list_text_view,ConstraintSet.START,0);
+                constraintSet1.connect(R.id.scanBarcode,ConstraintSet.END,R.id.empty_list_text_view,ConstraintSet.END,0);
+                constraintSet1.connect(R.id.scanBarcode,ConstraintSet.TOP,R.id.empty_list_text_view,ConstraintSet.BOTTOM,0);
+                constraintSet1.applyTo(constraintLayout);
+                ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) scanBarcode.getLayoutParams();
+                newLayoutParams1.topMargin = 20;
+                newLayoutParams1.leftMargin = 0;
+                newLayoutParams1.rightMargin = 0;
+                newLayoutParams1.bottomMargin = 0;
+                scanBarcode.setLayoutParams(newLayoutParams1);
+            }
+        });
         if(codelistfromIntent.size()>0){
             //instantiate custom adapter
             CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, BulkUpdateActivity.this);
@@ -206,6 +236,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                 spinner.setVisibility(View.GONE);
                 empty_list_text_view.setVisibility(View.GONE);
                 codeList.setVisibility(View.VISIBLE);
+                clearAll.setVisibility(View.VISIBLE);
                 ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
                 ConstraintSet constraintSet = new ConstraintSet();
                 constraintSet.clone(constraintLayout);
@@ -233,6 +264,8 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                         spinner.setVisibility(View.GONE);
                         empty_list_text_view.setVisibility(View.GONE);
                         codeList.setVisibility(View.VISIBLE);
+                        clearAll.setVisibility(View.VISIBLE);
+                        enteredCodeValue.setText("");
                         ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
                         ConstraintSet constraintSet = new ConstraintSet();
                         constraintSet.clone(constraintLayout);
@@ -403,7 +436,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
     public void triggerReleaseEventRecieved() {
         rfidHandler.stopInventory();
         try {
-            Thread.sleep(5000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -427,6 +460,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                     spinner.setVisibility(View.GONE);
                     empty_list_text_view.setVisibility(View.GONE);
                     codeList.setVisibility(View.VISIBLE);
+                    clearAll.setVisibility(View.VISIBLE);
                     ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
                     ConstraintSet constraintSet = new ConstraintSet();
                     constraintSet.clone(constraintLayout);
