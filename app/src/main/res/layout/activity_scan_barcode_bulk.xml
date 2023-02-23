@@ -138,7 +138,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:background="@drawable/sign_out_border"
-            android:text="Update Container"
+            android:text="Update Containers"
             android:textAllCaps="false"
             android:textColor="#15BAB6"
             android:textSize="14dp"
