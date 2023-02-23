@@ -148,8 +148,6 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         spinner = (ProgressBar)findViewById(R.id.progressBarBulkUpdate);
         rfidHandler = new RFIDHandlerBulkUpdate();
         rfidHandler.onCreate(this);
-        codeLabel.setText("Scan or enter RFID code to edit container details");
-        enteredCodeValue.setHint("Enter RFID code");
         updateDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
