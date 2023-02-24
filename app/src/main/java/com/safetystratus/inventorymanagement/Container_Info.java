@@ -74,7 +74,7 @@ public class Container_Info extends AppCompatActivity {
         shape.getPaint().setColor(Color.RED);
         shape.getPaint().setStyle(Paint.Style.STROKE);
         shape.getPaint().setStrokeWidth(3);
-        tv.setText("Bulk Update");
+        tv.setText("Details");
         tv.setTextSize(20);
         tv.setVisibility(View.VISIBLE);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(Container_Info.this);
@@ -119,8 +119,13 @@ public class Container_Info extends AppCompatActivity {
         codelistfromIntent = new ArrayList<String>();
         if(intent.getSerializableExtra("codelistfromIntent")!=null)
             codelistfromIntent = (ArrayList<String>) intent.getSerializableExtra("codelistfromIntent");
-        //rfid = findViewById(R.id.rfidbtn);
-        //barcode = findViewById(R.id.barcodebtn);
+        productName = findViewById(R.id.productName);
+        code = findViewById(R.id.codeValue);
+        volume = findViewById(R.id.volume);
+        InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,scannedCode);
+        productName.setText(inv.getProductName());
+        code.setText(scannedCode);
+        volume.setText(inv.getVolume_mass()+" "+inv.getVolume_mass_unit());
     }
     public static void hideKeyboard(Container_Info activity) {
         try {

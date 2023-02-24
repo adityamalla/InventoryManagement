@@ -8,10 +8,10 @@
 
     <TableLayout
         android:id="@+id/tableLayout2"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:background="@drawable/sign_out_border"
         android:stretchColumns="0,1"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -25,13 +25,13 @@
 
             <TextView
                 android:id="@+id/labelProductName"
-                android:layout_width="80dp"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:fontFamily="@font/roboto_regular"
                 android:gravity="bottom"
                 android:paddingLeft="5dp"
-                android:text="Product Name"
+                android:text="Name"
                 android:textColor="#9B9B9B"
                 android:textSize="18sp" />
 
@@ -79,7 +79,7 @@
 
             <TextView
                 android:id="@+id/labelVol"
-                android:layout_width="80dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_regular"
                 android:gravity="bottom"

@@ -277,7 +277,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public InventoryModel getScannedInventoryDetails(SQLiteDatabase sqLiteDatabase, String cde){
         InventoryModel inv = null;
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM  chemical_inventory where code='"+cde+"' limit 1"), null);
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM  chemical_inventory where code='"+cde+"' or sec_code='"+cde+"' limit 1"), null);
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 String id = cursor.getString(cursor.getColumnIndex("id"));
