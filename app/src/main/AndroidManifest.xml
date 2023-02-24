@@ -23,8 +23,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.InventoryManagement"
         tools:replace="android:allowBackup">
-        <activity android:name=".BulkContainerUpdate"
-            android:screenOrientation="portrait" ></activity>
+        <activity android:name=".Container_Info"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".BulkContainerUpdate"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ScanBarcodeBulkActivity"
             android:screenOrientation="portrait" />

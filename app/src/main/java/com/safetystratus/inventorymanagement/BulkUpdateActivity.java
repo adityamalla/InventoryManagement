@@ -76,6 +76,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
     ArrayList<String> newList = new ArrayList<String>();
     ProgressDialog progressSynStart = null;
     RFIDHandlerBulkUpdate rfidHandler;
+    IntentModel model = null;
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +149,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         spinner = (ProgressBar)findViewById(R.id.progressBarBulkUpdate);
         rfidHandler = new RFIDHandlerBulkUpdate();
         rfidHandler.onCreate(this);
+        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"1",codelistfromIntent);
         updateDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -244,7 +246,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         });
         if(codelistfromIntent.size()>0){
             //instantiate custom adapter
-            CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, BulkUpdateActivity.this);
+            CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent,model, BulkUpdateActivity.this);
             codeList.setAdapter(adapter);
             if (codeList.getAdapter().getCount() > 0) {
                 spinner.setVisibility(View.GONE);
@@ -272,7 +274,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                 if (enteredCodeValue.getText().toString().trim().length()>0){
                     codelistfromIntent.add(enteredCodeValue.getText().toString());
                     //instantiate custom adapter
-                    CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, BulkUpdateActivity.this);
+                    CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent,model, BulkUpdateActivity.this);
                     codeList.setAdapter(adapter);
                     if (codeList.getAdapter().getCount() > 0) {
                         spinner.setVisibility(View.GONE);
@@ -468,7 +470,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                         codelistfromIntent.add(element);
                     }
                 }
-                CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, BulkUpdateActivity.this);
+                CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent,model, BulkUpdateActivity.this);
                 codeList.setAdapter(adapter);
                 if (codeList.getAdapter().getCount() > 0) {
                     spinner.setVisibility(View.GONE);

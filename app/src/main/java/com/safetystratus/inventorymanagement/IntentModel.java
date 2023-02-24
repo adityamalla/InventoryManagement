@@ -1,5 +1,7 @@
 package com.safetystratus.inventorymanagement;
 
+import java.util.ArrayList;
+
 public class IntentModel {
     public String site_id;
     public String user_id;
@@ -9,8 +11,10 @@ public class IntentModel {
     public String empName;
     public String site_name;
     public String loggedinUsername;
+    public String flag;
+    public ArrayList<String> codelistfromIntent;
 
-    public IntentModel(String site_id, String user_id, String token, String md5, String sso, String empName, String site_name, String loggedinUsername) {
+    public IntentModel(String site_id, String user_id, String token, String md5, String sso, String empName, String site_name, String loggedinUsername, String flag, ArrayList<String> codelistfromIntent) {
         this.site_id = site_id;
         this.user_id = user_id;
         this.token = token;
@@ -19,6 +23,24 @@ public class IntentModel {
         this.empName = empName;
         this.site_name = site_name;
         this.loggedinUsername = loggedinUsername;
+        this.flag = flag;
+        this.codelistfromIntent = codelistfromIntent;
+    }
+
+    public ArrayList<String> getCodelistfromIntent() {
+        return codelistfromIntent;
+    }
+
+    public void setCodelistfromIntent(ArrayList<String> codelistfromIntent) {
+        this.codelistfromIntent = codelistfromIntent;
+    }
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
     }
 
     public String getSite_id() {

@@ -5,6 +5,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -22,33 +23,42 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.RadioButton;
 import android.widget.TextView;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.util.ArrayList;
 
-public class ContinueActivity extends AppCompatActivity {
+public class Container_Info extends AppCompatActivity {
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     boolean connected = false;
     String loggedinUsername = "";
     String loggedinUserSiteId = "";
     String md5Pwd = "";
     String selectedUserId = "";
-    String selectedSearchValue = "";
     String sso = "";
     String site_name = "";
     String token="";
     String empName = "";
+    String scannedCode = "";
+    String flag = "";
     ConstraintLayout header;
-    CustomizedListView adapter;
-    ListView pendingScansList;
-    TextView msg;
+    ArrayList<String> codelistfromIntent;
+    TextView productName;
+    TextView code;
+    TextView volume;
+    //generate list
+    ArrayList<String> newList = new ArrayList<String>();
+    ProgressDialog progressSynStart = null;
+    RFIDHandlerBulkUpdate rfidHandler;
+    IntentModel model = null;
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_continue);
+        setContentView(R.layout.activity_container_info);
         SQLiteDatabase.loadLibs(this);
         hideKeyboard(this);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
@@ -64,10 +74,10 @@ public class ContinueActivity extends AppCompatActivity {
         shape.getPaint().setColor(Color.RED);
         shape.getPaint().setStyle(Paint.Style.STROKE);
         shape.getPaint().setStrokeWidth(3);
-        tv.setText("Continue");
+        tv.setText("Bulk Update");
         tv.setTextSize(20);
         tv.setVisibility(View.VISIBLE);
-        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(ContinueActivity.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(Container_Info.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
@@ -94,32 +104,25 @@ public class ContinueActivity extends AppCompatActivity {
         if(intent.getStringExtra("empName")!=null) {
             empName = intent.getStringExtra("empName");
         }
+        if(intent.getStringExtra("scannedCode")!=null) {
+            scannedCode = intent.getStringExtra("scannedCode");
+        }
+        if(intent.getStringExtra("flag")!=null) {
+            flag = intent.getStringExtra("flag");
+        }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
         Log.e("selecteduserid1>>",selectedUserId+"**");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
-        if (intent.getStringExtra("selectedSearchValue") != null) {
-            selectedSearchValue = intent.getStringExtra("selectedSearchValue");
-        }
-        pendingScansList = (ListView) findViewById(R.id.pendingScanList);
-        msg = (TextView) findViewById(R.id.msg);
-        IntentModel model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"",null);
-        ArrayList<ScanInfo> listPendingScans = new ArrayList<ScanInfo>();
-        listPendingScans = databaseHandler.getPendingScans(db);
-        if (listPendingScans.size()==0){
-            pendingScansList.setVisibility(View.GONE);
-            msg.setVisibility(View.VISIBLE);
-
-        }else{
-            msg.setVisibility(View.GONE);
-            pendingScansList.setVisibility(View.VISIBLE);
-            adapter=new CustomizedListView(this, listPendingScans,model);
-            pendingScansList.setAdapter(adapter);
-        }
+        codelistfromIntent = new ArrayList<String>();
+        if(intent.getSerializableExtra("codelistfromIntent")!=null)
+            codelistfromIntent = (ArrayList<String>) intent.getSerializableExtra("codelistfromIntent");
+        //rfid = findViewById(R.id.rfidbtn);
+        //barcode = findViewById(R.id.barcodebtn);
     }
-    public static void hideKeyboard(ContinueActivity activity) {
+    public static void hideKeyboard(Container_Info activity) {
         try {
             InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
@@ -127,11 +130,20 @@ public class ContinueActivity extends AppCompatActivity {
         }
     }
     @Override
+    public void onBackPressed() {
+    }
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+        Intent myIntent = null;
         if (id == android.R.id.home) {
-            final Intent myIntent = new Intent(ContinueActivity.this,
-                    HomeActivity.class);
+            if (Integer.parseInt(flag.trim())==1){
+                myIntent = new Intent(Container_Info.this,
+                        BulkUpdateActivity.class);
+            }else{
+                myIntent = new Intent(Container_Info.this,
+                        ScanBarcodeBulkActivity.class);
+            }
             myIntent.putExtra("user_id", selectedUserId);
             myIntent.putExtra("site_id", loggedinUserSiteId);
             myIntent.putExtra("token", token);
@@ -141,6 +153,7 @@ public class ContinueActivity extends AppCompatActivity {
             myIntent.putExtra("site_name", site_name);
             myIntent.putExtra("pageLoadTemp", "-1");
             myIntent.putExtra("empName", empName);
+            myIntent.putExtra("codelistfromIntent", codelistfromIntent);
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);

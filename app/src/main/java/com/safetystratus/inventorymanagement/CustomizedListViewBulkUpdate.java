@@ -21,10 +21,13 @@ import java.util.ArrayList;
 public class CustomizedListViewBulkUpdate  extends BaseAdapter implements ListAdapter {
     private ArrayList<String> list = new ArrayList<String>();
     private Context context;
+    private IntentModel obj;
 
-    public CustomizedListViewBulkUpdate(ArrayList<String> list, Context context) {
+
+    public CustomizedListViewBulkUpdate(ArrayList<String> list, IntentModel model, Context context) {
         this.list = list;
         this.context = context;
+        this.obj = model;
     }
 
     @Override
@@ -85,7 +88,20 @@ public class CustomizedListViewBulkUpdate  extends BaseAdapter implements ListAd
         info.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-
+                final Intent myIntent = new Intent(context,
+                        Container_Info.class);
+                myIntent.putExtra("user_id", obj.getUser_id());
+                myIntent.putExtra("site_id", obj.getSite_id());
+                myIntent.putExtra("token", obj.getToken());
+                myIntent.putExtra("sso", obj.getSso());
+                myIntent.putExtra("md5pwd", obj.getMd5());
+                myIntent.putExtra("loggedinUsername", obj.getLoggedinUsername());
+                myIntent.putExtra("site_name", obj.getSite_name());
+                myIntent.putExtra("empName",obj.getEmpName());
+                myIntent.putExtra("flag",obj.getFlag()+"");
+                myIntent.putExtra("codelistfromIntent",obj.getCodelistfromIntent());
+                myIntent.putExtra("scannedCode", listItemText.getText().toString());
+                context.startActivity(myIntent);
             }
         });
 

@@ -66,6 +66,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
     Button scanRFID;
     Button updateDetails;
     Button clearAll;
+    IntentModel model = null;
     ArrayList<String> codelistfromIntent;
     CustomizedListViewBulkUpdate adapter;
     //generate list
@@ -143,6 +144,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         filter.addAction(getResources().getString(R.string.activity_intent_filter_action));
         registerReceiver(myBroadcastReceiver, filter);
+        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"0",codelistfromIntent);
         scanRFID.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -238,7 +240,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
         });
         if(codelistfromIntent.size()>0){
             //instantiate custom adapter
-            CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, ScanBarcodeBulkActivity.this);
+            CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent,model, ScanBarcodeBulkActivity.this);
             barcodeList.setAdapter(adapter);
             if (barcodeList.getAdapter().getCount() > 0) {
                 empty_list_text_view.setVisibility(View.GONE);
@@ -265,7 +267,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
                 if(enteredBarCodeValue.getText().toString().trim().length()>0){
                     codelistfromIntent.add(enteredBarCodeValue.getText().toString());
                     //instantiate custom adapter
-                    CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, ScanBarcodeBulkActivity.this);
+                    CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent,model, ScanBarcodeBulkActivity.this);
                     barcodeList.setAdapter(adapter);
                     if (barcodeList.getAdapter().getCount() > 0) {
                         empty_list_text_view.setVisibility(View.GONE);
@@ -375,7 +377,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
         }
         codelistfromIntent.add(decodedData);
         //instantiate custom adapter
-        CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, ScanBarcodeBulkActivity.this);
+        CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent,model, ScanBarcodeBulkActivity.this);
         barcodeList.setAdapter(adapter);
         if (barcodeList.getAdapter().getCount() > 0) {
             empty_list_text_view.setVisibility(View.GONE);
