@@ -57,13 +57,35 @@ public class CustomizedListViewBulkUpdate  extends BaseAdapter implements ListAd
 
         //Handle buttons and add onClickListeners
         ImageView deleteBtn = (ImageView) view.findViewById(R.id.removeContainer);
+        ImageView info = (ImageView) view.findViewById(R.id.containerinfo);
 
         deleteBtn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                //do something
-                list.remove(position); //or some other task
-                notifyDataSetChanged();
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(context);
+                dlgAlert.setTitle("Safety Stratus");
+                dlgAlert.setMessage("Do you confirm that you want to remove this item from the list?");
+                dlgAlert.setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                list.remove(position);
+                                notifyDataSetChanged();
+                                return;
+                            }
+                        });
+                dlgAlert.setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        });
+                dlgAlert.create().show();
+            }
+        });
+        info.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+
             }
         });
 

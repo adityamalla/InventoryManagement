@@ -203,27 +203,43 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
             @Override
             public void onClick(View view) {
                 //codeList.setAdapter(null);
-                CustomizedListViewBulkUpdate adapter = (CustomizedListViewBulkUpdate)codeList.getAdapter();
-                codeList.removeAllViewsInLayout();
-                adapter.notifyDataSetChanged();
-                codelistfromIntent.clear();
-                enteredCodeValue.setText("");
-                codeList.setVisibility(View.GONE);
-                empty_list_text_view.setVisibility(View.VISIBLE);
-                clearAll.setVisibility(View.GONE);
-                ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
-                ConstraintSet constraintSet1 = new ConstraintSet();
-                constraintSet1.clone(constraintLayout);
-                constraintSet1.connect(R.id.scanBarcode,ConstraintSet.START,R.id.empty_list_text_view,ConstraintSet.START,0);
-                constraintSet1.connect(R.id.scanBarcode,ConstraintSet.END,R.id.empty_list_text_view,ConstraintSet.END,0);
-                constraintSet1.connect(R.id.scanBarcode,ConstraintSet.TOP,R.id.empty_list_text_view,ConstraintSet.BOTTOM,0);
-                constraintSet1.applyTo(constraintLayout);
-                ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) scanBarcode.getLayoutParams();
-                newLayoutParams1.topMargin = 20;
-                newLayoutParams1.leftMargin = 0;
-                newLayoutParams1.rightMargin = 0;
-                newLayoutParams1.bottomMargin = 0;
-                scanBarcode.setLayoutParams(newLayoutParams1);
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(BulkUpdateActivity.this);
+                dlgAlert.setTitle("Safety Stratus");
+                dlgAlert.setMessage("Do you confirm that you wish to remove all the items from the list?");
+                dlgAlert.setPositiveButton("Yes",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                CustomizedListViewBulkUpdate adapter = (CustomizedListViewBulkUpdate)codeList.getAdapter();
+                                codeList.removeAllViewsInLayout();
+                                adapter.notifyDataSetChanged();
+                                codelistfromIntent.clear();
+                                enteredCodeValue.setText("");
+                                codeList.setVisibility(View.GONE);
+                                empty_list_text_view.setVisibility(View.VISIBLE);
+                                clearAll.setVisibility(View.GONE);
+                                ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
+                                ConstraintSet constraintSet1 = new ConstraintSet();
+                                constraintSet1.clone(constraintLayout);
+                                constraintSet1.connect(R.id.scanBarcode,ConstraintSet.START,R.id.empty_list_text_view,ConstraintSet.START,0);
+                                constraintSet1.connect(R.id.scanBarcode,ConstraintSet.END,R.id.empty_list_text_view,ConstraintSet.END,0);
+                                constraintSet1.connect(R.id.scanBarcode,ConstraintSet.TOP,R.id.empty_list_text_view,ConstraintSet.BOTTOM,0);
+                                constraintSet1.applyTo(constraintLayout);
+                                ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) scanBarcode.getLayoutParams();
+                                newLayoutParams1.topMargin = 20;
+                                newLayoutParams1.leftMargin = 0;
+                                newLayoutParams1.rightMargin = 0;
+                                newLayoutParams1.bottomMargin = 0;
+                                scanBarcode.setLayoutParams(newLayoutParams1);
+                                return;
+                            }
+                        });
+                dlgAlert.setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        });
+                dlgAlert.create().show();
             }
         });
         if(codelistfromIntent.size()>0){

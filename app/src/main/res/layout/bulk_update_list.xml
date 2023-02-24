@@ -23,6 +23,16 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:id="@+id/containerinfo"
+        style="@style/DashboardButton"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toStartOf="@+id/removeContainer"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_info_icon_svgrepo_com" />
+    <ImageView
         android:id="@+id/removeContainer"
         style="@style/DashboardButton"
         android:layout_width="20dp"
