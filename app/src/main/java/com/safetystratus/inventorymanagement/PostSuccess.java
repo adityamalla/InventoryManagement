@@ -74,6 +74,7 @@ public class PostSuccess extends AppCompatActivity {
     Button postScanData;
     Button startAnotherInv;
     String fromBarcodeScan="";
+    String fromBulkUpdate="";
     EditText defaultText;
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(PostSuccess.this);
@@ -127,6 +128,10 @@ public class PostSuccess extends AppCompatActivity {
         }
         if (intent.getStringExtra("fromBarcodeScan") != null) {
             fromBarcodeScan = intent.getStringExtra("fromBarcodeScan");
+        }
+
+        if (intent.getStringExtra("fromBulkUpdate") != null) {
+            fromBulkUpdate = intent.getStringExtra("fromBulkUpdate");
         }
         badge_notification = findViewById(R.id.badge_notification);
         postScanData = findViewById(R.id.postScan);
