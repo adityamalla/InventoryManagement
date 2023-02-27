@@ -33,6 +33,8 @@ import com.android.volley.error.VolleyError;
 import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import net.sqlcipher.database.SQLiteDatabase;
 
@@ -368,37 +370,23 @@ public class BulkContainerUpdate extends AppCompatActivity {
             public void onClick(View v){
                 note = notes.getText().toString();
                 comment = comments.getText().toString();
-                ContentValues cv = new ContentValues();
-                cv.put("room_id", Integer.parseInt(selectedRoom));
-                cv.put("object_id", Integer.parseInt(selectedOwner));
-                cv.put("object_table", "site_users");
-                cv.put("owner", selectedOwnerName);
-                cv.put("room", selectedRoomName);
-                cv.put("status_id", Integer.parseInt(selectedStatus));
-                cv.put("status", selectedStatus);
-                cv.put("notes", note);
-                cv.put("comment", comment);
-                //databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                /*InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString());
-                BracodeScanAPIObject obj = new BracodeScanAPIObject(
-                        selectedUserId,token,loggedinUserSiteId,code.getText().toString(),
-                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val,selectedOwner,"site_users"
-                );
+                String JSONObjectCodelist = "";
+                for (int h=0;h<codelistfromIntent.size();h++){
+                    JSONObjectCodelist = JSONObjectCodelist+codelistfromIntent.get(h)+",";
+                }
+                JSONObjectCodelist = JSONObjectCodelist.substring(0,JSONObjectCodelist.length()-1);
+                BulkUpdateModel inv = new BulkUpdateModel(JSONObjectCodelist,selectedStatus,selectedRoom,selectedOwner,selectedPrimaryUserId,note,comment,"site_users",selectedUserId,loggedinUserSiteId,token);
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";
                 try {
-                    jsonString = mapper.writeValueAsString(obj);
+                    jsonString = mapper.writeValueAsString(inv);
                     ContentValues cv_save = new ContentValues();
-                    cv_save.put("code", code.getText().toString());
-                    cv_save.put("user_id", Integer.parseInt(selectedUserId));
-                    cv_save.put("location_id", Integer.parseInt(selectedFacil));
-                    cv_save.put("room_id", Integer.parseInt(selectedRoom));
-                    cv_save.put("scan_type", "barcode");
-                    cv_save.put("json_data", jsonString);
-                    databaseHandler.insertScannedBarcodeInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
+                    cv_save.put("json_data", jsonString.trim());
+                    databaseHandler.saveBulkInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                     if (connected) {
-                        String URL = ApiConstants.syncbarcodeScannedData;
-                        RequestQueue requestQueue = Volley.newRequestQueue(ContainerDetailsActivity.this);
+                        String URL = ApiConstants.syncbulkbarcodeScannedData;
+                        RequestQueue requestQueue = Volley.newRequestQueue(BulkContainerUpdate.this);
+                        String finalJsonString = jsonString;
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
                                 new Response.Listener<JSONObject>() {
                                     @Override
@@ -406,8 +394,8 @@ public class BulkContainerUpdate extends AppCompatActivity {
                                         //Process os success response
                                         String res = response.toString();
                                         Log.e("res from complete>>", res + "**");
-                                        databaseHandler.deleteBarcodeInventoryDetails(db,code.getText().toString());
-                                        final Intent myIntent = new Intent(ContainerDetailsActivity.this,
+                                        databaseHandler.deleteBulkBarcodeInventoryDetails(db, finalJsonString.trim());
+                                        final Intent myIntent = new Intent(BulkContainerUpdate.this,
                                                 PostSuccess.class);
                                         myIntent.putExtra("user_id", selectedUserId);
                                         myIntent.putExtra("site_id", loggedinUserSiteId);
@@ -418,20 +406,20 @@ public class BulkContainerUpdate extends AppCompatActivity {
                                         myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                                         myIntent.putExtra("site_name", site_name);
                                         myIntent.putExtra("empName", empName);
-                                        myIntent.putExtra("fromBarcodeScan", "yes");
+                                        myIntent.putExtra("fromBulkUpdate", "yes");
                                         startActivity(myIntent);
                                     }
                                 }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
                                 error.printStackTrace();
-                                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ContainerDetailsActivity.this);
+                                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(BulkContainerUpdate.this);
                                 dlgAlert.setTitle("Safety Stratus");
                                 dlgAlert.setMessage("Error response: Request timed out! Your data is saved offline");
                                 dlgAlert.setPositiveButton("Ok",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
-                                                final Intent myIntent = new Intent(ContainerDetailsActivity.this,
+                                                final Intent myIntent = new Intent(BulkContainerUpdate.this,
                                                         PostSuccess.class);
                                                 myIntent.putExtra("user_id", selectedUserId);
                                                 myIntent.putExtra("site_id", loggedinUserSiteId);
@@ -442,7 +430,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                                                 myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                                                 myIntent.putExtra("site_name", site_name);
                                                 myIntent.putExtra("empName", empName);
-                                                myIntent.putExtra("fromBarcodeScan", "yes");
+                                                myIntent.putExtra("fromBulkUpdate", "yes");
                                                 startActivity(myIntent);
                                                 return;
                                             }
@@ -457,14 +445,14 @@ public class BulkContainerUpdate extends AppCompatActivity {
                         requestQueue.add(request_json);
                     }
                     else{
-                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ContainerDetailsActivity.this);
+                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(BulkContainerUpdate.this);
                         dlgAlert.setTitle("Safety Stratus");
                         dlgAlert.setMessage("No Internet!! Your data is saved offline");
                         String finalJsonString1 = jsonString;
                         dlgAlert.setPositiveButton("Ok",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
-                                        final Intent myIntent = new Intent(ContainerDetailsActivity.this,
+                                        final Intent myIntent = new Intent(BulkContainerUpdate.this,
                                                 PostSuccess.class);
                                         myIntent.putExtra("user_id", selectedUserId);
                                         myIntent.putExtra("site_id", loggedinUserSiteId);
@@ -475,7 +463,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                                         myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                                         myIntent.putExtra("site_name", site_name);
                                         myIntent.putExtra("empName", empName);
-                                        myIntent.putExtra("fromBarcodeScan", "yes");
+                                        myIntent.putExtra("fromBulkUpdate", "yes");
                                         startActivity(myIntent);
                                         return;
                                     }
@@ -484,7 +472,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     }
                 }catch (Exception e){
                     e.printStackTrace();
-                }*/
+                }
             }
         });
     }

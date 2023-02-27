@@ -337,6 +337,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void deleteBarcodeInventoryDetails(SQLiteDatabase sqLiteDatabase, String code){
         sqLiteDatabase.delete("scanned_json_data", "code=?", new String[]{code});
     }
+    public void deleteBulkBarcodeInventoryDetails(SQLiteDatabase sqLiteDatabase, String json){
+        sqLiteDatabase.delete("bulk_inv_update_data", "json_data=?", new String[]{json});
+    }
     @SuppressLint("Range")
     public ArrayList<MyObject> getSavedJsonData(SQLiteDatabase sqLiteDatabase){
         int count = 0;
@@ -424,6 +427,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " and location_id="+loc_id+" and inventory_id > 0"), null);
         int count = cursor1.getCount();
         Log.e("scannedCount>>",count+"***");
+        cursor1.close();
+        return count;
+    }
+    @SuppressLint("Range")
+    public int checkScannedBulkDataUpdateCount(SQLiteDatabase sqLiteDatabase){
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from bulk_inv_update_data"), null);
+        int count = cursor1.getCount();
         cursor1.close();
         return count;
     }
@@ -808,6 +818,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     public void updateInventoryDetails(SQLiteDatabase sqLiteDatabase, ContentValues cv){
         sqLiteDatabase.update(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, cv, "code=?", new String[]{cv.getAsString("code")});
+    }
+    public void saveBulkInventoryDetails(SQLiteDatabase sqLiteDatabase, ContentValues cv){
+        sqLiteDatabase.insert(QueryConstants.TABLE_NAME_BULK_INVENTORY_UPDATE_DATA, null,cv);
     }
 
 }

@@ -19,6 +19,7 @@ public class QueryConstants {
     public static final String TABLE_NAME_UOM = "units_of_measure";
     public static final String TABLE_NAME_INV_STATUS = "inventory_status";
     public static final String TABLE_NAME_SCANNED_JSON_DATA_BARCODE = "scanned_json_data_barcode";
+    public static final String TABLE_NAME_BULK_INVENTORY_UPDATE_DATA = "bulk_inv_update_data";
     public static final String TABLE_NAME_PRIMARY_USERS = "primary_users";
 
     public static String SQL_CREATE_CHEMICAL_INVENTORY = "CREATE TABLE IF NOT EXISTS chemical_inventory\n" +
@@ -54,6 +55,9 @@ public class QueryConstants {
             "    \tlast_test_date text,\n" +
             "    \tcreate_user_id integer NOT NULL,\n" +
             "    \texpiration_date text)";
+    public static String SQL_CREATE_bulk_inv_update_data = "CREATE TABLE IF NOT EXISTS bulk_inv_update_data\n" +
+            "(id integer PRIMARY KEY NOT NULL, " +
+            "json_data text)";
     public static String SQL_CREATE_SETTINGS = "CREATE TABLE IF NOT EXISTS settings\n" +
             "(\n" +
             "    setting character varying(32) PRIMARY KEY NOT NULL,\n" +
