@@ -38,6 +38,8 @@ public class OwnerList extends AppCompatActivity {
     String selectedSearchValue = "";
     String lastCompletedInspectionSiteInfo = "";
     String sso = "";
+    String selectedPrimaryUserName = "";
+    String selectedPrimaryUserId = "";
     String site_name = "";
     String request_token="";
     String selectedFacilName = "";
@@ -50,6 +52,7 @@ public class OwnerList extends AppCompatActivity {
     String decodedData = "";
     String fromBulkUpdate="";
     ArrayList<MyObject> ownerList=null;
+    ArrayList<MyObject> primaryUsersList=null;
     ConstraintLayout header;
     EditText ownerSearch;
     String selectedConcUnitName = "";
@@ -62,6 +65,7 @@ public class OwnerList extends AppCompatActivity {
     String quan_val="";
     String selectedOwnerName = "";
     String selectedOwner = "";
+    String pu = "";
     ArrayList<String> codelistfromIntent=null;
     @SuppressLint("WrongConstant")
     @Override
@@ -101,6 +105,12 @@ public class OwnerList extends AppCompatActivity {
         if(intent.getStringExtra("selectedStatusName")!=null) {
             selectedStatusName = intent.getStringExtra("selectedStatusName");
         }
+        if(intent.getStringExtra("pu")!=null) {
+            pu = intent.getStringExtra("pu");
+        }
+        if(pu.trim().length()>0){
+            tv.setText("Primary Users");
+        }
         if(intent.getStringExtra("selectedStatus")!=null) {
             selectedStatus = intent.getStringExtra("selectedStatus");
         }
@@ -124,6 +134,12 @@ public class OwnerList extends AppCompatActivity {
         }
         if(intent.getStringExtra("note")!=null) {
             note = intent.getStringExtra("note");
+        }
+        if (intent.getStringExtra("selectedPrimaryUserId") != null) {
+            selectedPrimaryUserId = intent.getStringExtra("selectedPrimaryUserId");
+        }
+        if (intent.getStringExtra("selectedPrimaryUserName") != null) {
+            selectedPrimaryUserName = intent.getStringExtra("selectedPrimaryUserName");
         }
         if(intent.getStringExtra("comment")!=null) {
             comment = intent.getStringExtra("comment");
@@ -167,29 +183,48 @@ public class OwnerList extends AppCompatActivity {
         ownerList = new ArrayList<MyObject>();
         if(intent.getSerializableExtra("ownerList")!=null)
             ownerList = (ArrayList<MyObject>) intent.getSerializableExtra("ownerList");
+        primaryUsersList = new ArrayList<MyObject>();
+        if(intent.getSerializableExtra("primaryUsersList")!=null)
+            primaryUsersList = (ArrayList<MyObject>) intent.getSerializableExtra("primaryUsersList");
         TableLayout tableOwner = (TableLayout) findViewById(R.id.tableOwner);
         ownerSearch = (EditText) findViewById(R.id.owner_search);
-        for (int i = 0; i < ownerList.size(); i++) {
+        ArrayList<MyObject> finalUsersList = new ArrayList<MyObject>();
+        if (pu.trim().length()>0){
+           finalUsersList = primaryUsersList;
+        }else{
+            finalUsersList = ownerList;
+        }
+        for (int i = 0; i < finalUsersList.size(); i++) {
             final TextView ownerName = new TextView(this);
             ownerName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
                     100,5));
             ownerName.setGravity(Gravity.LEFT);
             ownerName.setPadding(5, 30, 0, 0);
             ownerName.setBackgroundResource(R.drawable.cell_shape_child);
-            ownerName.setText(ownerList.get(i).getObjectName());
-            ownerName.setId(Integer.parseInt(ownerList.get(i).getObjectId()));
+            ownerName.setText(finalUsersList.get(i).getObjectName());
+            ownerName.setId(Integer.parseInt(finalUsersList.get(i).getObjectId()));
             ownerName.setTextSize(16);
             ownerName.setTextColor(Color.parseColor("#000000"));
             ownerName.setBackgroundColor(Color.parseColor("#FFFFFF"));
-            if(selectedOwner.trim().length()>0){
-                if(Integer.parseInt(ownerList.get(i).getObjectId()) == Integer.parseInt(selectedOwner)){
-                    Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
-                    img.setBounds(0, 0, 60, 60);
-                    ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+            if (pu.trim().length()>0){
+                if(selectedPrimaryUserId.trim().length()>0){
+                    if(Integer.parseInt(finalUsersList.get(i).getObjectId()) == Integer.parseInt(selectedPrimaryUserId)){
+                        Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
+                        img.setBounds(0, 0, 60, 60);
+                        ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                    }
+                }
+            }else{
+                if(selectedOwner.trim().length()>0){
+                    if(Integer.parseInt(finalUsersList.get(i).getObjectId()) == Integer.parseInt(selectedOwner)){
+                        Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
+                        img.setBounds(0, 0, 60, 60);
+                        ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                    }
                 }
             }
             final TableRow trOwner = new TableRow(this);
-            trOwner.setId(Integer.parseInt(ownerList.get(i).getObjectId()));
+            trOwner.setId(Integer.parseInt(finalUsersList.get(i).getObjectId()));
             TableLayout.LayoutParams trParamsRosters = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
                     TableLayout.LayoutParams.WRAP_CONTENT);
             trOwner.setBackgroundResource(R.drawable.table_tr_border);
@@ -234,6 +269,17 @@ public class OwnerList extends AppCompatActivity {
                     myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                     myIntent.putExtra("decodedData", decodedData+"");
                     myIntent.putExtra("selectedFacil", selectedFacil+"");
+                    if(pu.trim().length()>0){
+                        myIntent.putExtra("selectedOwnerName",selectedOwnerName );
+                        myIntent.putExtra("selectedOwner", selectedOwner+"");
+                        myIntent.putExtra("selectedPrimaryUserName", ownerName.getText().toString());
+                        myIntent.putExtra("selectedPrimaryUserId", ownerName.getId()+"");
+                    }else{
+                        myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                        myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
+                        myIntent.putExtra("selectedOwnerName", ownerName.getText().toString());
+                        myIntent.putExtra("selectedOwner", ownerName.getId()+"");
+                    }
                     myIntent.putExtra("user_id", user_id);
                     myIntent.putExtra("site_id", loggedinUserSiteId);
                     myIntent.putExtra("token", request_token);
@@ -241,10 +287,9 @@ public class OwnerList extends AppCompatActivity {
                     myIntent.putExtra("md5pwd", md5Pwd);
                     myIntent.putExtra("loggedinUsername", loggedinUsername);
                     myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-                    myIntent.putExtra("selectedOwnerName", ownerName.getText().toString());
-                    myIntent.putExtra("selectedOwner", ownerName.getId()+"");
                     myIntent.putExtra("site_name", site_name);
                     myIntent.putExtra("ownerList",ownerList);
+                    myIntent.putExtra("primaryUsersList",primaryUsersList);
                     myIntent.putExtra("pageLoadTemp", "-1");
                     myIntent.putExtra("empName", empName);
                     myIntent.putExtra("quan_val", quan_val+"");
@@ -286,11 +331,21 @@ public class OwnerList extends AppCompatActivity {
                     ownerName.setTextSize(16);
                     ownerName.setTextColor(Color.parseColor("#000000"));
                     ownerName.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                    if (selectedOwner.length() > 0) {
-                        if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(selectedOwner)) {
-                            Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
-                            img.setBounds(0, 0, 60, 60);
-                            ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                    if (pu.trim().length()>0){
+                        if (selectedPrimaryUserId.length() > 0) {
+                            if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(selectedPrimaryUserId)) {
+                                Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
+                                img.setBounds(0, 0, 60, 60);
+                                ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                            }
+                        }
+                    }else{
+                        if (selectedOwner.length() > 0) {
+                            if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(selectedOwner)) {
+                                Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
+                                img.setBounds(0, 0, 60, 60);
+                                ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                            }
                         }
                     }
                     final TableRow trOwner = new TableRow(OwnerList.this);
@@ -342,8 +397,20 @@ public class OwnerList extends AppCompatActivity {
                             myIntent.putExtra("loggedinUsername", loggedinUsername);
                             myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                             myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                            if(pu.trim().length()>0){
+                                myIntent.putExtra("selectedOwnerName",selectedOwnerName );
+                                myIntent.putExtra("selectedOwner", selectedOwner+"");
+                                myIntent.putExtra("selectedPrimaryUserName", ownerName.getText().toString());
+                                myIntent.putExtra("selectedPrimaryUserId", ownerName.getId()+"");
+                            }else{
+                                myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                                myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
+                                myIntent.putExtra("selectedOwnerName", ownerName.getText().toString());
+                                myIntent.putExtra("selectedOwner", ownerName.getId()+"");
+                            }
                             myIntent.putExtra("site_name", site_name);
                             myIntent.putExtra("ownerList",ownerList);
+                            myIntent.putExtra("primaryUsersList",primaryUsersList);
                             myIntent.putExtra("pageLoadTemp", "-1");
                             myIntent.putExtra("empName", empName);
                             myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
@@ -354,8 +421,6 @@ public class OwnerList extends AppCompatActivity {
                             myIntent.putExtra("conc_val", conc_val+"");
                             myIntent.putExtra("note", note+"");
                             myIntent.putExtra("comment", comment+"");
-                            myIntent.putExtra("selectedOwnerName", ownerName.getText().toString());
-                            myIntent.putExtra("selectedOwner", ownerName.getId()+"");
                             startActivity(myIntent);
                         }
                     });
@@ -389,7 +454,10 @@ public class OwnerList extends AppCompatActivity {
             myIntent.putExtra("loggedinUsername", loggedinUsername);
             myIntent.putExtra("selectedSearchValue", selectedSearchValue);
             myIntent.putExtra("codelistfromIntent", codelistfromIntent);
+            myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+            myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
             myIntent.putExtra("site_name", site_name);
+            myIntent.putExtra("primaryUsersList",primaryUsersList);
             myIntent.putExtra("ownerList",ownerList);
             myIntent.putExtra("pageLoadTemp", "-1");
             myIntent.putExtra("selectedRoomName", selectedRoomName);
@@ -416,7 +484,7 @@ public class OwnerList extends AppCompatActivity {
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         MyObject[] myObject = null;
         try {
-            myObject = databaseHandler.getAutoSearchOwnerData(db, searchTerm);
+                myObject = databaseHandler.getAutoSearchOwnerData(db, searchTerm,pu);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

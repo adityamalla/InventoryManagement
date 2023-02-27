@@ -61,11 +61,14 @@ public class BulkContainerUpdate extends AppCompatActivity {
     String selectedRoom = "";
     String selectedOwnerName = "";
     String selectedOwner = "";
+    String selectedPrimaryUserName = "";
+    String selectedPrimaryUserId = "";
     EditText owner;
     EditText location;
     EditText status;
     EditText notes;
     EditText comments;
+    EditText primaryUser;
     ArrayList<String> codelistfromIntent;
     ConstraintLayout header;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(BulkContainerUpdate.this);
@@ -137,6 +140,12 @@ public class BulkContainerUpdate extends AppCompatActivity {
         if (intent.getStringExtra("selectedRoomName") != null) {
             selectedRoomName = intent.getStringExtra("selectedRoomName");
         }
+        if (intent.getStringExtra("selectedPrimaryUserId") != null) {
+            selectedPrimaryUserId = intent.getStringExtra("selectedPrimaryUserId");
+        }
+        if (intent.getStringExtra("selectedPrimaryUserName") != null) {
+            selectedPrimaryUserName = intent.getStringExtra("selectedPrimaryUserName");
+        }
 
         if (intent.getStringExtra("selectedOwner") != null) {
             selectedOwner = intent.getStringExtra("selectedOwner");
@@ -162,6 +171,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
         location = (EditText)findViewById(R.id.location);
         comments = (EditText)findViewById(R.id.comment);
         status = (EditText)findViewById(R.id.status);
+        primaryUser = (EditText)findViewById(R.id.primaryUser);
         notes.setText(note);
         comments.setText(comment);
         if(selectedOwnerName.trim().length()>0)
@@ -176,6 +186,10 @@ public class BulkContainerUpdate extends AppCompatActivity {
             status.setText(selectedStatusName);
         else
             status.setText("None");
+        if(selectedPrimaryUserName.trim().length()>0)
+            primaryUser.setText(selectedPrimaryUserName);
+        else
+            primaryUser.setText("None");
         location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -198,6 +212,8 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     myIntent.putExtra("selectedRoom", selectedRoom+"");
                     myIntent.putExtra("selectedStatusName", selectedStatusName);
                     myIntent.putExtra("selectedStatus", selectedStatus+"");
+                    myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                    myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
                     myIntent.putExtra("selectedOwnerName", selectedOwnerName);
                     myIntent.putExtra("codelistfromIntent", codelistfromIntent);
                     myIntent.putExtra("selectedOwner", selectedOwner+"");
@@ -246,6 +262,8 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("empName", empName);
                     myIntent.putExtra("fromBulkUpdate", "yes");
+                    myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                    myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
                     startActivity(myIntent);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -287,6 +305,52 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("empName", empName);
                     myIntent.putExtra("fromBulkUpdate", "yes");
+                    myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                    myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
+                    startActivity(myIntent);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }finally {
+                    // progress.dismiss();
+                    db.close();
+                    if (databaseHandler != null) {
+                        databaseHandler.close();
+                    }
+                }
+            }
+        });
+        primaryUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    note = notes.getText().toString();
+                    comment = comments.getText().toString();
+                    ArrayList<MyObject> primaryUsersList = databaseHandler.getPrimaryUsersList(db);
+                    final Intent myIntent = new Intent(BulkContainerUpdate.this,
+                            OwnerList.class);
+                    myIntent.putExtra("user_id", selectedUserId);
+                    myIntent.putExtra("site_id", loggedinUserSiteId);
+                    myIntent.putExtra("token", token);
+                    myIntent.putExtra("sso", sso);
+                    myIntent.putExtra("md5pwd", md5Pwd);
+                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                    myIntent.putExtra("codelistfromIntent", codelistfromIntent);
+                    myIntent.putExtra("site_name", site_name);
+                    myIntent.putExtra("pu", "1");
+                    myIntent.putExtra("primaryUsersList",primaryUsersList);
+                    myIntent.putExtra("selectedRoomName", selectedRoomName);
+                    myIntent.putExtra("selectedRoom", selectedRoom+"");
+                    myIntent.putExtra("selectedStatusName", selectedStatusName);
+                    myIntent.putExtra("selectedStatus", selectedStatus+"");
+                    myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                    myIntent.putExtra("selectedOwner", selectedOwner+"");
+                    myIntent.putExtra("note", note+"");
+                    myIntent.putExtra("comment", comment+"");
+                    myIntent.putExtra("empName", empName);
+                    myIntent.putExtra("fromBulkUpdate", "yes");
+                    myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                    myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
                     startActivity(myIntent);
                 }catch (Exception e){
                     e.printStackTrace();

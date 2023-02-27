@@ -56,6 +56,8 @@ public class StatusList extends AppCompatActivity {
         ConstraintLayout header;
         EditText statusSearch;
         String selectedConcUnitName = "";
+        String selectedPrimaryUserName = "";
+        String selectedPrimaryUserId = "";
         String selectedConcUnit = "";
         String selectedQuanUnitName = "";
         String selectedQuanUnit = "";
@@ -129,6 +131,12 @@ public class StatusList extends AppCompatActivity {
             }
             if(intent.getStringExtra("fromBulkUpdate")!=null) {
                 fromBulkUpdate = intent.getStringExtra("fromBulkUpdate");
+            }
+            if (intent.getStringExtra("selectedPrimaryUserId") != null) {
+                selectedPrimaryUserId = intent.getStringExtra("selectedPrimaryUserId");
+            }
+            if (intent.getStringExtra("selectedPrimaryUserName") != null) {
+                selectedPrimaryUserName = intent.getStringExtra("selectedPrimaryUserName");
             }
             codelistfromIntent = new ArrayList<String>();
             if(intent.getSerializableExtra("codelistfromIntent")!=null)
@@ -224,6 +232,8 @@ public class StatusList extends AppCompatActivity {
                         myIntent.putExtra("selectedStatusName", statusName.getText());
                         myIntent.putExtra("selectedStatus", statusName.getId()+"");
                         myIntent.putExtra("decodedData", decodedData+"");
+                        myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                        myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
                         myIntent.putExtra("selectedFacil", selectedFacil+"");
                         myIntent.putExtra("user_id", user_id);
                         myIntent.putExtra("site_id", loggedinUserSiteId);
@@ -331,6 +341,8 @@ public class StatusList extends AppCompatActivity {
                                 myIntent.putExtra("selectedStatus", statusName.getId()+"");
                                 myIntent.putExtra("selectedFacil", selectedFacil+"");
                                 myIntent.putExtra("decodedData", decodedData+"");
+                                myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                                myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
                                 myIntent.putExtra("user_id", user_id);
                                 myIntent.putExtra("site_id", loggedinUserSiteId);
                                 myIntent.putExtra("token", request_token);
@@ -400,6 +412,8 @@ public class StatusList extends AppCompatActivity {
                 myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName);
                 myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
                 myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
                 myIntent.putExtra("selectedOwner", selectedOwner+"");
                 myIntent.putExtra("quan_val", quan_val+"");
                 myIntent.putExtra("conc_val", conc_val+"");

@@ -441,8 +441,11 @@ public class SyncDBActivity extends AppCompatActivity {
             ContentValues values = new ContentValues();
             JSONArray jsonArrayFiFacilRooms = obj.getJSONArray("fi_facil_rooms");
             JSONArray jsonArrayChemicalInventory = obj.getJSONArray("chemical_inventory");
+            JSONArray jsonArrayPrimaryUsers = obj.getJSONArray("primary_users");
+            Log.e("test pu>>>",jsonArrayPrimaryUsers.toString());
             db.delete(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, null);
             db.delete(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, null);
+            db.delete(QueryConstants.TABLE_NAME_PRIMARY_USERS, null, null);
             for (int i = 0, size = jsonArrayChemicalInventory.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayChemicalInventory.getJSONObject(i);
                 String id = objectInArray.getString("id");
@@ -499,6 +502,13 @@ public class SyncDBActivity extends AppCompatActivity {
                     db.insert(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, values);
                     values.clear();
                 }
+            }
+            for (int i = 0, size = jsonArrayPrimaryUsers.length(); i < size; i++) {
+                JSONObject objectInArray = jsonArrayPrimaryUsers.getJSONObject(i);
+                values.put("primary_user", objectInArray.getString("primary_user"));
+                values.put("primary_user_id", objectInArray.getString("primary_user_id"));
+                db.insert(QueryConstants.TABLE_NAME_PRIMARY_USERS, null, values);
+                values.clear();
             }
             db.setTransactionSuccessful();
 

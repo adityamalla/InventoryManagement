@@ -51,6 +51,8 @@ public class RoomList extends AppCompatActivity {
     String quan_val="";
     String empName = "";
     String decodedData = "";
+    String selectedPrimaryUserName = "";
+    String selectedPrimaryUserId = "";
     String selectedStatusName = "";
     String selectedStatus = "";
     ArrayList<MyObject> roomlist=null;
@@ -142,6 +144,12 @@ public class RoomList extends AppCompatActivity {
         }
         if (intent.getStringExtra("selectedStatus") != null) {
             selectedStatus = intent.getStringExtra("selectedStatus");
+        }
+        if (intent.getStringExtra("selectedPrimaryUserId") != null) {
+            selectedPrimaryUserId = intent.getStringExtra("selectedPrimaryUserId");
+        }
+        if (intent.getStringExtra("selectedPrimaryUserName") != null) {
+            selectedPrimaryUserName = intent.getStringExtra("selectedPrimaryUserName");
         }
         if (intent.getStringExtra("selectedConcUnitName") != null) {
             selectedConcUnitName = intent.getStringExtra("selectedConcUnitName");
@@ -248,6 +256,8 @@ public class RoomList extends AppCompatActivity {
                     myIntent.putExtra("selectedQuanUnit", selectedQuanUnit+"");
                     myIntent.putExtra("selectedOwnerName", selectedOwnerName);
                     myIntent.putExtra("selectedOwner", selectedOwner+"");
+                    myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                    myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
                     myIntent.putExtra("quan_val", quan_val+"");
                     myIntent.putExtra("conc_val", conc_val+"");
                     myIntent.putExtra("note", note+"");
@@ -342,6 +352,8 @@ public class RoomList extends AppCompatActivity {
                             myIntent.putExtra("decodedData", decodedData+"");
                             myIntent.putExtra("user_id", user_id);
                             myIntent.putExtra("site_id", loggedinUserSiteId);
+                            myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                            myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
                             myIntent.putExtra("token", request_token);
                             myIntent.putExtra("sso", sso);
                             myIntent.putExtra("md5pwd", md5Pwd);
@@ -400,6 +412,8 @@ public class RoomList extends AppCompatActivity {
             myIntent.putExtra("token", request_token);
             myIntent.putExtra("sso", sso);
             myIntent.putExtra("md5pwd", md5Pwd);
+            myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+            myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
             myIntent.putExtra("loggedinUsername", loggedinUsername);
             myIntent.putExtra("selectedSearchValue", selectedSearchValue);
             myIntent.putExtra("site_name", site_name);

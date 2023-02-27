@@ -44,6 +44,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_INVENTORY_STATUS);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_UNITS_OF_MEASURE);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_SCANNED_BARCODE_JSON_DATA);
+        sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_PRIMARY_USERS);
     }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
@@ -384,6 +385,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return ownerList;
     }
+    @SuppressLint("Range")
+    public ArrayList<MyObject> getPrimaryUsersList(SQLiteDatabase sqLiteDatabase){
+        int count = 0;
+        ArrayList<MyObject> primaryUsers = new ArrayList<MyObject>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select distinct primary_user_id, primary_user from primary_users"), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                primaryUsers.add(new MyObject(cursor.getString(cursor.getColumnIndex("primary_user")).trim(),
+                        cursor.getString(cursor.getColumnIndex("primary_user_id")))
+                );
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return primaryUsers;
+    }
+
     @SuppressLint("Range")
     public ArrayList<MyObject> getUnitList(SQLiteDatabase sqLiteDatabase){
         int count = 0;
@@ -738,8 +756,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return ObjectItemData;
     }
     @SuppressLint("Range")
-    public MyObject[] getAutoSearchOwnerData(SQLiteDatabase sqLiteDatabase, String searchTerm) {
-        String sql = "SELECT owner,object_id FROM chemical_inventory where owner like '%"+searchTerm+"%' and object_table='site_users'";
+    public MyObject[] getAutoSearchOwnerData(SQLiteDatabase sqLiteDatabase, String searchTerm, String pu) {
+        String sql = "";
+        if(pu.trim().length()>0){
+            sql = "SELECT primary_user_id as user_id,primary_user as user FROM primary_users where primary_user like '%"+searchTerm+"%'";
+        }else{
+            sql = "SELECT owner as user_id,object_id as user FROM chemical_inventory where owner like '%"+searchTerm+"%' and object_table='site_users'";
+        }
         Log.e("TESTSQL>",sql);
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();
@@ -748,8 +771,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         // looping through all rows and adding to list
         if (cursor2.moveToFirst()) {
             do {
-                String objectName = cursor2.getString(cursor2.getColumnIndex("owner"));
-                String objectId = cursor2.getString(cursor2.getColumnIndex("object_id"));
+                String objectName = cursor2.getString(cursor2.getColumnIndex("user"));
+                String objectId = cursor2.getString(cursor2.getColumnIndex("user_id"));
                 MyObject myObject = new MyObject(objectName, objectId);
                 ObjectItemData[x] = myObject;
                 x++;

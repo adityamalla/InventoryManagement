@@ -19,6 +19,7 @@ public class QueryConstants {
     public static final String TABLE_NAME_UOM = "units_of_measure";
     public static final String TABLE_NAME_INV_STATUS = "inventory_status";
     public static final String TABLE_NAME_SCANNED_JSON_DATA_BARCODE = "scanned_json_data_barcode";
+    public static final String TABLE_NAME_PRIMARY_USERS = "primary_users";
 
     public static String SQL_CREATE_CHEMICAL_INVENTORY = "CREATE TABLE IF NOT EXISTS chemical_inventory\n" +
             "(id integer PRIMARY KEY NOT NULL,\n" +
@@ -57,6 +58,11 @@ public class QueryConstants {
             "(\n" +
             "    setting character varying(32) PRIMARY KEY NOT NULL,\n" +
             "    value text NOT NULL\n" +
+            ")";
+    public static String SQL_CREATE_PRIMARY_USERS = "CREATE TABLE IF NOT EXISTS primary_users\n" +
+            "(\n" +
+            "    primary_user text,\n" +
+            "    primary_user_id integer\n" +
             ")";
     public static String SQL_CREATE_MENU_CATEGORIES = "CREATE TABLE IF NOT EXISTS menu_categories\n" +
             "(\n" +

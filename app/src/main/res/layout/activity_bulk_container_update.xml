@@ -182,6 +182,40 @@
             app:layout_constraintEnd_toEndOf="@+id/statuslabel"
             app:layout_constraintStart_toStartOf="@+id/statuslabel"
             app:layout_constraintTop_toBottomOf="@+id/statuslabel" />
+        <TextView
+            android:id="@+id/primaryUserlabel"
+            android:layout_width="0dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:text="Primary User"
+            android:editable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="#000000"
+            app:layout_constraintEnd_toEndOf="@+id/status"
+            app:layout_constraintStart_toStartOf="@+id/status"
+            app:layout_constraintTop_toBottomOf="@+id/status" />
+        <EditText
+            android:id="@+id/primaryUser"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rounded_corner"
+            android:drawablePadding="10dp"
+            android:ems="10"
+            android:hint="Primary User"
+            android:inputType="textPersonName"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text="Primary User"
+            android:drawableRight="@drawable/ic_chevron_right_24px"
+            android:editable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false"
+            app:layout_constraintEnd_toEndOf="@+id/primaryUserlabel"
+            app:layout_constraintStart_toStartOf="@+id/primaryUserlabel"
+            app:layout_constraintTop_toBottomOf="@+id/primaryUserlabel" />
         <Button
             android:id="@+id/uploadToWeb"
             android:layout_width="0dp"
@@ -195,8 +229,8 @@
             android:textSize="14dp"
             app:backgroundTint="@null"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/status"
-            app:layout_constraintStart_toStartOf="@+id/status"
-            app:layout_constraintTop_toBottomOf="@+id/status" />
+            app:layout_constraintEnd_toEndOf="@+id/primaryUser"
+            app:layout_constraintStart_toStartOf="@+id/primaryUser"
+            app:layout_constraintTop_toBottomOf="@+id/primaryUser" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

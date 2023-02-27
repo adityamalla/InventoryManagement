@@ -123,9 +123,14 @@ public class Container_Info extends AppCompatActivity {
         code = findViewById(R.id.codeValue);
         volume = findViewById(R.id.volume);
         InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,scannedCode);
-        productName.setText(inv.getProductName());
-        code.setText(scannedCode);
-        volume.setText(inv.getVolume_mass()+" "+inv.getVolume_mass_unit());
+        if(inv!=null){
+            productName.setText(inv.getProductName());
+            code.setText(scannedCode);
+            volume.setText(inv.getVolume_mass()+" "+inv.getVolume_mass_unit());
+        }else{
+
+        }
+
     }
     public static void hideKeyboard(Container_Info activity) {
         try {
