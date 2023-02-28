@@ -238,6 +238,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return count;
     }
+    @SuppressLint("Range")
+    public int getSavedBulkDataUpdateCount(SQLiteDatabase sqLiteDatabase){
+        int count = 0;
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data where scan_type='bulkupdate'"), null);
+        count = cursor.getCount();
+        cursor.close();
+        return count;
+    }
 
     @SuppressLint("Range")
     public ArrayList<InventoryObject> getInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
@@ -331,14 +339,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.insert("scanned_json_data", null, cv);
     }
     public void insertScannedBarcodeInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
-        sqLiteDatabase.delete("scanned_json_data", "code=?", new String[]{cv.getAsString("code")});
+        sqLiteDatabase.delete("scanned_json_data", "code=? and scan_type=?", new String[]{cv.getAsString("code"),cv.getAsString("scan_type")});
         sqLiteDatabase.insert("scanned_json_data", null, cv);
     }
     public void deleteBarcodeInventoryDetails(SQLiteDatabase sqLiteDatabase, String code){
         sqLiteDatabase.delete("scanned_json_data", "code=?", new String[]{code});
-    }
-    public void deleteBulkBarcodeInventoryDetails(SQLiteDatabase sqLiteDatabase, String json){
-        sqLiteDatabase.delete("bulk_inv_update_data", "json_data=?", new String[]{json});
     }
     @SuppressLint("Range")
     public ArrayList<MyObject> getSavedJsonData(SQLiteDatabase sqLiteDatabase){
@@ -356,6 +361,23 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return jsonList;
     }
+    @SuppressLint("Range")
+    public ArrayList<MyObject> getSavedJsonDataBulkUpdate(SQLiteDatabase sqLiteDatabase){
+        int count = 0;
+        ArrayList<MyObject> jsonList = new ArrayList<MyObject>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,json_data FROM scanned_json_data where scan_type='bulkupdate'"), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                jsonList.add(new MyObject(cursor.getString(cursor.getColumnIndex("json_data")).trim(),
+                        cursor.getString(cursor.getColumnIndex("id")))
+                );
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return jsonList;
+    }
+
     @SuppressLint("Range")
     public ArrayList<MyObject> getStatusList(SQLiteDatabase sqLiteDatabase){
         int count = 0;
@@ -427,13 +449,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 " and location_id="+loc_id+" and inventory_id > 0"), null);
         int count = cursor1.getCount();
         Log.e("scannedCount>>",count+"***");
-        cursor1.close();
-        return count;
-    }
-    @SuppressLint("Range")
-    public int checkScannedBulkDataUpdateCount(SQLiteDatabase sqLiteDatabase){
-        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from bulk_inv_update_data"), null);
-        int count = cursor1.getCount();
         cursor1.close();
         return count;
     }
@@ -818,9 +833,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     public void updateInventoryDetails(SQLiteDatabase sqLiteDatabase, ContentValues cv){
         sqLiteDatabase.update(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, cv, "code=?", new String[]{cv.getAsString("code")});
-    }
-    public void saveBulkInventoryDetails(SQLiteDatabase sqLiteDatabase, ContentValues cv){
-        sqLiteDatabase.insert(QueryConstants.TABLE_NAME_BULK_INVENTORY_UPDATE_DATA, null,cv);
     }
 
 }

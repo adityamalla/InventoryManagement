@@ -327,7 +327,10 @@ public class HomeActivity extends AppCompatActivity {
                 String scan_type = databaseHandler.getScanType(db,jsonList.get(k).getObjectId());
                 if(scan_type.trim().equalsIgnoreCase("barcode")){
                     URL = ApiConstants.syncbarcodeScannedData;
-                }else{
+                }else if(scan_type.trim().equalsIgnoreCase("bulkupdate")){
+                    URL = ApiConstants.syncbulkbarcodeScannedData;
+                }
+                else{
                     URL = ApiConstants.syncpostscanneddata;
                 }
                 JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonList.get(k).getObjectName()),

@@ -178,7 +178,7 @@ public class PostSuccess extends AppCompatActivity {
                 startAnotherInv.setLayoutParams(newLayoutParams);
                 badge_notification.setVisibility(View.VISIBLE);
                 badge_notification.setText(String.valueOf(scannedJsonData));
-                if (fromBarcodeScan.trim().length()>0){
+                if (fromBarcodeScan.trim().length()>0 || fromBulkUpdate.trim().length()>0){
                     startAnotherInv.setVisibility(View.GONE);
                     defaultText.setText("Data Updated Successfully");
                     constraintSet.clone(constraintLayout);
@@ -210,7 +210,7 @@ public class PostSuccess extends AppCompatActivity {
                 startAnotherInv.setLayoutParams(newLayoutParams);
                 badge_notification.setVisibility(View.GONE);
                 badge_notification.setText("");
-                if (fromBarcodeScan.trim().length()>0){
+                if (fromBarcodeScan.trim().length()>0 || fromBulkUpdate.trim().length()>0){
                     startAnotherInv.setVisibility(View.GONE);
                     defaultText.setText("Data Updated Successfully");
                     constraintSet.clone(constraintLayout);
@@ -326,6 +326,8 @@ public class PostSuccess extends AppCompatActivity {
                         String scan_type = databaseHandler.getScanType(db,jsonList.get(k).getObjectId());
                         if(scan_type.trim().equalsIgnoreCase("barcode")){
                             URL = ApiConstants.syncbarcodeScannedData;
+                        }else if(scan_type.trim().equalsIgnoreCase("bulkupdate")){
+                            URL = ApiConstants.syncbulkbarcodeScannedData;
                         }else{
                             URL = ApiConstants.syncpostscanneddata;
                         }

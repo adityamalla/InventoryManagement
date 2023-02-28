@@ -6,6 +6,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -54,6 +55,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
     String site_name = "";
     String token="";
     Button uploadData;
+    Button saveData;
     String empName = "";
     String note = "";
     String comment="";
@@ -71,6 +73,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
     EditText notes;
     EditText comments;
     EditText primaryUser;
+    TextView badge_notification_bulk;
     ArrayList<String> codelistfromIntent;
     ConstraintLayout header;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(BulkContainerUpdate.this);
@@ -168,12 +171,14 @@ public class BulkContainerUpdate extends AppCompatActivity {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
         uploadData = (Button) findViewById(R.id.uploadToWeb);
+        saveData = (Button) findViewById(R.id.saveData);
         owner = (EditText)findViewById(R.id.owner);
         notes = (EditText)findViewById(R.id.locationNotes);
         location = (EditText)findViewById(R.id.location);
         comments = (EditText)findViewById(R.id.comment);
         status = (EditText)findViewById(R.id.status);
         primaryUser = (EditText)findViewById(R.id.primaryUser);
+        badge_notification_bulk = (TextView) findViewById(R.id.badge_notification_bulk);
         notes.setText(note);
         comments.setText(comment);
         if(selectedOwnerName.trim().length()>0)
@@ -192,6 +197,14 @@ public class BulkContainerUpdate extends AppCompatActivity {
             primaryUser.setText(selectedPrimaryUserName);
         else
             primaryUser.setText("None");
+        int scannedJsonData = databaseHandler.getSavedBulkDataUpdateCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
+        if(scannedJsonData>0){
+            badge_notification_bulk.setVisibility(View.VISIBLE);
+            badge_notification_bulk.setText(String.valueOf(scannedJsonData));
+        }else{
+            badge_notification_bulk.setVisibility(View.GONE);
+            badge_notification_bulk.setText("");
+        }
         location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -381,20 +394,29 @@ public class BulkContainerUpdate extends AppCompatActivity {
                 try {
                     jsonString = mapper.writeValueAsString(inv);
                     ContentValues cv_save = new ContentValues();
-                    cv_save.put("json_data", jsonString.trim());
-                    databaseHandler.saveBulkInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
+                    cv_save.put("code", JSONObjectCodelist);
+                    cv_save.put("user_id", Integer.parseInt(selectedUserId));
+                    cv_save.put("location_id", -1);
+                    cv_save.put("room_id", -1);
+                    cv_save.put("scan_type", "bulkupdate");
+                    cv_save.put("json_data", jsonString);
+                    databaseHandler.insertScannedBarcodeInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                     if (connected) {
-                        String URL = ApiConstants.syncbulkbarcodeScannedData;
+                        ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonDataBulkUpdate(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                        //SyncInventory sdb = new SyncInventory();
+                        //sdb.execute(jsonList);
+                        uploadInventoryData(jsonList);
+                        /*String URL = ApiConstants.syncbulkbarcodeScannedData;
                         RequestQueue requestQueue = Volley.newRequestQueue(BulkContainerUpdate.this);
-                        String finalJsonString = jsonString;
+                        String finalJSONObjectCodelist = JSONObjectCodelist;
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
                                 new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject response) {
                                         //Process os success response
                                         String res = response.toString();
-                                        Log.e("res from complete>>", res + "**");
-                                        databaseHandler.deleteBulkBarcodeInventoryDetails(db, finalJsonString.trim());
+                                        Log.e("res from bulk>>", res + "**");
+                                        databaseHandler.deleteBarcodeInventoryDetails(db, finalJSONObjectCodelist);
                                         final Intent myIntent = new Intent(BulkContainerUpdate.this,
                                                 PostSuccess.class);
                                         myIntent.putExtra("user_id", selectedUserId);
@@ -442,7 +464,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, 2, 2);
                         request_json.setRetryPolicy(policy);
                         // add the request object to the queue to be executed
-                        requestQueue.add(request_json);
+                        requestQueue.add(request_json);*/
                     }
                     else{
                         AlertDialog.Builder dlgAlert = new AlertDialog.Builder(BulkContainerUpdate.this);
@@ -475,6 +497,111 @@ public class BulkContainerUpdate extends AppCompatActivity {
                 }
             }
         });
+        saveData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v){
+                note = notes.getText().toString();
+                comment = comments.getText().toString();
+                String JSONObjectCodelist = "";
+                for (int h=0;h<codelistfromIntent.size();h++){
+                    JSONObjectCodelist = JSONObjectCodelist+codelistfromIntent.get(h)+",";
+                }
+                JSONObjectCodelist = JSONObjectCodelist.substring(0,JSONObjectCodelist.length()-1);
+                BulkUpdateModel inv = new BulkUpdateModel(JSONObjectCodelist,selectedStatus,selectedRoom,selectedOwner,selectedPrimaryUserId,note,comment,"site_users",selectedUserId,loggedinUserSiteId,token);
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonString = "";
+                try {
+                    jsonString = mapper.writeValueAsString(inv);
+                    ContentValues cv_save = new ContentValues();
+                    cv_save.put("code", JSONObjectCodelist);
+                    cv_save.put("user_id", Integer.parseInt(selectedUserId));
+                    cv_save.put("location_id", -1);
+                    cv_save.put("room_id", -1);
+                    cv_save.put("scan_type", "bulkupdate");
+                    cv_save.put("json_data", jsonString);
+                    databaseHandler.insertScannedBarcodeInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(BulkContainerUpdate.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Your data is saved successfully!");
+                    String finalJsonString1 = jsonString;
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    int scannedJsonData = databaseHandler.getSavedBulkDataUpdateCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
+                                    if(scannedJsonData>0){
+                                        badge_notification_bulk.setVisibility(View.VISIBLE);
+                                        badge_notification_bulk.setText(String.valueOf(scannedJsonData));
+                                    }else{
+                                        badge_notification_bulk.setVisibility(View.GONE);
+                                        badge_notification_bulk.setText("");
+                                    }
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+    public void uploadInventoryData(ArrayList<MyObject> jsonList){
+        try {
+            ProgressDialog progressSync = new ProgressDialog(BulkContainerUpdate.this);
+            progressSync.setTitle("");
+            progressSync.setMessage("Uploading..");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(400, 200);
+            RequestQueue requestQueue = Volley.newRequestQueue(BulkContainerUpdate.this);
+            for (int k=0;k<jsonList.size();k++){
+                int finalK = k;
+                String URL = ApiConstants.syncbulkbarcodeScannedData;
+                JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonList.get(k).getObjectName()),
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                //Process os success response
+                                String res = response.toString();
+                                Log.e("res>>>>>>",res);
+                                databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
+                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                                if (jsonListModified.size()==0){
+                                    progressSync.dismiss();
+                                    final Intent myIntent = new Intent(BulkContainerUpdate.this,
+                                            PostSuccess.class);
+                                    myIntent.putExtra("user_id", selectedUserId);
+                                    myIntent.putExtra("site_id", loggedinUserSiteId);
+                                    myIntent.putExtra("token", token);
+                                    myIntent.putExtra("sso", sso);
+                                    myIntent.putExtra("md5pwd", md5Pwd);
+                                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                    myIntent.putExtra("site_name", site_name);
+                                    myIntent.putExtra("empName", empName);
+                                    myIntent.putExtra("fromBulkUpdate", "yes");
+                                    startActivity(myIntent);
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+                int socketTimeout = 60000;//30 seconds - change to what you want
+                RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, 2, 2);
+                request_json.setRetryPolicy(policy);
+                // add the request object to the queue to be executed
+                requestQueue.add(request_json);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+
+        }
+        //}
+        //});
     }
     @Override
     public void onBackPressed() {
@@ -502,6 +629,16 @@ public class BulkContainerUpdate extends AppCompatActivity {
             myIntent.putExtra("pageLoadTemp", "-1");
             myIntent.putExtra("empName", empName);
             myIntent.putExtra("codelistfromIntent",codelistfromIntent);
+            myIntent.putExtra("selectedRoomName", selectedRoomName);
+            myIntent.putExtra("selectedRoom", selectedRoom+"");
+            myIntent.putExtra("selectedStatusName", selectedStatusName);
+            myIntent.putExtra("selectedStatus", selectedStatus+"");
+            myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+            myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
+            myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+            myIntent.putExtra("selectedOwner", selectedOwner+"");
+            myIntent.putExtra("note", note+"");
+            myIntent.putExtra("comment", comment+"");
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);
