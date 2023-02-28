@@ -386,6 +386,19 @@ public class BulkContainerUpdate extends AppCompatActivity {
                 String JSONObjectCodelist = "";
                 for (int h=0;h<codelistfromIntent.size();h++){
                     JSONObjectCodelist = JSONObjectCodelist+codelistfromIntent.get(h)+",";
+                    ContentValues cv = new ContentValues();
+                    cv.put("code", codelistfromIntent.get(h));
+                    cv.put("room_id", Integer.parseInt(selectedRoom));
+                    cv.put("object_id", Integer.parseInt(selectedOwner));
+                    cv.put("object_table", "site_users");
+                    cv.put("owner", selectedOwnerName);
+                    cv.put("room", selectedRoomName);
+                    cv.put("status_id", Integer.parseInt(selectedStatus));
+                    cv.put("status", selectedStatus);
+                    cv.put("notes", note);
+                    cv.put("comment", comment);
+                    cv.put("primary_user_id", selectedPrimaryUserId);
+                    databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                 }
                 JSONObjectCodelist = JSONObjectCodelist.substring(0,JSONObjectCodelist.length()-1);
                 BulkUpdateModel inv = new BulkUpdateModel(JSONObjectCodelist,selectedStatus,selectedRoom,selectedOwner,selectedPrimaryUserId,note,comment,"site_users",selectedUserId,loggedinUserSiteId,token);

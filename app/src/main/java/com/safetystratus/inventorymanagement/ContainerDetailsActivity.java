@@ -6,6 +6,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -568,7 +569,11 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     cv_save.put("json_data", jsonString);
                     databaseHandler.insertScannedBarcodeInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                     if (connected) {
-                        String URL = ApiConstants.syncbarcodeScannedData;
+                        ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonDataBarcodeUpdate(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                        //SyncInventory sdb = new SyncInventory();
+                        //sdb.execute(jsonList);
+                        uploadInventoryData(jsonList);
+                        /*String URL = ApiConstants.syncbarcodeScannedData;
                         RequestQueue requestQueue = Volley.newRequestQueue(ContainerDetailsActivity.this);
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
                                 new Response.Listener<JSONObject>() {
@@ -625,7 +630,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, 2, 2);
                         request_json.setRetryPolicy(policy);
                         // add the request object to the queue to be executed
-                        requestQueue.add(request_json);
+                        requestQueue.add(request_json);*/
                     }
                     else{
                         AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ContainerDetailsActivity.this);
@@ -723,6 +728,64 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    public void uploadInventoryData(ArrayList<MyObject> jsonList){
+        try {
+            ProgressDialog progressSync = new ProgressDialog(ContainerDetailsActivity.this);
+            progressSync.setTitle("");
+            progressSync.setMessage("Uploading..");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(400, 200);
+            RequestQueue requestQueue = Volley.newRequestQueue(ContainerDetailsActivity.this);
+            for (int k=0;k<jsonList.size();k++){
+                int finalK = k;
+                String URL = ApiConstants.syncbarcodeScannedData;
+                JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonList.get(k).getObjectName()),
+                        new Response.Listener<JSONObject>() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                //Process os success response
+                                String res = response.toString();
+                                Log.e("res>>>>>>",res);
+                                databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
+                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                                if (jsonListModified.size()==0){
+                                    progressSync.dismiss();
+                                    final Intent myIntent = new Intent(ContainerDetailsActivity.this,
+                                            PostSuccess.class);
+                                    myIntent.putExtra("user_id", selectedUserId);
+                                    myIntent.putExtra("site_id", loggedinUserSiteId);
+                                    myIntent.putExtra("token", token);
+                                    myIntent.putExtra("sso", sso);
+                                    myIntent.putExtra("md5pwd", md5Pwd);
+                                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                    myIntent.putExtra("site_name", site_name);
+                                    myIntent.putExtra("empName", empName);
+                                    myIntent.putExtra("fromBarcodeScan", "yes");
+                                    startActivity(myIntent);
+                                }
+                            }
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                    }
+                });
+                int socketTimeout = 60000;//30 seconds - change to what you want
+                RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, 2, 2);
+                request_json.setRetryPolicy(policy);
+                // add the request object to the queue to be executed
+                requestQueue.add(request_json);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+
+        }
+        //}
+        //});
     }
     @Override
     public void onBackPressed() {

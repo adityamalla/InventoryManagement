@@ -459,6 +459,7 @@ public class SyncDBActivity extends AppCompatActivity {
                     values.put("modified_user_id", objectInArray.getString("modified_user_id"));
                     values.put("modified_date", objectInArray.getString("modified_date"));
                     values.put("last_test_date", objectInArray.getString("last_test_date"));
+                    values.put("primary_user_id", objectInArray.getString("primary_user_id"));
                     values.put("lot", objectInArray.getString("lot"));
                     values.put("create_date", objectInArray.getString("create_date"));
                     values.put("code", objectInArray.getString("code"));

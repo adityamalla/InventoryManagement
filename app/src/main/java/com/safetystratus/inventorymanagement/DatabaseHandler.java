@@ -377,6 +377,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
         return jsonList;
     }
+    @SuppressLint("Range")
+    public ArrayList<MyObject> getSavedJsonDataBarcodeUpdate(SQLiteDatabase sqLiteDatabase){
+        int count = 0;
+        ArrayList<MyObject> jsonList = new ArrayList<MyObject>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,json_data FROM scanned_json_data where scan_type='barcode'"), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                jsonList.add(new MyObject(cursor.getString(cursor.getColumnIndex("json_data")).trim(),
+                        cursor.getString(cursor.getColumnIndex("id")))
+                );
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return jsonList;
+    }
 
     @SuppressLint("Range")
     public ArrayList<MyObject> getStatusList(SQLiteDatabase sqLiteDatabase){
