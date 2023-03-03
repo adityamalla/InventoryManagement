@@ -312,7 +312,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String concentration_unit_abbrevation = cursor.getString(cursor.getColumnIndex("concentration_unit_abbrevation"));
                 String concentration_unit_abbrevation_id = cursor.getString(cursor.getColumnIndex("concentration_unit_abbrevation_id"));
                 String rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
-                inv = new InventoryModel(id, code,name,cas,status_id,status,facil_id,room_id,room,owner,notes,comments,volume_mass,volume_mass_units_id,volume_mass_units,rfidCode,concentration,concentration_unit_abbrevation_id,concentration_unit_abbrevation,object_id,object_table);
+                String primary_user_id = cursor.getString(cursor.getColumnIndex("primary_user_id"));
+                inv = new InventoryModel(id, code,name,cas,status_id,status,facil_id,room_id,room,owner,notes,comments,volume_mass,volume_mass_units_id,volume_mass_units,rfidCode,concentration,concentration_unit_abbrevation_id,concentration_unit_abbrevation,object_id,object_table,primary_user_id);
                 cursor.moveToNext();
             }
         }
@@ -443,6 +444,20 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         cursor.close();
         return primaryUsers;
+    }
+    @SuppressLint("Range")
+    public String getPrimaryUserName(SQLiteDatabase sqLiteDatabase, String id){
+        int count = 0;
+        String name = "";
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select distinct primary_user_id, primary_user from primary_users where primary_user_id="+id), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                name = cursor.getString(cursor.getColumnIndex("primary_user")).trim();
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return name;
     }
 
     @SuppressLint("Range")

@@ -9,23 +9,23 @@
     <TableLayout
         android:id="@+id/tableLayout2"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="220dp"
         android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="10dp"
         android:background="@drawable/sign_out_border"
         android:stretchColumns="0,1"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TableRow
-            android:layout_width="328dp"
-            android:layout_height="wrap_content">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
 
             <TextView
                 android:id="@+id/labelProductName"
-                android:layout_width="130dp"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:layout_column="0"
                 android:fontFamily="@font/roboto_regular"
@@ -52,18 +52,18 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/labelCode"
-                android:layout_width="80dp"
+                android:id="@+id/labelBarCode"
+                android:layout_width="155dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_regular"
                 android:gravity="bottom"
                 android:paddingLeft="5dp"
-                android:text="Code"
+                android:text="Barcode"
                 android:textColor="#9B9B9B"
                 android:textSize="18sp" />
 
             <TextView
-                android:id="@+id/codeValue"
+                android:id="@+id/barcodeValue"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_regular"
@@ -78,8 +78,138 @@
             android:layout_height="match_parent">
 
             <TextView
+                android:id="@+id/labelRFIDCode"
+                android:layout_width="155dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:paddingLeft="5dp"
+                android:text="RFID Code"
+                android:textColor="#9B9B9B"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/rfid"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:text="rfid"
+                android:textColor="#1E1E1E"
+                android:textSize="16sp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/labelOwner"
+                android:layout_width="155dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:paddingLeft="5dp"
+                android:text="Owner"
+                android:textColor="#9B9B9B"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/owner"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:text="owner"
+                android:textColor="#1E1E1E"
+                android:textSize="16sp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/labelPrimaryUser"
+                android:layout_width="155dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:paddingLeft="5dp"
+                android:text="Primary User"
+                android:textColor="#9B9B9B"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/pu"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:text="pu"
+                android:textColor="#1E1E1E"
+                android:textSize="16sp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/labelNotes"
+                android:layout_width="155dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:paddingLeft="5dp"
+                android:text="Location Notes"
+                android:textColor="#9B9B9B"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/notes"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:text="notes"
+                android:textColor="#1E1E1E"
+                android:textSize="16sp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/labelComm"
+                android:layout_width="155dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:paddingLeft="5dp"
+                android:text="Container Comment"
+                android:textColor="#9B9B9B"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/comm"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_regular"
+                android:gravity="bottom"
+                android:text="comments"
+                android:textColor="#1E1E1E"
+                android:textSize="16sp" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
                 android:id="@+id/labelVol"
-                android:layout_width="120dp"
+                android:layout_width="155dp"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_regular"
                 android:gravity="bottom"

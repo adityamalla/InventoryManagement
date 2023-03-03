@@ -54,7 +54,12 @@ public class Container_Info extends AppCompatActivity {
     ConstraintLayout header;
     ArrayList<String> codelistfromIntent;
     TextView productName;
-    TextView code;
+    TextView barcode;
+    TextView rfidcode;
+    TextView owner;
+    TextView primaryUser;
+    TextView notes;
+    TextView comments;
     TextView volume;
     //generate list
     ArrayList<String> newList = new ArrayList<String>();
@@ -148,12 +153,22 @@ public class Container_Info extends AppCompatActivity {
         if(intent.getSerializableExtra("codelistfromIntent")!=null)
             codelistfromIntent = (ArrayList<String>) intent.getSerializableExtra("codelistfromIntent");
         productName = findViewById(R.id.productName);
-        code = findViewById(R.id.codeValue);
+        barcode = findViewById(R.id.barcodeValue);
+        rfidcode = findViewById(R.id.rfid);
+        owner = findViewById(R.id.owner);
+        primaryUser = findViewById(R.id.pu);
+        notes = findViewById(R.id.notes);
+        comments = findViewById(R.id.comm);
         volume = findViewById(R.id.volume);
         InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,scannedCode);
         if(inv!=null){
             productName.setText(inv.getProductName());
-            code.setText(scannedCode);
+            barcode.setText(inv.getCode());
+            rfidcode.setText(inv.getRfidCode());
+            owner.setText(inv.getOwner());
+            primaryUser.setText(databaseHandler.getPrimaryUserName(db,inv.getPrimary_user_id()));
+            notes.setText(inv.getNotes());
+            comments.setText(inv.getComments());
             volume.setText(inv.getVolume_mass()+" "+inv.getVolume_mass_unit());
         }else{
 
