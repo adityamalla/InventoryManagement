@@ -63,9 +63,35 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
         TextView productName = (TextView)view.findViewById(R.id.productName);
         TextView productCode = (TextView)view.findViewById(R.id.productcode);
         TextView volumne = (TextView)view.findViewById(R.id.volumeofitem);
+        ImageView invinfo = (ImageView)view.findViewById(R.id.invinfo);
         productName.setText(list.get(position).getProductName());
         productCode.setText(list.get(position).getRfidCode());
         volumne.setText(list.get(position).getVolume());
+        invinfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Intent myIntent = new Intent(context,
+                        Container_Info.class);
+                myIntent.putExtra("user_id", obj.getUser_id());
+                myIntent.putExtra("site_id", obj.getSite_id());
+                myIntent.putExtra("token", obj.getToken());
+                myIntent.putExtra("sso", obj.getSso());
+                myIntent.putExtra("md5pwd", obj.getMd5());
+                myIntent.putExtra("loggedinUsername", obj.getLoggedinUsername());
+                myIntent.putExtra("site_name", obj.getSite_name());
+                myIntent.putExtra("empName",obj.getEmpName());
+                myIntent.putExtra("selectedFacilName", obj.getSelectedFacilName());
+                myIntent.putExtra("selectedFacil", obj.getSelectedFacil()+"");
+                myIntent.putExtra("selectedRoomName", obj.getSelectedRoomName());
+                myIntent.putExtra("selectedRoom", obj.getSelectedRoom()+"");
+                myIntent.putExtra("selectedSearchValue", obj.getSelectedSearchValue());
+                myIntent.putExtra("total_inventory", obj.getTotal_inventory()+"");
+                myIntent.putExtra("flag",obj.getFlag()+"");
+                myIntent.putExtra("codelistfromIntent",obj.getCodelistfromIntent());
+                myIntent.putExtra("scannedCode", list.get(position).getRfidCode());
+                context.startActivity(myIntent);
+            }
+        });
         return view;
     }
 }

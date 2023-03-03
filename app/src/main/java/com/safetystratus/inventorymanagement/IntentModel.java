@@ -13,8 +13,17 @@ public class IntentModel {
     public String loggedinUsername;
     public String flag;
     public ArrayList<String> codelistfromIntent;
+    public String selectedSearchValue;
+    public String selectedFacilName;
+    public String selectedFacil;
+    public String selectedRoomName;
+    public String selectedRoom;
+    public String total_inventory;
 
-    public IntentModel(String site_id, String user_id, String token, String md5, String sso, String empName, String site_name, String loggedinUsername, String flag, ArrayList<String> codelistfromIntent) {
+    public IntentModel(String site_id, String user_id, String token,
+                       String md5, String sso, String empName, String site_name,
+                       String loggedinUsername, String flag, ArrayList<String> codelistfromIntent,
+                       String selectedSearchValue, String selectedFacilName, String selectedFacil, String selectedRoomName, String selectedRoom,String total_inventory) {
         this.site_id = site_id;
         this.user_id = user_id;
         this.token = token;
@@ -25,6 +34,60 @@ public class IntentModel {
         this.loggedinUsername = loggedinUsername;
         this.flag = flag;
         this.codelistfromIntent = codelistfromIntent;
+        this.selectedSearchValue = selectedSearchValue;
+        this.selectedFacilName = selectedFacilName;
+        this.selectedFacil = selectedFacil;
+        this.selectedRoomName = selectedRoomName;
+        this.selectedRoom = selectedRoom;
+        this.total_inventory = total_inventory;
+    }
+
+    public String getSelectedSearchValue() {
+        return selectedSearchValue;
+    }
+
+    public void setSelectedSearchValue(String selectedSearchValue) {
+        this.selectedSearchValue = selectedSearchValue;
+    }
+
+    public String getSelectedFacilName() {
+        return selectedFacilName;
+    }
+
+    public void setSelectedFacilName(String selectedFacilName) {
+        this.selectedFacilName = selectedFacilName;
+    }
+
+    public String getSelectedFacil() {
+        return selectedFacil;
+    }
+
+    public void setSelectedFacil(String selectedFacil) {
+        this.selectedFacil = selectedFacil;
+    }
+
+    public String getSelectedRoomName() {
+        return selectedRoomName;
+    }
+
+    public void setSelectedRoomName(String selectedRoomName) {
+        this.selectedRoomName = selectedRoomName;
+    }
+
+    public String getSelectedRoom() {
+        return selectedRoom;
+    }
+
+    public void setSelectedRoom(String selectedRoom) {
+        this.selectedRoom = selectedRoom;
+    }
+
+    public String getTotal_inventory() {
+        return total_inventory;
+    }
+
+    public void setTotal_inventory(String total_inventory) {
+        this.total_inventory = total_inventory;
     }
 
     public ArrayList<String> getCodelistfromIntent() {

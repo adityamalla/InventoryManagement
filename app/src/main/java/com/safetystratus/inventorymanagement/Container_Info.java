@@ -44,6 +44,13 @@ public class Container_Info extends AppCompatActivity {
     String empName = "";
     String scannedCode = "";
     String flag = "";
+    String fromReconc = "";
+    public String selectedSearchValue="";
+    public String selectedFacilName="";
+    public String selectedFacil="";
+    public String selectedRoomName="";
+    public String selectedRoom="";
+    public String total_inventory="";
     ConstraintLayout header;
     ArrayList<String> codelistfromIntent;
     TextView productName;
@@ -110,6 +117,27 @@ public class Container_Info extends AppCompatActivity {
         if(intent.getStringExtra("flag")!=null) {
             flag = intent.getStringExtra("flag");
         }
+        if(intent.getStringExtra("fromReconc")!=null) {
+            fromReconc = intent.getStringExtra("fromReconc");
+        }
+        if(intent.getStringExtra("selectedSearchValue")!=null) {
+            selectedSearchValue = intent.getStringExtra("selectedSearchValue");
+        }
+        if(intent.getStringExtra("selectedFacilName")!=null) {
+            selectedFacilName = intent.getStringExtra("selectedFacilName");
+        }
+        if(intent.getStringExtra("selectedFacil")!=null) {
+            selectedFacil = intent.getStringExtra("selectedFacil");
+        }
+        if(intent.getStringExtra("selectedRoomName")!=null) {
+            selectedRoomName = intent.getStringExtra("selectedRoomName");
+        }
+        if(intent.getStringExtra("selectedRoom")!=null) {
+            selectedRoom = intent.getStringExtra("selectedRoom");
+        }
+        if(intent.getStringExtra("total_inventory")!=null) {
+            total_inventory = intent.getStringExtra("total_inventory");
+        }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
@@ -150,6 +178,9 @@ public class Container_Info extends AppCompatActivity {
             if (Integer.parseInt(flag.trim())==1){
                 myIntent = new Intent(Container_Info.this,
                         BulkUpdateActivity.class);
+            }else if (Integer.parseInt(flag.trim())==2){
+                myIntent = new Intent(Container_Info.this,
+                        RFIDScannerActivity.class);
             }else{
                 myIntent = new Intent(Container_Info.this,
                         ScanBarcodeBulkActivity.class);
@@ -160,9 +191,15 @@ public class Container_Info extends AppCompatActivity {
             myIntent.putExtra("sso", sso);
             myIntent.putExtra("md5pwd", md5Pwd);
             myIntent.putExtra("loggedinUsername", loggedinUsername);
+            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
             myIntent.putExtra("site_name", site_name);
-            myIntent.putExtra("pageLoadTemp", "-1");
+            myIntent.putExtra("selectedFacilName", selectedFacilName);
+            myIntent.putExtra("selectedFacil", selectedFacil+"");
+            myIntent.putExtra("selectedRoomName", selectedRoomName);
+            myIntent.putExtra("selectedRoom", selectedRoom+"");
             myIntent.putExtra("empName", empName);
+            myIntent.putExtra("total_inventory", total_inventory+"");
+            myIntent.putExtra("pageLoadTemp", "-1");
             myIntent.putExtra("codelistfromIntent", codelistfromIntent);
             startActivity(myIntent);
         }

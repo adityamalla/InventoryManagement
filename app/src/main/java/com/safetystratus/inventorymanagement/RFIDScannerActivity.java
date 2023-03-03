@@ -174,7 +174,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         tagList = (ListView)findViewById(R.id.invList);
         spinner = (ProgressBar)findViewById(R.id.progressBar1);
-        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"1",null);
+        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"2",null,selectedSearchValue,selectedFacilName,selectedFacil,selectedRoomName,selectedRoom,total_inventory);
         if (json_data_from_continue.trim().length()>0) {
             try {
                 JSONObject obj = new JSONObject(json_data_from_continue.toString());
