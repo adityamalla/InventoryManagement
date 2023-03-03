@@ -62,10 +62,10 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
         //Handle TextView and display string from your list
         TextView productName = (TextView)view.findViewById(R.id.productName);
         TextView productCode = (TextView)view.findViewById(R.id.productcode);
+        TextView volumne = (TextView)view.findViewById(R.id.volumeofitem);
         productName.setText(list.get(position).getProductName());
         productCode.setText(list.get(position).getRfidCode());
-
-
+        volumne.setText(list.get(position).getVolume());
         return view;
     }
 }

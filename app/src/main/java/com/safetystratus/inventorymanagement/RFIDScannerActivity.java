@@ -200,7 +200,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         }
         if (scannedOutOflocationListfromContinue.size()>0){
             for (int h=0;h<scannedOutOflocationListfromContinue.size();h++) {
-                invList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(h),"","-1","","1",true));
+                invList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(h),"","-1","","1","",true));
             }
         }
         if (scannedListfromContinue.size()>0){
@@ -556,7 +556,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     rfids.add(invList.get(i).getRfidCode());
                 }
                 for (int k=0;k < scannedOutOflocationListfromContinue.size();k++){
-                        invList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(k),"","-1","","1",true));
+                        invList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(k),"","-1","","1","",true));
                         ContentValues cv = new ContentValues();
                         cv.put("location_id", selectedFacil);
                         cv.put("room_id", selectedRoom);
@@ -569,7 +569,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 }
                 for (int k=0;k < newList.size();k++){
                     if (!rfids.contains(newList.get(k))){
-                        invList.add(new InventoryObject(newList.get(k),"","-1","","1",true));
+                        invList.add(new InventoryObject(newList.get(k),"","-1","","1","",true));
                         ContentValues cv = new ContentValues();
                         cv.put("location_id", selectedFacil);
                         cv.put("room_id", selectedRoom);

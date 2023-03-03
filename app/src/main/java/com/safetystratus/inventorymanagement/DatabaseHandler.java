@@ -263,7 +263,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<InventoryObject> getInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
         ArrayList<InventoryObject> inv = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT sec_code,name,code,id  \n" +
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT sec_code,name,code,id,quantity, quantity_unit_abbreviation \n" +
                 "FROM  chemical_inventory where room_id="+room_id), null);
         int count = 0;
         int recCount = cursor.getCount();
@@ -272,23 +272,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String id = cursor.getString(cursor.getColumnIndex("id"));
                 String product_name = "";
                 String code = "";
-                if(cursor.getString(cursor.getColumnIndex("name")).trim().length()>0) {
-                    product_name = cursor.getString(cursor.getColumnIndex("name"));
-                }else{
-                    product_name = "Inv"+count;
-                }
+                product_name = cursor.getString(cursor.getColumnIndex("name"));
                 String rfidCode = "";
-                if(cursor.getString(cursor.getColumnIndex("sec_code")).trim().length()>0) {
-                    rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
-                }else{
-                    rfidCode = "rfid"+count;
-                }
-                if(cursor.getString(cursor.getColumnIndex("code")).trim().length()>0) {
-                    code = cursor.getString(cursor.getColumnIndex("code"));
-                }else{
-                    code = "code"+count;
-                }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,false));
+                rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                code = cursor.getString(cursor.getColumnIndex("code"));
+                String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,false));
                 cursor.moveToNext();
                 count++;
             }
@@ -496,7 +485,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<InventoryObject> getFoundInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
         ArrayList<InventoryObject> inv = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,ci.id from chemical_inventory ci \n" +
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,ci.id,ci.quantity, ci.quantity_unit_abbreviation from chemical_inventory ci \n" +
                 "join scanned_data sc on ci.id = sc.inventory_id \n" +
                 "where ci.room_id = "+room_id), null);
         int count = 0;
@@ -505,23 +494,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String id = cursor.getString(cursor.getColumnIndex("id"));
                 String product_name = "";
                 String code = "";
-                if(cursor.getString(cursor.getColumnIndex("name")).trim().length()>0) {
-                    product_name = cursor.getString(cursor.getColumnIndex("name"));
-                }else{
-                    product_name = "Inv"+count;
-                }
+                product_name = cursor.getString(cursor.getColumnIndex("name"));
                 String rfidCode = "";
-                if(cursor.getString(cursor.getColumnIndex("sec_code")).trim().length()>0) {
-                    rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
-                }else{
-                    rfidCode = "rfid"+count;
-                }
-                if(cursor.getString(cursor.getColumnIndex("code")).trim().length()>0) {
-                    code = cursor.getString(cursor.getColumnIndex("code"));
-                }else{
-                    code = "code"+count;
-                }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,true));
+                rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                code = cursor.getString(cursor.getColumnIndex("code"));
+                String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,true));
                 cursor.moveToNext();
                 count++;
             }
@@ -544,7 +522,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,true));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"",true));
                 cursor1.moveToNext();
             }
         }
@@ -555,7 +533,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<InventoryObject> getNotFoundInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
         ArrayList<InventoryObject> inv = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,ci.id from chemical_inventory ci \n" +
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,ci.id,ci.quantity, ci.quantity_unit_abbreviation from chemical_inventory ci \n" +
                 "where ci.room_id="+room_id+" and ci.id not in(select inventory_id from scanned_data sc where sc.room_id="+room_id+");"), null);
         int count = 0;
         if (cursor.moveToFirst()) {
@@ -563,23 +541,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String id = cursor.getString(cursor.getColumnIndex("id"));
                 String product_name = "";
                 String code = "";
-                if(cursor.getString(cursor.getColumnIndex("name")).trim().length()>0) {
-                    product_name = cursor.getString(cursor.getColumnIndex("name"));
-                }else{
-                    product_name = "Inv"+count;
-                }
+                product_name = cursor.getString(cursor.getColumnIndex("name"));
                 String rfidCode = "";
-                if(cursor.getString(cursor.getColumnIndex("sec_code")).trim().length()>0) {
-                    rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
-                }else{
-                    rfidCode = "rfid"+count;
-                }
-                if(cursor.getString(cursor.getColumnIndex("code")).trim().length()>0) {
-                    code = cursor.getString(cursor.getColumnIndex("code"));
-                }else{
-                    code = "code"+count;
-                }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,false));
+                rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                code = cursor.getString(cursor.getColumnIndex("code"));
+                String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,false));
                 cursor.moveToNext();
                 count++;
             }
@@ -590,7 +557,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<InventoryObject> getALLInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
         ArrayList<InventoryObject> inv = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,sc.scanned,ci.id from chemical_inventory ci \n" +
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,sc.scanned,ci.id,ci.quantity, ci.quantity_unit_abbreviation from chemical_inventory ci \n" +
                 "left join scanned_data sc on ci.id = sc.inventory_id \n" +
                 "where ci.room_id = "+room_id), null);
         int count = 0;
@@ -600,22 +567,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String product_name = "";
                 String code = "";
                 String scanned = "";
-                if(cursor.getString(cursor.getColumnIndex("name")).trim().length()>0) {
-                    product_name = cursor.getString(cursor.getColumnIndex("name"));
-                }else{
-                    product_name = "Inv"+count;
-                }
+                product_name = cursor.getString(cursor.getColumnIndex("name"));
                 String rfidCode = "";
-                if(cursor.getString(cursor.getColumnIndex("sec_code")).trim().length()>0) {
-                    rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
-                }else{
-                    rfidCode = "rfid"+count;
-                }
-                if(cursor.getString(cursor.getColumnIndex("code")).trim().length()>0) {
-                    code = cursor.getString(cursor.getColumnIndex("code"));
-                }else{
-                    code = "code"+count;
-                }
+                rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                code = cursor.getString(cursor.getColumnIndex("code"));
                 boolean flag = false;
                 if(cursor.getString(cursor.getColumnIndex("scanned"))!=null) {
                     if (cursor.getString(cursor.getColumnIndex("scanned")).trim().length() > 0) {
@@ -627,7 +582,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,flag));
+                String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,vol,flag));
                 cursor.moveToNext();
                 count++;
             }
@@ -650,7 +606,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,true));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"",true));
                 cursor1.moveToNext();
             }
         }

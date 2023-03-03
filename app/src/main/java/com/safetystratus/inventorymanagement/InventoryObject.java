@@ -8,16 +8,26 @@ public class InventoryObject implements Serializable {
     public String productName;
     public String code;
     public String scanned;
+    public String volume;
     public boolean flag;
 
 
-    public InventoryObject(String rfidCode, String productName, String inv_id, String code, String scanned, boolean flag) {
+    public InventoryObject(String rfidCode, String productName, String inv_id, String code, String scanned, String volume, boolean flag) {
         this.rfidCode = rfidCode;
         this.productName = productName;
         this.inv_id = inv_id;
         this.code = code;
         this.scanned = scanned;
+        this.volume = volume;
         this.flag = flag;
+    }
+
+    public String getVolume() {
+        return volume;
+    }
+
+    public void setVolume(String volume) {
+        this.volume = volume;
     }
 
     public boolean isFlag() {
