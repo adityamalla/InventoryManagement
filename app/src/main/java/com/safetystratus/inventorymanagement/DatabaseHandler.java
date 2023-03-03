@@ -521,7 +521,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 }else{
                     code = "code"+count;
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,false));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,true));
                 cursor.moveToNext();
                 count++;
             }
@@ -544,7 +544,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,false));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,true));
                 cursor1.moveToNext();
             }
         }
@@ -616,16 +616,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 }else{
                     code = "code"+count;
                 }
+                boolean flag = false;
                 if(cursor.getString(cursor.getColumnIndex("scanned"))!=null) {
                     if (cursor.getString(cursor.getColumnIndex("scanned")).trim().length() > 0) {
                         scanned = cursor.getString(cursor.getColumnIndex("scanned"));
+                        flag = true;
                     } else {
                         scanned = "0";
                     }
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,false));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,flag));
                 cursor.moveToNext();
                 count++;
             }
@@ -648,7 +650,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,false));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,true));
                 cursor1.moveToNext();
             }
         }
