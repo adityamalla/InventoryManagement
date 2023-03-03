@@ -171,7 +171,14 @@ public class Container_Info extends AppCompatActivity {
             comments.setText(inv.getComments());
             volume.setText(inv.getVolume_mass()+" "+inv.getVolume_mass_unit());
         }else{
-
+            productName.setText("N/A");
+            barcode.setText("N/A");
+            rfidcode.setText("N/A");
+            owner.setText("N/A");
+            primaryUser.setText("N/A");
+            notes.setText("N/A");
+            comments.setText("N/A");
+            volume.setText("N/A");
         }
 
     }
