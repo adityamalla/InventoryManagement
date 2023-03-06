@@ -722,7 +722,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     public void delSavedScanDatabyId(SQLiteDatabase sqLiteDatabase, String id){
         sqLiteDatabase.delete("scanned_json_data", "id=?", new String[]{id});
-        sqLiteDatabase.delete("scanned_data", null, null);
+        //sqLiteDatabase.delete("scanned_data", null, null);
     }
     @SuppressLint("Range")
     public MyObject[] getAutoSearchBuildingsData(SQLiteDatabase sqLiteDatabase, String searchTerm) {

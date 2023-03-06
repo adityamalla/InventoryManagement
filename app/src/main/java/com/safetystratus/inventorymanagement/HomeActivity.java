@@ -570,7 +570,7 @@ public class HomeActivity extends AppCompatActivity {
             db.delete(QueryConstants.TABLE_NAME_MENU_CATEGORIES, null, null);
             db.delete(QueryConstants.TABLE_NAME_MENU_ITEMS, null, null);
             db.delete(QueryConstants.TABLE_NAME_SETTINGS, null, null);
-            //db.delete(QueryConstants.TABLE_NAME_SCANNED_DATA, null, null);
+            db.delete(QueryConstants.TABLE_NAME_SCANNED_DATA, null, null);
             db.delete(QueryConstants.TABLE_NAME_UOM, null, null);
             db.delete(QueryConstants.TABLE_NAME_INV_STATUS, null, null);
             //db.delete(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, null);
