@@ -113,14 +113,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public String getUserEmployeeUsername(SQLiteDatabase sqLiteDatabase, String val) {
         Cursor cursor = null;
         String name = "";
-        Log.e("name0>>>",val+"**");
         try{
             cursor = sqLiteDatabase.rawQuery(String.format("select username from site_users " +
                     "where user_id = " + val), null);
             if (cursor.moveToFirst()) {
                 name = cursor.getString(cursor.getColumnIndex("username"));
             }
-            Log.e("name1>>>",name+"**");
             cursor.close();
         }catch (Exception e){
             e.printStackTrace();
@@ -132,7 +130,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     /*public String getUserEmployeeName(SQLiteDatabase sqLiteDatabase, String val) {
         Cursor cursor = null;
         String name = "";
-        Log.e("test>>",val);
         try{
             cursor = sqLiteDatabase.rawQuery(String.format("select firstname||' '||lastname as name from site_users " +
                     "where user_id = " + val), null);
@@ -143,7 +140,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }catch (Exception e){
             e.printStackTrace();
         }
-        Log.e("test>>",name);
         return name;
     }*/
     @SuppressLint("Range")
@@ -491,7 +487,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+room_id+"" +
                 " and location_id="+loc_id+" and inventory_id > 0"), null);
         int count = cursor1.getCount();
-        Log.e("scannedCount>>",count+"***");
         cursor1.close();
         return count;
     }
@@ -500,7 +495,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+room_id+"" +
                 " and location_id="+loc_id), null);
         int count = cursor1.getCount();
-        Log.e("scannedCount>>",count+"***");
         cursor1.close();
         return String.valueOf(count);
     }
@@ -508,7 +502,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public boolean checkScannedBarcodeDataAvailable(SQLiteDatabase sqLiteDatabase,  String code){
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from chemical_inventory where code='"+code+"'"), null);
         int count = cursor1.getCount();
-        Log.e("scannedCount>>",count+"***");
         cursor1.close();
         if(count>0)
             return true;
@@ -561,7 +554,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
         }
         cursor1.close();
-        Log.e("invList>>>",inv.size()+"----");
         return inv;
     }
     @SuppressLint("Range")
@@ -645,7 +637,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
         }
         cursor1.close();
-        Log.e("invListAll>>>",inv.size()+"----");
         return inv;
     }
 
@@ -737,7 +728,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public MyObject[] getAutoSearchBuildingsData(SQLiteDatabase sqLiteDatabase, String searchTerm) {
         String sql = "SELECT name,id FROM fi_facilities " +
                 "where status = 'active' and name like '%"+searchTerm+"%'";
-        Log.e("TESTSQL>",sql);
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();
         MyObject[] ObjectItemData = new MyObject[recCount];
@@ -750,7 +740,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 MyObject myObject = new MyObject(objectName, objectId);
                 ObjectItemData[x] = myObject;
                 x++;
-                Log.e("Count>>",x+"");
             } while (cursor2.moveToNext());
         }
         cursor2.close();
@@ -760,7 +749,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public MyObject[] getAutoSearchRoomsData(SQLiteDatabase sqLiteDatabase, String searchTerm,String facil_id) {
         String sql = "SELECT room,id FROM fi_facil_rooms where status = 'active' and room like '%"+searchTerm+"%' and facil_id="+facil_id;
-        Log.e("TESTSQL>",sql);
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();
         MyObject[] ObjectItemData = new MyObject[recCount];
@@ -773,7 +761,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 MyObject myObject = new MyObject(objectName, objectId);
                 ObjectItemData[x] = myObject;
                 x++;
-                Log.e("Count>>",x+"");
             } while (cursor2.moveToNext());
         }
         cursor2.close();
@@ -783,7 +770,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public MyObject[] getAutoSearchStatusData(SQLiteDatabase sqLiteDatabase, String searchTerm) {
         String sql = "SELECT status,id FROM inventory_status where status like '%"+searchTerm+"%'";
-        Log.e("TESTSQL>",sql);
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();
         MyObject[] ObjectItemData = new MyObject[recCount];
@@ -796,7 +782,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 MyObject myObject = new MyObject(objectName, objectId);
                 ObjectItemData[x] = myObject;
                 x++;
-                Log.e("Count>>",x+"");
             } while (cursor2.moveToNext());
         }
         cursor2.close();
@@ -811,7 +796,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }else{
             sql = "SELECT owner as user_id,object_id as user FROM chemical_inventory where owner like '%"+searchTerm+"%' and object_table='site_users'";
         }
-        Log.e("TESTSQL>",sql);
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();
         MyObject[] ObjectItemData = new MyObject[recCount];
@@ -824,7 +808,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 MyObject myObject = new MyObject(objectName, objectId);
                 ObjectItemData[x] = myObject;
                 x++;
-                Log.e("Count>>",x+"");
             } while (cursor2.moveToNext());
         }
         cursor2.close();
@@ -834,7 +817,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public MyObject[] getAutoSearchUnitData(SQLiteDatabase sqLiteDatabase, String searchTerm) {
         String sql = "SELECT abbreviation,id FROM units_of_measure where abbreviation like '%"+searchTerm+"%'";
-        Log.e("TESTSQL>",sql);
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();
         MyObject[] ObjectItemData = new MyObject[recCount];
@@ -847,7 +829,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 MyObject myObject = new MyObject(objectName, objectId);
                 ObjectItemData[x] = myObject;
                 x++;
-                Log.e("Count>>",x+"");
             } while (cursor2.moveToNext());
         }
         cursor2.close();

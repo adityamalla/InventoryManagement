@@ -8,6 +8,7 @@ import androidx.core.widget.NestedScrollView;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -89,6 +90,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     Button backToHome;
     IntentModel model;
     String scannedTotalCount="";
+    ProgressDialog progressSynStart= null;
     ArrayList<InventoryObject> scannedInvList = null;
     ArrayList<String> scannedListfromContinue = new ArrayList<String>();
     ArrayList<String> scannedOutOflocationListfromContinue = new ArrayList<String>();
@@ -188,7 +190,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             scannedInvList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         tagList = (ListView)findViewById(R.id.invList);
-        spinner = (ProgressBar)findViewById(R.id.progressBar1);
+        //spinner = (ProgressBar)findViewById(R.id.progressBar1);
         model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"2",null,selectedSearchValue,selectedFacilName,selectedFacil,selectedRoomName,selectedRoom,total_inventory);
         if (json_data_from_continue.trim().length()>0) {
             try {
@@ -543,28 +545,20 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
 
     @Override
     public void handleTriggerPress(boolean pressed) {
+
         if (pressed) {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    progressSynStart = new ProgressDialog(RFIDScannerActivity.this);
+                    progressSynStart.setTitle("");
+                    progressSynStart.setMessage("Scanning in progress..");
+                    progressSynStart.setCancelable(false);
+                    progressSynStart.show();
+                    progressSynStart.getWindow().setLayout(450, 200);
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
-                    spinner.setVisibility(View.VISIBLE);
-                    tagList.setVisibility(View.GONE);
-                    ConstraintLayout constraintLayout = findViewById(R.id.rfidLayout);
-                    ConstraintSet constraintSet = new ConstraintSet();
-                    constraintSet.clone(constraintLayout);
-                    constraintSet.connect(R.id.saveScan,ConstraintSet.START,R.id.progressBar1,ConstraintSet.START,0);
-                    constraintSet.connect(R.id.saveScan,ConstraintSet.END,R.id.progressBar1,ConstraintSet.END,0);
-                    constraintSet.connect(R.id.saveScan,ConstraintSet.TOP,R.id.progressBar1,ConstraintSet.BOTTOM,0);
-                    constraintSet.applyTo(constraintLayout);
-                    ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) saveScanData.getLayoutParams();
-                    newLayoutParams.topMargin = 20;
-                    newLayoutParams.leftMargin = 10;
-                    newLayoutParams.rightMargin = 10;
-                    newLayoutParams.bottomMargin = 10;
-                    saveScanData.setLayoutParams(newLayoutParams);
                 }
             });
             rfidHandler.performInventory();
@@ -629,21 +623,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 }
                 CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList,model, RFIDScannerActivity.this);
                 tagList.setAdapter(adapter);
-                spinner.setVisibility(View.GONE);
-                tagList.setVisibility(View.VISIBLE);
-                ConstraintLayout constraintLayout = findViewById(R.id.rfidLayout);
-                ConstraintSet constraintSet = new ConstraintSet();
-                constraintSet.clone(constraintLayout);
-                constraintSet.connect(R.id.saveScan,ConstraintSet.START,R.id.invList,ConstraintSet.START,0);
-                constraintSet.connect(R.id.saveScan,ConstraintSet.END,R.id.invList,ConstraintSet.END,0);
-                constraintSet.connect(R.id.saveScan,ConstraintSet.TOP,R.id.invList,ConstraintSet.BOTTOM,0);
-                constraintSet.applyTo(constraintLayout);
-                ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) saveScanData.getLayoutParams();
-                newLayoutParams.topMargin = 20;
-                newLayoutParams.leftMargin = 10;
-                newLayoutParams.rightMargin = 10;
-                newLayoutParams.bottomMargin = 10;
-                saveScanData.setLayoutParams(newLayoutParams);
                 int scannedCount = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom);
                 scannedTotalCount = databaseHandler.checkScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom);
                 setscancount(String.valueOf(scannedCount), scannedTotalCount);
@@ -652,6 +631,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     }
 
     public void setscancount(String count, String total_scan_count){
+        progressSynStart.dismiss();
         scanCount.setText(total_scan_count);
         if(Integer.parseInt(total_inventory)>0) {
             if(Integer.parseInt(count)<=Integer.parseInt(total_inventory)) {
