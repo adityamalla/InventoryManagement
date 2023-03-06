@@ -88,15 +88,48 @@
             app:layout_constraintStart_toStartOf="@+id/scanProgress"
             app:layout_constraintTop_toBottomOf="@+id/scanProgress"
             tools:ignore="RtlCompat" />
+
+        <EditText
+            android:id="@+id/enteredbarcodeValue"
+            android:layout_width="210dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/rounded_corner"
+            android:drawablePadding="10dp"
+            android:ems="10"
+            android:focusableInTouchMode="true"
+            android:hint="Enter Barcode Details"
+            android:inputType="textPersonName"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:text=""
+            app:layout_constraintStart_toStartOf="@+id/scannedProgressCount"
+            app:layout_constraintTop_toBottomOf="@+id/scannedProgressPercentage" />
+
+        <Button
+            android:id="@+id/addBarCodeToList"
+            android:layout_width="70dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/sign_out_border"
+            android:text="Add"
+            android:textAllCaps="false"
+            android:textColor="#15BAB6"
+            android:textSize="14dp"
+            app:backgroundTint="@null"
+            app:layout_constraintEnd_toEndOf="@+id/scannedProgressCount"
+            app:layout_constraintStart_toEndOf="@+id/enteredbarcodeValue"
+            app:layout_constraintTop_toBottomOf="@+id/scannedProgressPercentage" />
         <RadioGroup
             android:layout_width="0dp"
             android:layout_height="55dp"
             android:weightSum="1"
             android:orientation="horizontal"
             android:id="@+id/radioGroup"
-            app:layout_constraintEnd_toEndOf="@+id/scannedProgressPercentage"
-            app:layout_constraintStart_toStartOf="@+id/scannedProgressPercentage"
-            app:layout_constraintTop_toBottomOf="@+id/scannedProgressPercentage">
+            app:layout_constraintEnd_toEndOf="@+id/addBarCodeToList"
+            app:layout_constraintStart_toStartOf="@+id/enteredbarcodeValue"
+            app:layout_constraintTop_toBottomOf="@+id/enteredbarcodeValue">
 
             <RadioButton
                 android:layout_width="wrap_content"

@@ -643,11 +643,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<RFIDScanDataObj> getALLInventoryScannedList(SQLiteDatabase sqLiteDatabase){
         ArrayList<RFIDScanDataObj> inv = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select inventory_id, scanned_by, scanned_date,rfid_code from scanned_data "), null);
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select inventory_id, scanned_by, scanned_date,rfid_code,code from scanned_data "), null);
         int count = 0;
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 String inventory_id = cursor.getString(cursor.getColumnIndex("inventory_id"));
+                String code = cursor.getString(cursor.getColumnIndex("code"));
                 String scanned_by = cursor.getString(cursor.getColumnIndex("scanned_by"));
                 String rfid_code="";
                 if(cursor.getString(cursor.getColumnIndex("rfid_code"))!=null) {
@@ -660,7 +661,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     rfid_code = "";
                 }
                 String scanned_date = cursor.getString(cursor.getColumnIndex("scanned_date"));
-                inv.add(new RFIDScanDataObj(inventory_id, scanned_by,scanned_date,rfid_code));
+                inv.add(new RFIDScanDataObj(inventory_id, scanned_by,scanned_date,rfid_code,code));
                 cursor.moveToNext();
             }
         }

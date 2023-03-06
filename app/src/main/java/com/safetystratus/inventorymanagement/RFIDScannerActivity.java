@@ -86,6 +86,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     RadioButton notfound;
     Button saveScanData;
     Button completeScan;
+    Button scanBarcode;
     ProgressBar spinner;
     Button backToHome;
     IntentModel model;
@@ -131,6 +132,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         completeScan = findViewById(R.id.completeScan);
         saveScanData = findViewById(R.id.saveScan);
         backToHome = (Button) findViewById(R.id.backToHome);
+        scanBarcode = (Button) findViewById(R.id.scanBarcodeReconc);
         backToHome.setVisibility(View.VISIBLE);
         scannedProgressPercentage.setText("0 %");
         Intent intent = getIntent();
@@ -269,6 +271,31 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             }
         });
 
+        scanBarcode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Intent myIntent = new Intent(RFIDScannerActivity.this,
+                        ScanBarcodeReconciliation.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("empName",empName);
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("scannedInvList", scannedInvList);
+                myIntent.putExtra("total_inventory", total_inventory+"");
+                myIntent.putExtra("scannedTotalCount", scannedTotalCount+"");
+                myIntent.putExtra("flag","2");
+                startActivity(myIntent);
+            }
+        });
         saveScanData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

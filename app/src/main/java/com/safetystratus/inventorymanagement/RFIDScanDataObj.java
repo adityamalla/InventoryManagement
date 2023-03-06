@@ -7,12 +7,22 @@ public class RFIDScanDataObj implements Serializable {
     public String scanned_by;
     public String scanned_date;
     public String rfid_code;
+    public String code;
 
-    public RFIDScanDataObj(String inventory_id, String scanned_by, String scanned_date, String rfid_code) {
+    public RFIDScanDataObj(String inventory_id, String scanned_by, String scanned_date, String rfid_code,String code) {
         this.inventory_id = inventory_id;
         this.scanned_by = scanned_by;
         this.scanned_date = scanned_date;
         this.rfid_code = rfid_code;
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getRfid_code() {

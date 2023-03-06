@@ -66,7 +66,10 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
         TextView volumne = (TextView)view.findViewById(R.id.volumeofitem);
         ImageView invinfo = (ImageView)view.findViewById(R.id.invinfo);
         productName.setText(list.get(position).getProductName());
-        productCode.setText(list.get(position).getRfidCode());
+        if(list.get(position).getRfidCode().trim().length()>0)
+            productCode.setText(list.get(position).getRfidCode());
+        else
+            productCode.setText(list.get(position).getCode());
         volumne.setText(list.get(position).getVolume());
         /*invinfo.setOnClickListener(new View.OnClickListener() {
             @Override
