@@ -352,7 +352,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                                     public void onResponse(JSONObject response) {
                                         //Process os success response
                                         String res = response.toString();
-                                        Log.e("res from complete>>",res+"**");
                                         databaseHandler.delSavedScanData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedUserId,selectedRoom);
                                         final Intent myIntent = new Intent(RFIDScannerActivity.this,
                                                 PostSuccess.class);
@@ -446,7 +445,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 InventoryObject selectedItem = (InventoryObject) parent.getItemAtPosition(position);
-                Log.e("rrrrrr>>",selectedItem.getInv_id()+"**");
                 final Intent myIntent = new Intent(RFIDScannerActivity.this,
                         Container_Info.class);
                 myIntent.putExtra("user_id", selectedUserId);

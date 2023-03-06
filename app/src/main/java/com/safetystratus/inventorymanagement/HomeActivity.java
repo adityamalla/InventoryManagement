@@ -170,7 +170,6 @@ public class HomeActivity extends AppCompatActivity {
             user_id[0] = selectedUserId;
             token[0] = request_token;
         }
-        Log.e("selecteduserid0>>",selectedUserId+"**");
 
         inventory.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -322,7 +321,6 @@ public class HomeActivity extends AppCompatActivity {
             RequestQueue requestQueue = Volley.newRequestQueue(HomeActivity.this);
             for (int k=0;k<jsonList.size();k++){
                 int finalK = k;
-                Log.e("JSON>>>",jsonList.get(k).getObjectName()+"**");
                 String URL = "";
                 String scan_type = databaseHandler.getScanType(db,jsonList.get(k).getObjectId());
                 if(scan_type.trim().equalsIgnoreCase("barcode")){
@@ -339,7 +337,6 @@ public class HomeActivity extends AppCompatActivity {
                             public void onResponse(JSONObject response) {
                                 //Process os success response
                                 String res = response.toString();
-                                Log.e("res>>>>",res);
                                 databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
                                 ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                                 if (jsonListModified.size()==0){
@@ -470,7 +467,6 @@ public class HomeActivity extends AppCompatActivity {
                     progressSynStart.dismiss();
                     progressSynStart = null;
                 }
-                Log.e("response>>",response.toString()+"**");
                 SyncDbDialogs sdb = new SyncDbDialogs();
                 sdb.execute(response.toString());
             }
@@ -558,7 +554,6 @@ public class HomeActivity extends AppCompatActivity {
             JSONArray jsonArrayFiFacilities = obj.getJSONArray("fi_facilities");
             JSONArray jsonArrayMenuCategories = obj.getJSONArray("menu_categories");
             JSONArray jsonArrayOtOrganization = obj.getJSONArray("ot_organization");
-            Log.e("Test00>",jsonArrayOtOrganization.toString()+"**");
 
             //JSONArray jsonArrayChemicalInventory = obj.getJSONArray("chemical_inventory");
             // JSONArray jsonArrayFiRoomRoster = obj.getJSONArray("fi_room_roster");
@@ -653,7 +648,6 @@ public class HomeActivity extends AppCompatActivity {
             }
             for (int i = 0, size = jsonArrayFiFacilities.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayFiFacilities.getJSONObject(i);
-                Log.e("Test>>",objectInArray.toString()+"*");
                 String id = objectInArray.getString("id");
                 if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_FACILITIES, "id", id) == 0) {
                     values.put("location_id", objectInArray.getString("location_id"));

@@ -191,7 +191,6 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
-        Log.e("selecteduserid1>>",selectedUserId+"**");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
         if (intent.getStringExtra("selectedSearchValue") != null) {
@@ -747,7 +746,6 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                             public void onResponse(JSONObject response) {
                                 //Process os success response
                                 String res = response.toString();
-                                Log.e("res>>>>>>",res);
                                 databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
                                 ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                                 if (jsonListModified.size()==0){

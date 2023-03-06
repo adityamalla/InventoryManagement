@@ -121,7 +121,6 @@ public class RFIDActivity extends AppCompatActivity {
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
-        Log.e("selecteduserid1>>",selectedUserId+"**");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
         if (intent.getStringExtra("selectedSearchValue") != null) {
@@ -139,12 +138,10 @@ public class RFIDActivity extends AppCompatActivity {
         if (intent.getStringExtra("selectedRoomName") != null) {
             selectedRoomName = intent.getStringExtra("selectedRoomName");
         }
-        Log.e("roomname>>",selectedRoomName+"*");
         employeeId = (EditText)findViewById(R.id.employeeId);
         building = (EditText)findViewById(R.id.building);
         room = (EditText)findViewById(R.id.room);
         scanRFID = (Button)findViewById(R.id.scanRFID);
-        Log.e("loggedinUsername>>",loggedinUsername+"**");
         employeeId.setText(loggedinUsername);
         employeeId.setEnabled(false);
         if(selectedFacilName.trim().length()>0){
@@ -319,7 +316,6 @@ public class RFIDActivity extends AppCompatActivity {
         if (id == android.R.id.home) {
             final Intent myIntent = new Intent(RFIDActivity.this,
                     HomeActivity.class);
-            Log.e("selecteduserid2>>",selectedUserId+"**");
             myIntent.putExtra("user_id", selectedUserId);
             myIntent.putExtra("site_id", loggedinUserSiteId);
             myIntent.putExtra("token", token);
