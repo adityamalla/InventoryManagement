@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -67,9 +68,10 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
         productName.setText(list.get(position).getProductName());
         productCode.setText(list.get(position).getRfidCode());
         volumne.setText(list.get(position).getVolume());
-        invinfo.setOnClickListener(new View.OnClickListener() {
+        /*invinfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                TextView tv = (TextView) view.findViewById(R.id.productcode);
                 final Intent myIntent = new Intent(context,
                         Container_Info.class);
                 myIntent.putExtra("user_id", obj.getUser_id());
@@ -88,10 +90,11 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
                 myIntent.putExtra("total_inventory", obj.getTotal_inventory()+"");
                 myIntent.putExtra("flag",obj.getFlag()+"");
                 myIntent.putExtra("codelistfromIntent",obj.getCodelistfromIntent());
-                myIntent.putExtra("scannedCode", list.get(position).getRfidCode());
+                Log.e("Test999999>>>>>",tv.getText().toString());
+                myIntent.putExtra("scannedCode", tv.getText().toString());
                 context.startActivity(myIntent);
             }
-        });
+        });*/
         return view;
     }
 }

@@ -221,7 +221,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             badge_notification.setText("");
         }
         if (decodedData.trim().length()>0){
-            InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,decodedData);
+            InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,decodedData,"");
             name.setText(inv.getProductName());
             cas.setText(inv.getCas_number());
             code.setText(inv.getCode());
@@ -551,7 +551,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 cv.put("quantity_unit_abbreviation_id", Integer.parseInt(selectedQuanUnit));
                 cv.put("concentration_unit_abbrevation_id", Integer.parseInt(selectedConcUnit));
                 databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString());
+                InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString(),"");
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(
                         selectedUserId,token,loggedinUserSiteId,code.getText().toString(),
                         selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val,selectedOwner,"site_users"
@@ -688,7 +688,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 cv.put("quantity_unit_abbreviation_id", Integer.parseInt(selectedQuanUnit));
                 cv.put("concentration_unit_abbrevation_id", Integer.parseInt(selectedConcUnit));
                 databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString());
+                InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString(),"");
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(
                         selectedUserId,token,loggedinUserSiteId,code.getText().toString(),
                         selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val, selectedOwner,"site_users"

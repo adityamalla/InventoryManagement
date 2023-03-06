@@ -22,6 +22,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -423,6 +424,32 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             public void onClick(View view) {
 
                 backToHome();
+            }
+        });
+        tagList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                InventoryObject selectedItem = (InventoryObject) parent.getItemAtPosition(position);
+                Log.e("rrrrrr>>",selectedItem.getInv_id()+"**");
+                final Intent myIntent = new Intent(RFIDScannerActivity.this,
+                        Container_Info.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("empName",empName);
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("total_inventory", total_inventory+"");
+                myIntent.putExtra("flag","2");
+                myIntent.putExtra("scannedCode", selectedItem.getInv_id()+"");
+                startActivity(myIntent);
             }
         });
     }

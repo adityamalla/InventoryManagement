@@ -160,16 +160,51 @@ public class Container_Info extends AppCompatActivity {
         notes = findViewById(R.id.notes);
         comments = findViewById(R.id.comm);
         volume = findViewById(R.id.volume);
-        InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,scannedCode);
+        Log.e("lll>>>",scannedCode+"***");
+        InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,scannedCode,flag);
         if(inv!=null){
             productName.setText(inv.getProductName());
-            barcode.setText(inv.getCode());
-            rfidcode.setText(inv.getRfidCode());
-            owner.setText(inv.getOwner());
-            primaryUser.setText(databaseHandler.getPrimaryUserName(db,inv.getPrimary_user_id()));
-            notes.setText(inv.getNotes());
-            comments.setText(inv.getComments());
-            volume.setText(inv.getVolume_mass()+" "+inv.getVolume_mass_unit());
+            if(inv.getCode().trim().length()>0){
+                barcode.setText(inv.getCode());
+            }else{
+                barcode.setText("N/A");
+
+            }
+            if(inv.getRfidCode().trim().length()>0) {
+                rfidcode.setText(inv.getRfidCode());
+            }else{
+                rfidcode.setText("N/A");
+            }
+            if(inv.getOwner().trim().length()>0) {
+                owner.setText(inv.getOwner());
+            }else{
+                owner.setText("N/A");
+            }
+            if(inv.getPrimary_user_id().trim().length()>0){
+                if(Integer.parseInt(inv.getPrimary_user_id())>0) {
+                    primaryUser.setText(databaseHandler.getPrimaryUserName(db, inv.getPrimary_user_id()));
+                }
+                else{
+                    primaryUser.setText("N/A");
+                }
+            }else{
+                primaryUser.setText("N/A");
+            }
+            if(inv.getNotes().trim().length()>0) {
+                notes.setText(inv.getNotes());
+            }else{
+                notes.setText("N/A");
+            }
+            if(inv.getComments().trim().length()>0) {
+                comments.setText(inv.getComments());
+            }else{
+                comments.setText("N/A");
+            }
+            if(inv.getVolume_mass().trim().length()>0) {
+                volume.setText(inv.getVolume_mass() + " " + inv.getVolume_mass_unit());
+            }else{
+                volume.setText("N/A");
+            }
         }else{
             productName.setText("N/A");
             barcode.setText("N/A");
@@ -197,10 +232,10 @@ public class Container_Info extends AppCompatActivity {
         int id = item.getItemId();
         Intent myIntent = null;
         if (id == android.R.id.home) {
-            if (Integer.parseInt(flag.trim())==1){
+            if (flag.equalsIgnoreCase("1")){
                 myIntent = new Intent(Container_Info.this,
                         BulkUpdateActivity.class);
-            }else if (Integer.parseInt(flag.trim())==2){
+            }else if (flag.equalsIgnoreCase("2")){
                 myIntent = new Intent(Container_Info.this,
                         RFIDScannerActivity.class);
             }else{

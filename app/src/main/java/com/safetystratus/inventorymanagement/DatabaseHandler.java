@@ -286,9 +286,19 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return inv;
     }
     @SuppressLint("Range")
-    public InventoryModel getScannedInventoryDetails(SQLiteDatabase sqLiteDatabase, String cde){
+    public InventoryModel getScannedInventoryDetails(SQLiteDatabase sqLiteDatabase, String cde,String flag){
         InventoryModel inv = null;
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM  chemical_inventory where code='"+cde+"' or sec_code='"+cde+"' limit 1"), null);
+        String sql = "";
+        if(flag.trim().length()>0){
+            if (flag.equalsIgnoreCase("2")){
+                sql = "SELECT * FROM  chemical_inventory where id= "+cde;
+            }else{
+                sql = "SELECT * FROM  chemical_inventory where code='"+cde+"' or sec_code='"+cde+"' limit 1";
+            }
+        }else{
+            sql = "SELECT * FROM  chemical_inventory where code='"+cde+"' or sec_code='"+cde+"' limit 1";
+        }
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format(sql), null);
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 String id = cursor.getString(cursor.getColumnIndex("id"));
