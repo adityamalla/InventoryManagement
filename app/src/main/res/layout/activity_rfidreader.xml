@@ -235,7 +235,7 @@
         app:layout_constraintStart_toStartOf="@+id/completeScan"
         app:layout_constraintTop_toBottomOf="@+id/completeScan" -->
     <Button
-        android:id="@+id/saveScan"
+        android:id="@+id/scanBarcodeReconc"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
@@ -243,7 +243,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/sign_out_border"
-        android:text="Save Data"
+        android:text="Scan Barcode"
         android:textAllCaps="false"
         android:textColor="#15BAB6"
         android:textSize="14dp"
@@ -251,6 +251,21 @@
         app:layout_constraintEnd_toEndOf="@+id/invList"
         app:layout_constraintStart_toStartOf="@+id/invList"
         app:layout_constraintTop_toBottomOf="@+id/invList" />
+
+    <Button
+        android:id="@+id/saveScan"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/sign_out_border"
+        android:text="Save Data"
+        android:textAllCaps="false"
+        android:textColor="#15BAB6"
+        android:textSize="14dp"
+        app:backgroundTint="@null"
+        app:layout_constraintEnd_toEndOf="@+id/scanBarcodeReconc"
+        app:layout_constraintStart_toStartOf="@+id/scanBarcodeReconc"
+        app:layout_constraintTop_toBottomOf="@+id/scanBarcodeReconc" />
 
     <Button
         android:id="@+id/completeScan"
