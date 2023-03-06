@@ -90,7 +90,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     ProgressBar spinner;
     Button backToHome;
     IntentModel model;
-    String scannedTotalCount="";
+    String scannedTotalCount="0";
     ProgressDialog progressSynStart= null;
     ArrayList<InventoryObject> scannedInvList = null;
     ArrayList<String> scannedListfromContinue = new ArrayList<String>();
@@ -174,10 +174,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         if (intent.getStringExtra("scannedTotalCount") != null) {
             scannedTotalCount = intent.getStringExtra("scannedTotalCount");
         }
-        if (scannedTotalCount.trim().length()>0)
-            scanCount.setText(scannedTotalCount);
-        else
-            scanCount.setText("0");
+        int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom);
+        setscancount(String.valueOf(scanned), scannedTotalCount);
         /*if (intent.getStringExtra("total_inventory") != null) {
             total_inventory = intent.getStringExtra("total_inventory");
         }*/
@@ -656,7 +654,10 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     }
 
     public void setscancount(String count, String total_scan_count){
-        progressSynStart.dismiss();
+        if(progressSynStart!=null) {
+            if(progressSynStart.isShowing())
+            progressSynStart.dismiss();
+        }
         scanCount.setText(total_scan_count);
         if(Integer.parseInt(total_inventory)>0) {
             if(Integer.parseInt(count)<=Integer.parseInt(total_inventory)) {

@@ -94,7 +94,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
     Button backToHome;
     IntentModel model;
     Button addtoList;
-    String scannedTotalCount="";
+    String scannedTotalCount="0";
     ProgressDialog progressSynStart= null;
     ArrayList<InventoryObject> scannedInvList = null;
     ArrayList<String> scannedListfromContinue = new ArrayList<String>();
@@ -149,9 +149,9 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         if (intent.getStringExtra("total_inventory") != null) {
             total_inventory = intent.getStringExtra("total_inventory");
         }
-        scannedProgressCount.setText("0/"+total_inventory);
+        scannedProgressCount.setText("0/" + total_inventory);
         progressVal.setProgress(0);
-        if(intent.getStringExtra("empName")!=null) {
+        if (intent.getStringExtra("empName") != null) {
             empName = intent.getStringExtra("empName");
         }
         site_name = intent.getStringExtra("site_name");
@@ -180,9 +180,10 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         if (intent.getStringExtra("scannedTotalCount") != null) {
             scannedTotalCount = intent.getStringExtra("scannedTotalCount");
         }
-        if (scannedTotalCount.trim().length()>0)
-            scanCount.setText(scannedTotalCount);
-        else
+        if (scannedTotalCount.trim().length() > 0){
+            int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom);
+            setscancount(String.valueOf(scanned), scannedTotalCount);
+        }else
             scanCount.setText("0");
         all.setChecked(true);
         scannedInvList = new ArrayList<InventoryObject>();
@@ -312,6 +313,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                 String jsonString = "";
                 try {
                     jsonString = mapper.writeValueAsString(postScanObj);
+                    Log.e("barcodejson>>",jsonString);
                     boolean connected;
                     ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                     NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
@@ -443,6 +445,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
+                    int count = 0;
                     Log.e("oooooo",databaseHandler.checkScannedBarcodeDataAvailable(db,enteredBarCodeValue.getText().toString())+"**");
                     if(!databaseHandler.checkScannedBarcodeDataAvailable(db,enteredBarCodeValue.getText().toString())){
                         scannedInvList.add(new InventoryObject("","","-1",enteredBarCodeValue.getText().toString(),"1","",true));
@@ -454,6 +457,9 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         cv.put("code", enteredBarCodeValue.getText().toString());
                         cv.put("scanned", 1);
                         databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        count = Integer.parseInt(scannedTotalCount)+1;
+                        scannedTotalCount = String.valueOf(count);
+                        scanCount.setText(String.valueOf(count));
                     }else{
                         for (int g=0;g<scannedInvList.size();g++){
                             Log.e("TESGGGGGG1",scannedInvList.get(g).getCode());
@@ -469,6 +475,10 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                     cv.put("scanned_by", selectedUserId);
                                     cv.put("scanned", 1);
                                     databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                    int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom);
+                                    count = Integer.parseInt(scannedTotalCount)+1;
+                                    scannedTotalCount = String.valueOf(count);
+                                    setscancount(String.valueOf(count),String.valueOf(scanned));
                                 }
                             }
                         }
@@ -512,7 +522,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                 myIntent.putExtra("scannedInvList", scannedInvList);
                 myIntent.putExtra("total_inventory", total_inventory+"");
                 myIntent.putExtra("scannedTotalCount", scannedTotalCount+"");
-                myIntent.putExtra("flag","2");
+                myIntent.putExtra("flag","3");
                 myIntent.putExtra("scannedCode", selectedItem.getInv_id()+"");
                 startActivity(myIntent);
             }
@@ -585,6 +595,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type_legacy));
         }
         Log.e("TestDecodeData>>",decodedData+"---");
+        int count = 0;
         if(!databaseHandler.checkScannedBarcodeDataAvailable(db,decodedData)){
             scannedInvList.add(new InventoryObject("","","-1",decodedData,"1","",true));
             ContentValues cv = new ContentValues();
@@ -595,6 +606,9 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             cv.put("code", decodedData);
             cv.put("scanned", 1);
             databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+            count = Integer.parseInt(scannedTotalCount)+1;
+            scannedTotalCount = String.valueOf(count);
+            scanCount.setText(count);
         }else{
             for (int g=0;g<scannedInvList.size();g++){
                 if (scannedInvList.get(g).getCode().equalsIgnoreCase(decodedData)){
@@ -607,11 +621,30 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         cv.put("scanned_by", selectedUserId);
                         cv.put("scanned", 1);
                         databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom);
+                        count = Integer.parseInt(scannedTotalCount)+1;
+                        scannedTotalCount = String.valueOf(count);
+                        setscancount(String.valueOf(count),String.valueOf(scanned));
                     }
                 }
             }
         }
         CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList,model, ScanBarcodeReconciliation.this);
         tagList.setAdapter(adapter);
+    }
+    public void setscancount(String count, String total_scan_count){
+        if(progressSynStart!=null) {
+            if(progressSynStart.isShowing())
+                progressSynStart.dismiss();
+        }
+        scanCount.setText(total_scan_count);
+        if(Integer.parseInt(total_inventory)>0) {
+            if(Integer.parseInt(count)<=Integer.parseInt(total_inventory)) {
+                int percent = (Integer.parseInt(count) * 100) / Integer.parseInt(total_inventory);
+                scannedProgressPercentage.setText(percent + " %");
+                scannedProgressCount.setText(count + "/" + total_inventory);
+                progressVal.setProgress(percent);
+            }
+        }
     }
 }

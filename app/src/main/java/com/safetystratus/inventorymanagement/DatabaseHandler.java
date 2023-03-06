@@ -286,7 +286,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         InventoryModel inv = null;
         String sql = "";
         if(flag.trim().length()>0){
-            if (flag.equalsIgnoreCase("2")){
+            if (flag.equalsIgnoreCase("2")||flag.equalsIgnoreCase("3")){
                 sql = "SELECT * FROM  chemical_inventory where id= "+cde;
             }else{
                 sql = "SELECT * FROM  chemical_inventory where code='"+cde+"' or sec_code='"+cde+"' limit 1";

@@ -61,7 +61,7 @@ public class Container_Info extends AppCompatActivity {
     TextView notes;
     TextView comments;
     TextView volume;
-    String scannedTotalCount="";
+    String scannedTotalCount="0";
     //generate list
     ArrayList<String> newList = new ArrayList<String>();
     ArrayList<InventoryObject> scannedInvList =null;
@@ -246,6 +246,9 @@ public class Container_Info extends AppCompatActivity {
             }else if (flag.equalsIgnoreCase("2")){
                 myIntent = new Intent(Container_Info.this,
                         RFIDScannerActivity.class);
+            }else if (flag.equalsIgnoreCase("3")){
+                myIntent = new Intent(Container_Info.this,
+                        ScanBarcodeReconciliation.class);
             }else{
                 myIntent = new Intent(Container_Info.this,
                         ScanBarcodeBulkActivity.class);
