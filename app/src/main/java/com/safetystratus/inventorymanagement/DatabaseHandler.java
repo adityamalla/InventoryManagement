@@ -496,6 +496,15 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return count;
     }
     @SuppressLint("Range")
+    public String checkScannedDataFullCount(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id){
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+room_id+"" +
+                " and location_id="+loc_id), null);
+        int count = cursor1.getCount();
+        Log.e("scannedCount>>",count+"***");
+        cursor1.close();
+        return String.valueOf(count);
+    }
+    @SuppressLint("Range")
     public boolean checkScannedBarcodeDataAvailable(SQLiteDatabase sqLiteDatabase,  String code){
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from chemical_inventory where code='"+code+"'"), null);
         int count = cursor1.getCount();

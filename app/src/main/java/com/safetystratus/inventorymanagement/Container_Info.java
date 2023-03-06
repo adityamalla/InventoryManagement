@@ -61,8 +61,10 @@ public class Container_Info extends AppCompatActivity {
     TextView notes;
     TextView comments;
     TextView volume;
+    String scannedTotalCount="";
     //generate list
     ArrayList<String> newList = new ArrayList<String>();
+    ArrayList<InventoryObject> scannedInvList =null;
     ProgressDialog progressSynStart = null;
     RFIDHandlerBulkUpdate rfidHandler;
     IntentModel model = null;
@@ -125,6 +127,9 @@ public class Container_Info extends AppCompatActivity {
         if(intent.getStringExtra("fromReconc")!=null) {
             fromReconc = intent.getStringExtra("fromReconc");
         }
+        if(intent.getStringExtra("scannedTotalCount")!=null) {
+            scannedTotalCount = intent.getStringExtra("scannedTotalCount");
+        }
         if(intent.getStringExtra("selectedSearchValue")!=null) {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
@@ -143,6 +148,9 @@ public class Container_Info extends AppCompatActivity {
         if(intent.getStringExtra("total_inventory")!=null) {
             total_inventory = intent.getStringExtra("total_inventory");
         }
+        scannedInvList = new ArrayList<InventoryObject>();
+        if(intent.getSerializableExtra("scannedInvList")!=null)
+            scannedInvList = (ArrayList<InventoryObject>) intent.getSerializableExtra("scannedInvList");
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
@@ -258,6 +266,8 @@ public class Container_Info extends AppCompatActivity {
             myIntent.putExtra("total_inventory", total_inventory+"");
             myIntent.putExtra("pageLoadTemp", "-1");
             myIntent.putExtra("codelistfromIntent", codelistfromIntent);
+            myIntent.putExtra("scannedInvList", scannedInvList);
+            myIntent.putExtra("scannedTotalCount", scannedTotalCount+"");
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);

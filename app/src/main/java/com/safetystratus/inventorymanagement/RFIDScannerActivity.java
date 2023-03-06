@@ -88,6 +88,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     ProgressBar spinner;
     Button backToHome;
     IntentModel model;
+    String scannedTotalCount="";
+    ArrayList<InventoryObject> scannedInvList = null;
     ArrayList<String> scannedListfromContinue = new ArrayList<String>();
     ArrayList<String> scannedOutOflocationListfromContinue = new ArrayList<String>();
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDScannerActivity.this);
@@ -165,6 +167,13 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         if (intent.getStringExtra("json_data_from_continue") != null) {
             json_data_from_continue = intent.getStringExtra("json_data_from_continue");
         }
+        if (intent.getStringExtra("scannedTotalCount") != null) {
+            scannedTotalCount = intent.getStringExtra("scannedTotalCount");
+        }
+        if (scannedTotalCount.trim().length()>0)
+            scanCount.setText(scannedTotalCount);
+        else
+            scanCount.setText("0");
         /*if (intent.getStringExtra("total_inventory") != null) {
             total_inventory = intent.getStringExtra("total_inventory");
         }*/
@@ -172,7 +181,12 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         rfidHandler = new RFIDHandler();
         rfidHandler.onCreate(this);
         all.setChecked(true);
-        ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+        scannedInvList = new ArrayList<InventoryObject>();
+        if(intent.getSerializableExtra("scannedInvList")!=null)
+            scannedInvList = (ArrayList<InventoryObject>) intent.getSerializableExtra("scannedInvList");
+        else
+            scannedInvList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+        //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         tagList = (ListView)findViewById(R.id.invList);
         spinner = (ProgressBar)findViewById(R.id.progressBar1);
         model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"2",null,selectedSearchValue,selectedFacilName,selectedFacil,selectedRoomName,selectedRoom,total_inventory);
@@ -201,17 +215,17 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         }
         if (scannedOutOflocationListfromContinue.size()>0){
             for (int h=0;h<scannedOutOflocationListfromContinue.size();h++) {
-                invList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(h),"","-1","","1","",true));
+                scannedInvList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(h),"","-1","","1","",true));
             }
         }
         if (scannedListfromContinue.size()>0){
-            for (int h=0;h<invList.size();h++) {
-                if(scannedListfromContinue.contains(invList.get(h).getInv_id())){
-                    invList.get(h).setFlag(true);
+            for (int h=0;h<scannedInvList.size();h++) {
+                if(scannedListfromContinue.contains(scannedInvList.get(h).getInv_id())){
+                    scannedInvList.get(h).setFlag(true);
                 }
             }
         }
-        CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(invList,model, RFIDScannerActivity.this);
+        CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList,model, RFIDScannerActivity.this);
         tagList.setAdapter(adapter);
         found.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -446,7 +460,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 myIntent.putExtra("selectedRoomName", selectedRoomName);
                 myIntent.putExtra("selectedRoom", selectedRoom+"");
                 myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("scannedInvList", scannedInvList);
                 myIntent.putExtra("total_inventory", total_inventory+"");
+                myIntent.putExtra("scannedTotalCount", scannedTotalCount+"");
                 myIntent.putExtra("flag","2");
                 myIntent.putExtra("scannedCode", selectedItem.getInv_id()+"");
                 startActivity(myIntent);
@@ -567,23 +583,26 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
+                //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
+                //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
                 ArrayList<String> rfids = new ArrayList<String>();
-                for (int i = 0; i < invList.size(); i++) {
-                    if (newList.contains(invList.get(i).getRfidCode())){
-                        invList.get(i).setFlag(true);
-                        ContentValues cv = new ContentValues();
-                        cv.put("location_id", selectedFacil);
-                        cv.put("room_id", selectedRoom);
-                        cv.put("inventory_id", Integer.parseInt(invList.get(i).getInv_id()));
-                        cv.put("scanned_by", selectedUserId);
-                        cv.put("scanned", 1);
-                        databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                for (int i = 0; i < scannedInvList.size(); i++) {
+                    if (newList.contains(scannedInvList.get(i).getRfidCode())){
+                        if(!scannedInvList.get(i).isFlag()) {
+                            scannedInvList.get(i).setFlag(true);
+                            ContentValues cv = new ContentValues();
+                            cv.put("location_id", selectedFacil);
+                            cv.put("room_id", selectedRoom);
+                            cv.put("inventory_id", Integer.parseInt(scannedInvList.get(i).getInv_id()));
+                            cv.put("scanned_by", selectedUserId);
+                            cv.put("scanned", 1);
+                            databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        }
                     }
-                    rfids.add(invList.get(i).getRfidCode());
+                    rfids.add(scannedInvList.get(i).getRfidCode());
                 }
                 for (int k=0;k < scannedOutOflocationListfromContinue.size();k++){
-                        invList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(k),"","-1","","1","",true));
+                        /*scannedInvList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(k),"","-1","","1","",true));
                         ContentValues cv = new ContentValues();
                         cv.put("location_id", selectedFacil);
                         cv.put("room_id", selectedRoom);
@@ -592,11 +611,11 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                         cv.put("rfid_code", newList.get(k));
                         cv.put("scanned", 1);
                         databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                        rfids.add(scannedOutOflocationListfromContinue.get(k));
+                        */rfids.add(scannedOutOflocationListfromContinue.get(k));
                 }
                 for (int k=0;k < newList.size();k++){
                     if (!rfids.contains(newList.get(k))){
-                        invList.add(new InventoryObject(newList.get(k),"","-1","","1","",true));
+                        //invList.add(new InventoryObject(newList.get(k),"","-1","","1","",true));
                         ContentValues cv = new ContentValues();
                         cv.put("location_id", selectedFacil);
                         cv.put("room_id", selectedRoom);
@@ -605,9 +624,10 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                         cv.put("rfid_code", newList.get(k));
                         cv.put("scanned", 1);
                         databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        scannedInvList.add(new InventoryObject(newList.get(k),"","-1","","1","",true));
                     }
                 }
-                CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(invList,model, RFIDScannerActivity.this);
+                CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList,model, RFIDScannerActivity.this);
                 tagList.setAdapter(adapter);
                 spinner.setVisibility(View.GONE);
                 tagList.setVisibility(View.VISIBLE);
@@ -625,7 +645,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 newLayoutParams.bottomMargin = 10;
                 saveScanData.setLayoutParams(newLayoutParams);
                 int scannedCount = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom);
-                setscancount(String.valueOf(scannedCount), String.valueOf(newList.size()));
+                scannedTotalCount = databaseHandler.checkScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom);
+                setscancount(String.valueOf(scannedCount), scannedTotalCount);
             }
         });
     }
