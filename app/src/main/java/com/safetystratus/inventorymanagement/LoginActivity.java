@@ -93,6 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                 myIntent.putExtra("url", ApiConstants.forgotPasswordURL);
                 myIntent.putExtra("tempVar", "0");
                 startActivity(myIntent);*/
+                Toast.makeText(LoginActivity.this, "This functionality will be available from next release", Toast.LENGTH_SHORT).show();
             }
         });
         supportLink.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +108,9 @@ public class LoginActivity extends AppCompatActivity {
         sso = (Switch) findViewById(R.id.sso);
         sso.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                errorPwdText.setVisibility(View.GONE);
+                errorUnameText.setVisibility(View.GONE);
+                errorText.setVisibility(View.GONE);
                 if (isChecked) {
                     password.setVisibility(View.GONE);
                     ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
@@ -237,24 +241,99 @@ public class LoginActivity extends AppCompatActivity {
                 if (!singleSign) {
                     if (!validateInputField(uname)) {
                         errorUnameText.setVisibility(View.VISIBLE);
+                        ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
+                        ConstraintSet constraintSet = new ConstraintSet();
+                        constraintSet.clone(constraintLayout);
+                        constraintSet.connect(R.id.password,ConstraintSet.START,R.id.errorUnameText,ConstraintSet.START,0);
+                        constraintSet.connect(R.id.password,ConstraintSet.END,R.id.errorUnameText,ConstraintSet.END,0);
+                        constraintSet.connect(R.id.password,ConstraintSet.TOP,R.id.errorUnameText,ConstraintSet.BOTTOM,0);
+                        constraintSet.applyTo(constraintLayout);
+                        ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) password.getLayoutParams();
+                        newLayoutParams.topMargin = 16;
+                        newLayoutParams.leftMargin = 0;
+                        newLayoutParams.rightMargin = 0;
+                        newLayoutParams.bottomMargin = 0;
+                        password.setLayoutParams(newLayoutParams);
                         if (errorPwdText.isShown()) {
                             errorPwdText.setVisibility(View.GONE);
+                            ConstraintSet constraintSet1 = new ConstraintSet();
+                            constraintSet1.clone(constraintLayout);
+                            constraintSet1.connect(R.id.button_login,ConstraintSet.START,R.id.password,ConstraintSet.START,0);
+                            constraintSet1.connect(R.id.button_login,ConstraintSet.END,R.id.password,ConstraintSet.END,0);
+                            constraintSet1.connect(R.id.button_login,ConstraintSet.TOP,R.id.password,ConstraintSet.BOTTOM,0);
+                            constraintSet1.applyTo(constraintLayout);
+                            ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                            newLayoutParams1.topMargin = 16;
+                            newLayoutParams1.leftMargin = 0;
+                            newLayoutParams1.rightMargin = 0;
+                            newLayoutParams1.bottomMargin = 0;
+                            login.setLayoutParams(newLayoutParams1);
                         }
                         progress.dismiss();
                     }
                     else if (!validateInputField(pwd)) {
+                        ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
                         if (errorUnameText.isShown()) {
                             errorUnameText.setVisibility(View.GONE);
+                            ConstraintSet constraintSet = new ConstraintSet();
+                            constraintSet.clone(constraintLayout);
+                            constraintSet.connect(R.id.password,ConstraintSet.START,R.id.username,ConstraintSet.START,0);
+                            constraintSet.connect(R.id.password,ConstraintSet.END,R.id.username,ConstraintSet.END,0);
+                            constraintSet.connect(R.id.password,ConstraintSet.TOP,R.id.username,ConstraintSet.BOTTOM,0);
+                            constraintSet.applyTo(constraintLayout);
+                            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) password.getLayoutParams();
+                            newLayoutParams.topMargin = 16;
+                            newLayoutParams.leftMargin = 0;
+                            newLayoutParams.rightMargin = 0;
+                            newLayoutParams.bottomMargin = 0;
+                            password.setLayoutParams(newLayoutParams);
                         }
                         errorPwdText.setVisibility(View.VISIBLE);
+                        ConstraintSet constraintSet1 = new ConstraintSet();
+                        constraintSet1.clone(constraintLayout);
+                        constraintSet1.connect(R.id.button_login,ConstraintSet.START,R.id.errorPwdText,ConstraintSet.START,0);
+                        constraintSet1.connect(R.id.button_login,ConstraintSet.END,R.id.errorPwdText,ConstraintSet.END,0);
+                        constraintSet1.connect(R.id.button_login,ConstraintSet.TOP,R.id.errorPwdText,ConstraintSet.BOTTOM,0);
+                        constraintSet1.applyTo(constraintLayout);
+                        ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                        newLayoutParams1.topMargin = 16;
+                        newLayoutParams1.leftMargin = 0;
+                        newLayoutParams1.rightMargin = 0;
+                        newLayoutParams1.bottomMargin = 0;
+                        login.setLayoutParams(newLayoutParams1);
                         progress.dismiss();
                     }
                     else {
+                        ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
                         if (errorUnameText.isShown()) {
                             errorUnameText.setVisibility(View.GONE);
+                            ConstraintSet constraintSet = new ConstraintSet();
+                            constraintSet.clone(constraintLayout);
+                            constraintSet.connect(R.id.password,ConstraintSet.START,R.id.username,ConstraintSet.START,0);
+                            constraintSet.connect(R.id.password,ConstraintSet.END,R.id.username,ConstraintSet.END,0);
+                            constraintSet.connect(R.id.password,ConstraintSet.TOP,R.id.username,ConstraintSet.BOTTOM,0);
+                            constraintSet.applyTo(constraintLayout);
+                            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) password.getLayoutParams();
+                            newLayoutParams.topMargin = 16;
+                            newLayoutParams.leftMargin = 0;
+                            newLayoutParams.rightMargin = 0;
+                            newLayoutParams.bottomMargin = 0;
+                            password.setLayoutParams(newLayoutParams);
                         }
                         else if (errorPwdText.isShown()) {
                             errorPwdText.setVisibility(View.GONE);
+                            ConstraintSet constraintSet1 = new ConstraintSet();
+                            constraintSet1.clone(constraintLayout);
+                            constraintSet1.connect(R.id.button_login,ConstraintSet.START,R.id.password,ConstraintSet.START,0);
+                            constraintSet1.connect(R.id.button_login,ConstraintSet.END,R.id.password,ConstraintSet.END,0);
+                            constraintSet1.connect(R.id.button_login,ConstraintSet.TOP,R.id.password,ConstraintSet.BOTTOM,0);
+                            constraintSet1.applyTo(constraintLayout);
+                            ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                            newLayoutParams1.topMargin = 16;
+                            newLayoutParams1.leftMargin = 0;
+                            newLayoutParams1.rightMargin = 0;
+                            newLayoutParams1.bottomMargin = 0;
+                            login.setLayoutParams(newLayoutParams1);
                         }
                         final String md5pwd = md5(pwd);
                         RequestQueue requestQueue = Volley.newRequestQueue(this);
@@ -275,6 +354,19 @@ public class LoginActivity extends AppCompatActivity {
                                             if (response.getString("Message").contains("Success")) {
                                                 if (errorText.isShown()) {
                                                     errorText.setVisibility(View.GONE);
+                                                    ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
+                                                    ConstraintSet constraintSet = new ConstraintSet();
+                                                    constraintSet.clone(constraintLayout);
+                                                    constraintSet.connect(R.id.button_login,ConstraintSet.START,R.id.password,ConstraintSet.START,0);
+                                                    constraintSet.connect(R.id.button_login,ConstraintSet.END,R.id.password,ConstraintSet.END,0);
+                                                    constraintSet.connect(R.id.button_login,ConstraintSet.TOP,R.id.password,ConstraintSet.BOTTOM,0);
+                                                    constraintSet.applyTo(constraintLayout);
+                                                    ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                                                    newLayoutParams.topMargin = 16;
+                                                    newLayoutParams.leftMargin = 0;
+                                                    newLayoutParams.rightMargin = 0;
+                                                    newLayoutParams.bottomMargin = 0;
+                                                    login.setLayoutParams(newLayoutParams);
                                                 }
                                                 String siteIds = response.getString("site_ids");
                                                 String username = response.getString("usernames");
@@ -342,6 +434,19 @@ public class LoginActivity extends AppCompatActivity {
 
                                             } else {
                                                 errorText.setVisibility(View.VISIBLE);
+                                                ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
+                                                ConstraintSet constraintSet = new ConstraintSet();
+                                                constraintSet.clone(constraintLayout);
+                                                constraintSet.connect(R.id.button_login,ConstraintSet.START,R.id.errorText,ConstraintSet.START,0);
+                                                constraintSet.connect(R.id.button_login,ConstraintSet.END,R.id.errorText,ConstraintSet.END,0);
+                                                constraintSet.connect(R.id.button_login,ConstraintSet.TOP,R.id.errorText,ConstraintSet.BOTTOM,0);
+                                                constraintSet.applyTo(constraintLayout);
+                                                ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                                                newLayoutParams.topMargin = 16;
+                                                newLayoutParams.leftMargin = 0;
+                                                newLayoutParams.rightMargin = 0;
+                                                newLayoutParams.bottomMargin = 0;
+                                                login.setLayoutParams(newLayoutParams);
                                                 progress.dismiss();
                                                 return;
                                             }
@@ -355,6 +460,19 @@ public class LoginActivity extends AppCompatActivity {
                                     public void onErrorResponse(VolleyError error) {
                                         if (error.networkResponse.statusCode == 401) {
                                             errorText.setVisibility(View.VISIBLE);
+                                            ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
+                                            ConstraintSet constraintSet = new ConstraintSet();
+                                            constraintSet.clone(constraintLayout);
+                                            constraintSet.connect(R.id.button_login,ConstraintSet.START,R.id.errorText,ConstraintSet.START,0);
+                                            constraintSet.connect(R.id.button_login,ConstraintSet.END,R.id.errorText,ConstraintSet.END,0);
+                                            constraintSet.connect(R.id.button_login,ConstraintSet.TOP,R.id.errorText,ConstraintSet.BOTTOM,0);
+                                            constraintSet.applyTo(constraintLayout);
+                                            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                                            newLayoutParams.topMargin = 16;
+                                            newLayoutParams.leftMargin = 0;
+                                            newLayoutParams.rightMargin = 0;
+                                            newLayoutParams.bottomMargin = 0;
+                                            login.setLayoutParams(newLayoutParams);
                                             progress.dismiss();
                                         } else {
                                             AlertDialog.Builder dlgAlert = new AlertDialog.Builder(LoginActivity.this);
@@ -382,16 +500,67 @@ public class LoginActivity extends AppCompatActivity {
                 else {
                     if (!validateInputField(uname)) {
                         errorUnameText.setVisibility(View.VISIBLE);
+                        ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
+                        ConstraintSet constraintSet = new ConstraintSet();
+                        constraintSet.clone(constraintLayout);
+                        constraintSet.connect(R.id.button_login,ConstraintSet.START,R.id.errorUnameText,ConstraintSet.START,0);
+                        constraintSet.connect(R.id.button_login,ConstraintSet.END,R.id.errorUnameText,ConstraintSet.END,0);
+                        constraintSet.connect(R.id.button_login,ConstraintSet.TOP,R.id.errorUnameText,ConstraintSet.BOTTOM,0);
+                        constraintSet.applyTo(constraintLayout);
+                        ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                        newLayoutParams.topMargin = 16;
+                        newLayoutParams.leftMargin = 0;
+                        newLayoutParams.rightMargin = 0;
+                        newLayoutParams.bottomMargin = 0;
+                        login.setLayoutParams(newLayoutParams);
                         if (errorPwdText.isShown()) {
                             errorPwdText.setVisibility(View.GONE);
+                            ConstraintSet constraintSet1 = new ConstraintSet();
+                            constraintSet1.clone(constraintLayout);
+                            constraintSet1.connect(R.id.button_login,ConstraintSet.START,R.id.username,ConstraintSet.START,0);
+                            constraintSet1.connect(R.id.button_login,ConstraintSet.END,R.id.username,ConstraintSet.END,0);
+                            constraintSet1.connect(R.id.button_login,ConstraintSet.TOP,R.id.username,ConstraintSet.BOTTOM,0);
+                            constraintSet1.applyTo(constraintLayout);
+                            ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                            newLayoutParams1.topMargin = 16;
+                            newLayoutParams1.leftMargin = 0;
+                            newLayoutParams1.rightMargin = 0;
+                            newLayoutParams1.bottomMargin = 0;
+                            login.setLayoutParams(newLayoutParams1);
                         }
                         progress.dismiss();
                     }
                     else {
                         if (errorUnameText.isShown()) {
                             errorUnameText.setVisibility(View.GONE);
+                            ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
+                            ConstraintSet constraintSet = new ConstraintSet();
+                            constraintSet.clone(constraintLayout);
+                            constraintSet.connect(R.id.button_login,ConstraintSet.START,R.id.username,ConstraintSet.START,0);
+                            constraintSet.connect(R.id.button_login,ConstraintSet.END,R.id.username,ConstraintSet.END,0);
+                            constraintSet.connect(R.id.button_login,ConstraintSet.TOP,R.id.username,ConstraintSet.BOTTOM,0);
+                            constraintSet.applyTo(constraintLayout);
+                            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                            newLayoutParams.topMargin = 16;
+                            newLayoutParams.leftMargin = 0;
+                            newLayoutParams.rightMargin = 0;
+                            newLayoutParams.bottomMargin = 0;
+                            login.setLayoutParams(newLayoutParams);
                         } else if (errorPwdText.isShown()) {
                             errorPwdText.setVisibility(View.GONE);
+                            ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
+                            ConstraintSet constraintSet = new ConstraintSet();
+                            constraintSet.clone(constraintLayout);
+                            constraintSet.connect(R.id.button_login,ConstraintSet.START,R.id.username,ConstraintSet.START,0);
+                            constraintSet.connect(R.id.button_login,ConstraintSet.END,R.id.username,ConstraintSet.END,0);
+                            constraintSet.connect(R.id.button_login,ConstraintSet.TOP,R.id.username,ConstraintSet.BOTTOM,0);
+                            constraintSet.applyTo(constraintLayout);
+                            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                            newLayoutParams.topMargin = 16;
+                            newLayoutParams.leftMargin = 0;
+                            newLayoutParams.rightMargin = 0;
+                            newLayoutParams.bottomMargin = 0;
+                            login.setLayoutParams(newLayoutParams);
                         }
                         RequestQueue requestQueue = Volley.newRequestQueue(this);
                         String URL = ApiConstants.signInUrl;
@@ -409,6 +578,19 @@ public class LoginActivity extends AppCompatActivity {
                                             if (response.getString("Message").contains("Success")) {
                                                 if (errorText.isShown()) {
                                                     errorText.setVisibility(View.GONE);
+                                                    ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
+                                                    ConstraintSet constraintSet = new ConstraintSet();
+                                                    constraintSet.clone(constraintLayout);
+                                                    constraintSet.connect(R.id.button_login,ConstraintSet.START,R.id.username,ConstraintSet.START,0);
+                                                    constraintSet.connect(R.id.button_login,ConstraintSet.END,R.id.username,ConstraintSet.END,0);
+                                                    constraintSet.connect(R.id.button_login,ConstraintSet.TOP,R.id.username,ConstraintSet.BOTTOM,0);
+                                                    constraintSet.applyTo(constraintLayout);
+                                                    ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                                                    newLayoutParams.topMargin = 16;
+                                                    newLayoutParams.leftMargin = 0;
+                                                    newLayoutParams.rightMargin = 0;
+                                                    newLayoutParams.bottomMargin = 0;
+                                                    login.setLayoutParams(newLayoutParams);
                                                 }
                                                 String siteIds = response.getString("site_ids");
                                                 String username = response.getString("usernames");
@@ -438,6 +620,19 @@ public class LoginActivity extends AppCompatActivity {
                                                 }
                                             } else {
                                                 errorText.setVisibility(View.VISIBLE);
+                                                ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
+                                                ConstraintSet constraintSet = new ConstraintSet();
+                                                constraintSet.clone(constraintLayout);
+                                                constraintSet.connect(R.id.button_login,ConstraintSet.START,R.id.errorText,ConstraintSet.START,0);
+                                                constraintSet.connect(R.id.button_login,ConstraintSet.END,R.id.errorText,ConstraintSet.END,0);
+                                                constraintSet.connect(R.id.button_login,ConstraintSet.TOP,R.id.errorText,ConstraintSet.BOTTOM,0);
+                                                constraintSet.applyTo(constraintLayout);
+                                                ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) login.getLayoutParams();
+                                                newLayoutParams.topMargin = 16;
+                                                newLayoutParams.leftMargin = 0;
+                                                newLayoutParams.rightMargin = 0;
+                                                newLayoutParams.bottomMargin = 0;
+                                                login.setLayoutParams(newLayoutParams);
                                                 progress.dismiss();
                                                 return;
                                             }
