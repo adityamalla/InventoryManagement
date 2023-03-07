@@ -16,7 +16,7 @@
         android:layout_marginEnd="5dp"
         android:layout_marginRight="5dp"
         android:layout_marginBottom="5dp"
-        android:text="Powered by SafetyStratus 2022 v4.1"
+        android:text="Powered by SafetyStratus 2022 v1.1"
         android:textColor="#878787"
         android:textSize="14sp"
         android:textStyle="bold" />
