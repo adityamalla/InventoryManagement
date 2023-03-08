@@ -394,7 +394,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     cv.put("owner", selectedOwnerName);
                     cv.put("room", selectedRoomName);
                     cv.put("status_id", Integer.parseInt(selectedStatus));
-                    cv.put("status", selectedStatus);
+                    cv.put("status", selectedStatusName);
                     cv.put("notes", note);
                     cv.put("comment", comment);
                     cv.put("primary_user_id", selectedPrimaryUserId);
