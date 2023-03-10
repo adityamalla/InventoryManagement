@@ -443,7 +443,7 @@ public class RoomList extends AppCompatActivity {
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         MyObject[] myObject = null;
         try {
-            myObject = databaseHandler.getAutoSearchStatusData(db, searchTerm);
+            myObject = databaseHandler.getAutoSearchRoomsData(db, searchTerm,selectedFacil);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

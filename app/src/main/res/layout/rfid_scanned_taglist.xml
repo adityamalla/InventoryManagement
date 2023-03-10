@@ -10,20 +10,22 @@
         android:id="@+id/productName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:maxWidth="220dp"
         android:layout_column="0"
         android:layout_marginStart="10dp"
         android:layout_marginTop="10dp"
         android:fontFamily="@font/roboto_regular"
         android:gravity="bottom"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:paddingLeft="5dp"
-        android:text="NEON"
+        android:text="NEONnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn"
         android:textAllCaps="false"
         android:textColor="#000000"
         android:textSize="18sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/productcode"
@@ -49,16 +51,17 @@
         android:layout_height="wrap_content"
         android:layout_column="0"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="10dp"
         android:fontFamily="@font/roboto_regular"
         android:gravity="bottom"
         android:paddingLeft="5dp"
         android:paddingRight="5dp"
-        android:textAllCaps="false"
         android:text="400 ml "
+        android:textAlignment="viewEnd"
+        android:textAllCaps="false"
         android:textColor="#000000"
         android:textSize="15sp"
         app:layout_constraintEnd_toStartOf="@+id/invinfo"
+        app:layout_constraintStart_toEndOf="@+id/productName"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
@@ -66,9 +69,8 @@
         style="@style/DashboardButton"
         android:layout_width="15dp"
         android:layout_height="15dp"
-        android:layout_marginEnd="10dp"
         app:layout_constraintBottom_toTopOf="@+id/productcode"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/productName"
-        app:srcCompat="@drawable/ic_chevron_right_24px"/>
+        app:srcCompat="@drawable/ic_chevron_right_24px" />
 </androidx.constraintlayout.widget.ConstraintLayout>
