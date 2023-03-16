@@ -3,6 +3,7 @@ package com.safetystratus.inventorymanagement;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
@@ -40,6 +41,8 @@ public class StatusList extends AppCompatActivity {
         String sso = "";
         String site_name = "";
         String request_token="";
+        public static final String PREFS_NAME = "MyPrefsFile";
+        SharedPreferences pref;
         String selectedFacilName = "";
         String selectedFacil = "";
         String selectedRoomName = "";
@@ -78,6 +81,7 @@ public class StatusList extends AppCompatActivity {
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             header = (ConstraintLayout) findViewById(R.id.header);
+            pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
             TextView tv = (TextView) findViewById(R.id.headerId);
             ShapeDrawable shape = new ShapeDrawable(new RectShape());
             shape.getPaint().setColor(Color.RED);
@@ -428,7 +432,8 @@ public class StatusList extends AppCompatActivity {
             final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
             MyObject[] myObject = null;
             try {
-                myObject = databaseHandler.getAutoSearchRoomsData(db, searchTerm,selectedFacil);
+                String user_role_id = pref.getString("logged_in_user_role_id", null);
+                myObject = databaseHandler.getAutoSearchStatusData(db, searchTerm,user_role_id);
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

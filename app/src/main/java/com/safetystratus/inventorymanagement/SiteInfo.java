@@ -6,11 +6,21 @@ public class SiteInfo implements Serializable {
     public String siteId;
     public String siteName;
     public String userId;
+    public String roleId;
 
-    public SiteInfo(String siteId, String siteName,String userId) {
+    public SiteInfo(String siteId, String siteName,String userId, String roleId) {
         this.siteId = siteId;
         this.siteName = siteName;
         this.userId = userId;
+        this.roleId = roleId;
+    }
+
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
     }
 
     public String getUserId() {

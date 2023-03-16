@@ -11,6 +11,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
@@ -67,6 +68,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
     String selectedOwner = "";
     String selectedPrimaryUserName = "";
     String selectedPrimaryUserId = "";
+    SharedPreferences pref;
     EditText owner;
     EditText location;
     EditText status;
@@ -74,6 +76,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
     EditText comments;
     EditText primaryUser;
     TextView badge_notification_bulk;
+    public static final String PREFS_NAME = "MyPrefsFile";
     ArrayList<String> codelistfromIntent;
     ConstraintLayout header;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(BulkContainerUpdate.this);
@@ -101,6 +104,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
         tv.setText("Edit Container");
         tv.setTextSize(18);
         tv.setVisibility(View.VISIBLE);
+        pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if(result!=null) {
@@ -254,7 +258,21 @@ public class BulkContainerUpdate extends AppCompatActivity {
                 try {
                     note = notes.getText().toString();
                     comment = comments.getText().toString();
-                    ArrayList<MyObject> statusList = databaseHandler.getStatusList(db);
+                    String user_role_id = pref.getString("logged_in_user_role_id", null);
+                    ArrayList<MyObject> statusList = databaseHandler.getStatusList(db,user_role_id);
+                    if (!selectedStatusName.equalsIgnoreCase("none")){
+                        boolean selectedStausExist = false;
+                        for(int h=0;h<statusList.size();h++){
+                            if (Integer.parseInt(statusList.get(h).getObjectId()) == Integer.parseInt(selectedStatus)){
+                                Log.e("test1111","999"+statusList.get(h).getObjectId()+"--"+selectedStatus);
+                                selectedStausExist = true;
+                                break;
+                            }
+                        }
+                        if (!selectedStausExist){
+                            statusList.add(new MyObject(selectedStatusName,selectedStatus));
+                        }
+                    }
                     final Intent myIntent = new Intent(BulkContainerUpdate.this,
                             StatusList.class);
                     myIntent.putExtra("user_id", selectedUserId);
@@ -340,6 +358,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                 try {
                     note = notes.getText().toString();
                     comment = comments.getText().toString();
+                    Log.e("test1111","1111");
                     ArrayList<MyObject> primaryUsersList = databaseHandler.getPrimaryUsersList(db);
                     final Intent myIntent = new Intent(BulkContainerUpdate.this,
                             OwnerList.class);
@@ -393,7 +412,14 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     cv.put("object_table", "site_users");
                     cv.put("owner", selectedOwnerName);
                     cv.put("room", selectedRoomName);
-                    cv.put("status_id", Integer.parseInt(selectedStatus));
+                    if(selectedStatus!=null) {
+                        if (selectedStatus.trim().length() > 0 && selectedStatus != "null")
+                            cv.put("status_id", Integer.parseInt(selectedStatus));
+                        else
+                            cv.put("status_id", (Integer) null);
+                    }else{
+                        cv.put("status_id", (Integer) null);
+                    }
                     cv.put("status", selectedStatusName);
                     cv.put("notes", note);
                     cv.put("comment", comment);

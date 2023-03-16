@@ -11,6 +11,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
@@ -87,6 +88,8 @@ public class ContainerDetailsActivity extends AppCompatActivity {
     EditText concentrationUnit;
     ConstraintLayout header;
     TextView badge_notification;
+    public static final String PREFS_NAME = "MyPrefsFile";
+    SharedPreferences pref;
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(ContainerDetailsActivity.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
     @SuppressLint("WrongConstant")
@@ -112,6 +115,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         tv.setText("Edit Container");
         tv.setTextSize(18);
         tv.setVisibility(View.VISIBLE);
+        pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if(result!=null) {
@@ -275,6 +279,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             concentration.setText("");
             concentrationUnit.setText("");
         }
+        Log.e("pppp",selectedStatusName);
         location.setText(selectedRoomName);
         status.setText(selectedStatusName);
         concentrationUnit.setText(selectedConcUnitName);
@@ -340,7 +345,18 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     conc_val = concentration.getText().toString();
                     note = notes.getText().toString();
                     comment = comments.getText().toString();
-                    ArrayList<MyObject> statusList = databaseHandler.getStatusList(db);
+                    String user_role_id = pref.getString("logged_in_user_role_id", null);
+                    ArrayList<MyObject> statusList = databaseHandler.getStatusList(db,user_role_id);
+                    boolean selectedStausExist = false;
+                    for(int h=0;h<statusList.size();h++){
+                        if (Integer.parseInt(statusList.get(h).getObjectId()) == Integer.parseInt(selectedStatus)){
+                            selectedStausExist = true;
+                            break;
+                        }
+                    }
+                    if (!selectedStausExist){
+                        statusList.add(new MyObject(selectedStatusName,selectedStatus));
+                    }
                     final Intent myIntent = new Intent(ContainerDetailsActivity.this,
                             StatusList.class);
                     myIntent.putExtra("user_id", selectedUserId);
@@ -540,15 +556,43 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 cv.put("owner", selectedOwnerName);
                 cv.put("room", selectedRoomName);
                 cv.put("status_id", Integer.parseInt(selectedStatus));
-                cv.put("status", selectedStatus);
+                cv.put("status", selectedStatusName);
                 cv.put("notes", note);
                 cv.put("comment", comment);
                 cv.put("quantity_unit_abbreviation", selectedQuanUnitName);
                 cv.put("concentration_unit_abbrevation", selectedConcUnitName);
-                cv.put("quantity", Integer.parseInt(quan_val));
-                cv.put("concentration", Integer.parseInt(conc_val));
-                cv.put("quantity_unit_abbreviation_id", Integer.parseInt(selectedQuanUnit));
-                cv.put("concentration_unit_abbrevation_id", Integer.parseInt(selectedConcUnit));
+                if(quan_val!=null) {
+                    if (quan_val.trim().length() > 0 && quan_val != "null")
+                        cv.put("quantity", Integer.parseInt(quan_val));
+                    else
+                        cv.put("quantity", (Integer) null);
+                }else{
+                    cv.put("quantity", (Integer) null);
+                }
+                if(conc_val!=null) {
+                    if (conc_val.trim().length() > 0 && conc_val != "null")
+                        cv.put("concentration", Integer.parseInt(conc_val));
+                    else
+                        cv.put("concentration", (Integer) null);
+                }else{
+                    cv.put("concentration", (Integer) null);
+                }
+                if(selectedQuanUnit!=null) {
+                    if (selectedQuanUnit.trim().length() > 0 && selectedQuanUnit != "null")
+                        cv.put("quantity_unit_abbreviation_id", Integer.parseInt(selectedQuanUnit));
+                    else
+                        cv.put("quantity_unit_abbreviation_id", (Integer) null);
+                }else{
+                    cv.put("quantity_unit_abbreviation_id", (Integer) null);
+                }
+                if(selectedConcUnit!=null) {
+                    if (selectedConcUnit.trim().length() > 0 && selectedConcUnit != "null")
+                        cv.put("concentration_unit_abbrevation_id", Integer.parseInt(selectedConcUnit));
+                    else
+                        cv.put("concentration_unit_abbrevation_id", (Integer) null);
+                }else{
+                    cv.put("concentration_unit_abbrevation_id", (Integer) null);
+                }
                 databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString(),"");
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(
@@ -682,10 +726,38 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 cv.put("comment", comment);
                 cv.put("quantity_unit_abbreviation", selectedQuanUnitName);
                 cv.put("concentration_unit_abbrevation", selectedConcUnitName);
-                cv.put("quantity", Integer.parseInt(quan_val));
-                cv.put("concentration", Integer.parseInt(conc_val));
-                cv.put("quantity_unit_abbreviation_id", Integer.parseInt(selectedQuanUnit));
-                cv.put("concentration_unit_abbrevation_id", Integer.parseInt(selectedConcUnit));
+                if(quan_val!=null) {
+                    if (quan_val.trim().length() > 0 && quan_val != "null")
+                        cv.put("quantity", Integer.parseInt(quan_val));
+                    else
+                        cv.put("quantity", (Integer) null);
+                }else{
+                    cv.put("quantity", (Integer) null);
+                }
+                if(conc_val!=null) {
+                    if (conc_val.trim().length() > 0 && conc_val != "null")
+                        cv.put("concentration", Integer.parseInt(conc_val));
+                    else
+                        cv.put("concentration", (Integer) null);
+                }else{
+                    cv.put("concentration", (Integer) null);
+                }
+                if(selectedQuanUnit!=null) {
+                    if (selectedQuanUnit.trim().length() > 0 && selectedQuanUnit != "null")
+                        cv.put("quantity_unit_abbreviation_id", Integer.parseInt(selectedQuanUnit));
+                    else
+                        cv.put("quantity_unit_abbreviation_id", (Integer) null);
+                }else{
+                    cv.put("quantity_unit_abbreviation_id", (Integer) null);
+                }
+                if(selectedConcUnit!=null) {
+                    if (selectedConcUnit.trim().length() > 0 && selectedConcUnit != "null")
+                        cv.put("concentration_unit_abbrevation_id", Integer.parseInt(selectedConcUnit));
+                    else
+                        cv.put("concentration_unit_abbrevation_id", (Integer) null);
+                }else{
+                    cv.put("concentration_unit_abbrevation_id", (Integer) null);
+                }
                 databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString(),"");
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(

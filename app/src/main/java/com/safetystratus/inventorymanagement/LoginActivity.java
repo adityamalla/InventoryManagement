@@ -371,16 +371,18 @@ public class LoginActivity extends AppCompatActivity {
                                                 String siteIds = response.getString("site_ids");
                                                 String username = response.getString("usernames");
                                                 String uid = response.getString("user_ids");
+                                                String roleIds = response.getString("role_ids");
                                                 String site_names = response.getString("site_names");
                                                 String siteIdsArray[] = siteIds.split(",");
                                                 String siteNamesArray[] = site_names.split(",");
                                                 String userIdsArray[] = uid.split(",");
+                                                String roleIdsArray[] = roleIds.split(",");
                                                 String res = response.toString();
                                                 if (siteIdsArray.length > 1 && siteNamesArray.length > 1) {
                                                     username = username.split(",")[0];
                                                     ArrayList<SiteInfo> siteInfo = new ArrayList<>();
                                                     for (int i = 0; i < siteIdsArray.length; i++) {
-                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i]);
+                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i],roleIdsArray[i]);
                                                         siteInfo.add(obj);
                                                     }
                                                     if (siteInfo.size() >= 1) {
@@ -403,7 +405,23 @@ public class LoginActivity extends AppCompatActivity {
                                                         sites.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                                             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                                                                 Object o = sites.getItemAtPosition(position);
-                                                                SiteInfo str = (SiteInfo) o; //As you are using Default String Adapter
+                                                                SiteInfo str = (SiteInfo) o; //As you are using Default String Adapter\
+                                                                String user_role_id = pref.getString("logged_in_user_role_id", null);
+                                                                if(user_role_id==null){
+                                                                    SharedPreferences.Editor myEdit = pref.edit();
+                                                                    myEdit.clear();
+                                                                    myEdit.commit();
+                                                                    myEdit.putString("logged_in_user_role_id", str.getRoleId()+"");
+                                                                    myEdit.commit();
+                                                                }else if(user_role_id!=null){
+                                                                    if(Integer.parseInt(str.getRoleId())!=Integer.parseInt(user_role_id)){
+                                                                        SharedPreferences.Editor myEdit = pref.edit();
+                                                                        myEdit.clear();
+                                                                        myEdit.commit();
+                                                                        myEdit.putString("logged_in_user_role_id", str.getRoleId()+"");
+                                                                        myEdit.commit();
+                                                                    }
+                                                                }
                                                                     Intent myIntent = new Intent(LoginActivity.this,
                                                                             HomeActivity.class);
                                                                     myIntent.putExtra("username", finalUsername);
@@ -412,6 +430,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                     myIntent.putExtra("md5pwd", md5pwd);
                                                                     myIntent.putExtra("sso", "false");
                                                                     myIntent.putExtra("selectedUserId", str.getUserId());
+                                                                    myIntent.putExtra("selectedUserRoleId", str.getRoleId());
                                                                     myIntent.putExtra("fromLogin", "1");
                                                                     startActivity(myIntent);
                                                             }
@@ -426,6 +445,7 @@ public class LoginActivity extends AppCompatActivity {
                                                     myIntent.putExtra("md5pwd", md5pwd);
                                                     myIntent.putExtra("sso", "false");
                                                     myIntent.putExtra("selectedUserId", uid);
+                                                    myIntent.putExtra("selectedUserRoleId",roleIds);
                                                     myIntent.putExtra("site_name", site_names);
                                                     myIntent.putExtra("fromLogin", "1");
                                                     progress.dismiss();
@@ -596,11 +616,29 @@ public class LoginActivity extends AppCompatActivity {
                                                 String username = response.getString("usernames");
                                                 String uid = response.getString("user_ids");
                                                 String site_names = response.getString("site_names");
+                                                String roleIds = response.getString("role_ids");
                                                 String siteIdsArray[] = siteIds.split(",");
                                                 String siteNamesArray[] = site_names.split(",");
                                                 String userIdsArray[] = uid.split(",");
+                                                String roleIdsArray[] = roleIds.split(",");
                                                 String res = response.toString();
                                                 if (finalSingleSign) {
+                                                    String user_role_id = pref.getString("logged_in_user_role_id", null);
+                                                    if(user_role_id==null){
+                                                        SharedPreferences.Editor myEdit = pref.edit();
+                                                        myEdit.clear();
+                                                        myEdit.commit();
+                                                        myEdit.putString("logged_in_user_role_id", roleIds+"");
+                                                        myEdit.commit();
+                                                    }else if(user_role_id!=null){
+                                                        if(Integer.parseInt(roleIds)!=Integer.parseInt(user_role_id)){
+                                                            SharedPreferences.Editor myEdit = pref.edit();
+                                                            myEdit.clear();
+                                                            myEdit.commit();
+                                                            myEdit.putString("logged_in_user_role_id", roleIds+"");
+                                                            myEdit.commit();
+                                                        }
+                                                    }
                                                     Uri.Builder builder = new Uri.Builder();
                                                     builder.scheme("https")
                                                             .authority("labcliq.com")
@@ -614,6 +652,7 @@ public class LoginActivity extends AppCompatActivity {
                                                     intent.putExtra("ssoUrlString", builder.toString());
                                                     intent.putExtra("selectedSiteId", siteIds);
                                                     intent.putExtra("selectedUserId", uid);
+                                                    intent.putExtra("selectedUserRoleId", roleIds);
                                                     intent.putExtra("site_name", site_names);
                                                     startActivity(intent);
                                                     return;

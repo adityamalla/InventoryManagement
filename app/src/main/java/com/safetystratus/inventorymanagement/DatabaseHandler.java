@@ -404,10 +404,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     @SuppressLint("Range")
-    public ArrayList<MyObject> getStatusList(SQLiteDatabase sqLiteDatabase){
+    public ArrayList<MyObject> getStatusList(SQLiteDatabase sqLiteDatabase, String role){
         int count = 0;
         ArrayList<MyObject> statusList = new ArrayList<MyObject>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,status FROM inventory_status"), null);
+        String sql = "";
+        if(Integer.parseInt(role)!=4){
+            sql = "SELECT id,status FROM inventory_status where id in (1,10)";
+        }else if (Integer.parseInt(role)==4){
+            sql = "SELECT id,status FROM inventory_status where id in (1,2,0,10)";
+        }
+        Cursor cursor = sqLiteDatabase.rawQuery(sql, null);
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 statusList.add(new MyObject(cursor.getString(cursor.getColumnIndex("status")).trim(),
@@ -769,8 +775,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return ObjectItemData;
     }
     @SuppressLint("Range")
-    public MyObject[] getAutoSearchStatusData(SQLiteDatabase sqLiteDatabase, String searchTerm) {
-        String sql = "SELECT status,id FROM inventory_status where status like '%"+searchTerm+"%'";
+    public MyObject[] getAutoSearchStatusData(SQLiteDatabase sqLiteDatabase, String searchTerm, String role) {
+        String sql = "";
+        if(Integer.parseInt(role)!=4){
+            sql = "SELECT status,id FROM inventory_status where status like '%"+searchTerm+"%' and id in (1,10)";
+        }else if (Integer.parseInt(role)==4){
+            sql = "SELECT status,id FROM inventory_status where status like '%"+searchTerm+"%' and id in (1,2,0,10)";
+        }
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();
         MyObject[] ObjectItemData = new MyObject[recCount];
