@@ -260,19 +260,6 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     comment = comments.getText().toString();
                     String user_role_id = pref.getString("logged_in_user_role_id", null);
                     ArrayList<MyObject> statusList = databaseHandler.getStatusList(db,user_role_id);
-                    if (!selectedStatusName.equalsIgnoreCase("none")){
-                        boolean selectedStausExist = false;
-                        for(int h=0;h<statusList.size();h++){
-                            if (Integer.parseInt(statusList.get(h).getObjectId()) == Integer.parseInt(selectedStatus)){
-                                Log.e("test1111","999"+statusList.get(h).getObjectId()+"--"+selectedStatus);
-                                selectedStausExist = true;
-                                break;
-                            }
-                        }
-                        if (!selectedStausExist){
-                            statusList.add(new MyObject(selectedStatusName,selectedStatus));
-                        }
-                    }
                     final Intent myIntent = new Intent(BulkContainerUpdate.this,
                             StatusList.class);
                     myIntent.putExtra("user_id", selectedUserId);
