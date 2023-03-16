@@ -289,10 +289,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             if (flag.equalsIgnoreCase("2")||flag.equalsIgnoreCase("3")){
                 sql = "SELECT * FROM  chemical_inventory where id= "+cde;
             }else{
-                sql = "SELECT * FROM  chemical_inventory where code='"+cde+"' or sec_code='"+cde+"' limit 1";
+                sql = "SELECT * FROM  chemical_inventory where lower(code)=lower('"+cde+"') or lower(sec_code)=lower('"+cde+"') limit 1";
             }
         }else{
-            sql = "SELECT * FROM  chemical_inventory where code='"+cde+"' or sec_code='"+cde+"' limit 1";
+            sql = "SELECT * FROM  chemical_inventory where lower(code)=lower('"+cde+"') or lower(sec_code)=lower('"+cde+"') limit 1";
         }
         Cursor cursor = sqLiteDatabase.rawQuery(String.format(sql), null);
         if (cursor.moveToFirst()) {
@@ -500,7 +500,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     @SuppressLint("Range")
     public boolean checkScannedBarcodeDataAvailable(SQLiteDatabase sqLiteDatabase,  String code){
-        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from chemical_inventory where code='"+code+"'"), null);
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from chemical_inventory where lower(code)=lower('"+code+"')"), null);
         int count = cursor1.getCount();
         cursor1.close();
         if(count>0)
