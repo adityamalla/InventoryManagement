@@ -80,8 +80,7 @@ public class UnitsList extends AppCompatActivity {
         shape.getPaint().setColor(Color.RED);
         shape.getPaint().setStyle(Paint.Style.STROKE);
         shape.getPaint().setStrokeWidth(3);
-        tv.setText("Status");
-        tv.setTextSize(20);
+        tv.setTextSize(18);
         tv.setVisibility(View.VISIBLE);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(UnitsList.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
@@ -134,6 +133,11 @@ public class UnitsList extends AppCompatActivity {
         }
         if (intent.getStringExtra("selectedOwnerName") != null) {
             selectedOwnerName = intent.getStringExtra("selectedOwnerName");
+        }
+        if(fromUnit.trim().length()>0){
+            tv.setText("Volume/Mass Units");
+        }else{
+            tv.setText("Concentration Unit");
         }
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
