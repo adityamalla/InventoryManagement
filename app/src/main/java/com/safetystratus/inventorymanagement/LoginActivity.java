@@ -438,6 +438,22 @@ public class LoginActivity extends AppCompatActivity {
                                                     }
                                                 }
                                                 else {
+                                                    String user_role_id = pref.getString("logged_in_user_role_id", null);
+                                                    if(user_role_id==null){
+                                                        SharedPreferences.Editor myEdit = pref.edit();
+                                                        myEdit.clear();
+                                                        myEdit.commit();
+                                                        myEdit.putString("logged_in_user_role_id", roleIds+"");
+                                                        myEdit.commit();
+                                                    }else if(user_role_id!=null){
+                                                        if(Integer.parseInt(roleIds)!=Integer.parseInt(user_role_id)){
+                                                            SharedPreferences.Editor myEdit = pref.edit();
+                                                            myEdit.clear();
+                                                            myEdit.commit();
+                                                            myEdit.putString("logged_in_user_role_id", roleIds+"");
+                                                            myEdit.commit();
+                                                        }
+                                                    }
                                                     Intent myIntent = new Intent(LoginActivity.this,
                                                             HomeActivity.class);
                                                     myIntent.putExtra("username", username);

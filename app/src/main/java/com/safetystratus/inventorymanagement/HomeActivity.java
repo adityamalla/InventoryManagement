@@ -263,7 +263,7 @@ public class HomeActivity extends AppCompatActivity {
                 myIntent.putExtra("empName", empName);
                 startActivity(myIntent);
             }});
-        int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),user_id[0]);
+        int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedUserId);
         if(scannedJsonData > 0){
             badge_notification.setVisibility(View.VISIBLE);
             badge_notification.setText(String.valueOf(scannedJsonData));
@@ -347,7 +347,7 @@ public class HomeActivity extends AppCompatActivity {
                                     dlgAlert.setPositiveButton("Ok",
                                             new DialogInterface.OnClickListener() {
                                                 public void onClick(DialogInterface dialog, int which) {
-                                                    int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),user_id[0]);
+                                                    int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedUserId);
                                                     if(scannedJsonData > 0){
                                                         badge_notification.setVisibility(View.VISIBLE);
                                                         badge_notification.setText(String.valueOf(scannedJsonData));
