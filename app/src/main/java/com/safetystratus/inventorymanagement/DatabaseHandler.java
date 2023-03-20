@@ -219,9 +219,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return count;
     }
     @SuppressLint("Range")
-    public int getSavedDataCount(SQLiteDatabase sqLiteDatabase){
+    public int getSavedDataCount(SQLiteDatabase sqLiteDatabase, String user_id){
         int count = 0;
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data"), null);
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data where user_id="+user_id), null);
         count = cursor.getCount();
         cursor.close();
         return count;
@@ -348,7 +348,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.insert("scanned_json_data", null, cv);
     }
     public void insertScannedBarcodeInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
-        sqLiteDatabase.delete("scanned_json_data", "code=? and scan_type=?", new String[]{cv.getAsString("code"),cv.getAsString("scan_type")});
+        sqLiteDatabase.delete("scanned_json_data", "code=? and scan_type=? and user_id=?", new String[]{cv.getAsString("code"),cv.getAsString("scan_type"),cv.getAsString("user_id")});
         sqLiteDatabase.insert("scanned_json_data", null, cv);
     }
     public void deleteBarcodeInventoryDetails(SQLiteDatabase sqLiteDatabase, String code){

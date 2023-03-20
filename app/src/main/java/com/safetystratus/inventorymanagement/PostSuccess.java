@@ -160,7 +160,7 @@ public class PostSuccess extends AppCompatActivity {
             newLayoutParams.bottomMargin = 0;
             gotohome.setLayoutParams(newLayoutParams);
         }else{*/
-            int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedUserId);
             if(scannedJsonData > 0){
                 postScanData.setVisibility(View.VISIBLE);
                 ConstraintLayout constraintLayout = findViewById(R.id.successLayout);
@@ -348,7 +348,7 @@ public class PostSuccess extends AppCompatActivity {
                                             dlgAlert.setPositiveButton("Ok",
                                                     new DialogInterface.OnClickListener() {
                                                         public void onClick(DialogInterface dialog, int which) {
-                                                            int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
+                                                            int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedUserId);
                                                             if(scannedJsonData > 0){
                                                                 badge_notification.setVisibility(View.VISIBLE);
                                                                 badge_notification.setText(String.valueOf(scannedJsonData));

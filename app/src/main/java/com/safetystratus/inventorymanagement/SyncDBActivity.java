@@ -180,7 +180,7 @@ public class SyncDBActivity extends AppCompatActivity {
         syncData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE));
+                int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedUserId);
                 if(scannedJsonData > 0){
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
                     dlgAlert.setTitle("SafetyStratus");
