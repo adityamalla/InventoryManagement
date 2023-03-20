@@ -26,6 +26,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import java.nio.charset.StandardCharsets;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -47,8 +48,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.regex.Pattern;
 
 public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandler.ResponseHandlerInterface {
     public TextView statusTextViewRFID = null;
@@ -533,11 +536,13 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         final StringBuilder sb = new StringBuilder();
         final int[] scanCounts = {0};
         for (int index = 0; index < tagData.length; index++) {
-            byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
-            try {
-                sb.append(new String(bytes, "UTF-8") + "&&&");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+            if(isHex(tagData[index].getTagID())) {
+                if(tagData[index].getTagID().startsWith("0000000000000000")){
+                    sb.append( tagData[index].getTagID().substring(16,tagData[index].getTagID().length())+ "&&&");
+                }else {
+                    byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
+                    sb.append(new String(bytes, StandardCharsets.UTF_8) + "&&&");
+                }
             }
         }
         runOnUiThread(new Runnable() {
@@ -670,5 +675,10 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     }
     @Override
     public void onBackPressed() {
+    }
+    private static final Pattern HEX_PATTERN = Pattern.compile("[0-9a-fA-F]+");
+
+    public static boolean isHex(String input) {
+        return HEX_PATTERN.matcher(input).matches();
     }
 }
