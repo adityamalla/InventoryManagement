@@ -21,6 +21,7 @@ public class QueryConstants {
     public static final String TABLE_NAME_SCANNED_JSON_DATA_BARCODE = "scanned_json_data_barcode";
     public static final String TABLE_NAME_BULK_INVENTORY_UPDATE_DATA = "bulk_inv_update_data";
     public static final String TABLE_NAME_PRIMARY_USERS = "primary_users";
+    public static final String TABLE_NAME_RECONC_DATA = "reconciliation_data";
 
     public static String SQL_CREATE_CHEMICAL_INVENTORY = "CREATE TABLE IF NOT EXISTS chemical_inventory\n" +
             "(id integer PRIMARY KEY NOT NULL,\n" +
@@ -161,10 +162,20 @@ public class QueryConstants {
             "    location_id integer NOT NULL,\n" +
             "    room_id integer NOT NULL,\n" +
             "    rfid_code text,\n" +
+            "    reconc_id integer,\n" +
             "    code text,\n" +
             "    inventory_id integer NOT NULL,\n" +
             "    scanned integer NOT NULL,\n" +
             "    scanned_by integer NOT NULL,\n" +
+            "    scanned_date timestamp DEFAULT CURRENT_TIMESTAMP\n" +
+            ")";
+
+    public static String SQL_CREATE_TABLE_RECONCILIATION_DATA = "CREATE TABLE IF NOT EXISTS reconciliation_data\n" +
+            "(\n" +
+            "    id integer PRIMARY KEY NOT NULL ,\n" +
+            "    location_id integer NOT NULL,\n" +
+            "    room_id integer NOT NULL,\n" +
+            "    user_id integer NOT NULL,\n" +
             "    scanned_date timestamp DEFAULT CURRENT_TIMESTAMP\n" +
             ")";
 
@@ -174,6 +185,7 @@ public class QueryConstants {
             "    user_id integer NOT NULL,\n" +
             "    location_id integer NOT NULL,\n" +
             "    room_id integer NOT NULL,\n" +
+            "    reconc_id integer,\n" +
             "    code text,\n" +
             "    scan_type text," +
             "    json_data text\n" +

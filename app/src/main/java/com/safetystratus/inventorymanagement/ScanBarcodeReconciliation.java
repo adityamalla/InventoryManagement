@@ -68,6 +68,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
     ConstraintLayout header;
     String loggedinUsername = "";
     String loggedinUserSiteId = "";
+    String reconc_id = "";
     String md5Pwd = "";
     String selectedUserId = "";
     String selectedSearchValue = "";
@@ -162,6 +163,9 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         if (intent.getStringExtra("selectedSearchValue") != null) {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
+        if(intent.getStringExtra("reconc_id")!=null) {
+            reconc_id = intent.getStringExtra("reconc_id");
+        }
         if (intent.getStringExtra("selectedFacilName") != null) {
             selectedFacilName = intent.getStringExtra("selectedFacilName");
         }
@@ -181,7 +185,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             scannedTotalCount = intent.getStringExtra("scannedTotalCount");
         }
         if (scannedTotalCount.trim().length() > 0){
-            int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom);
+            int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom,selectedUserId,reconc_id);
             setscancount(String.valueOf(scanned), scannedTotalCount);
         }else
             scanCount.setText("0");
@@ -284,6 +288,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     cv.put("user_id", selectedUserId);
                     cv.put("room_id", selectedRoom);
                     cv.put("scan_type", "rfid");
+                    cv.put("reconc_id", reconc_id);
                     databaseHandler.insertScannedInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeReconciliation.this);
                     dlgAlert.setTitle("Safety Stratus");
@@ -338,6 +343,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     cv.put("room_id", selectedRoom);
                     cv.put("user_id", selectedUserId);
                     cv.put("scan_type", "rfid");
+                    cv.put("reconc_id", reconc_id);
                     databaseHandler.insertScannedInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                     if(connected){
                         String URL = ApiConstants.syncpostscanneddata;
@@ -349,7 +355,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                     public void onResponse(JSONObject response) {
                                         //Process os success response
                                         String res = response.toString();
-                                        databaseHandler.delSavedScanData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedUserId,selectedRoom);
+                                        databaseHandler.delSavedScanData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedUserId,selectedRoom,reconc_id);
                                         final Intent myIntent = new Intent(ScanBarcodeReconciliation.this,
                                                 PostSuccess.class);
                                         myIntent.putExtra("user_id", selectedUserId);
@@ -456,6 +462,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         cv.put("scanned_by", selectedUserId);
                         cv.put("code", enteredBarCodeValue.getText().toString());
                         cv.put("scanned", 1);
+                        cv.put("reconc_id", reconc_id);
                         databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                         count = Integer.parseInt(scannedTotalCount)+1;
                         scannedTotalCount = String.valueOf(count);
@@ -474,8 +481,9 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                     cv.put("inventory_id", Integer.parseInt(scannedInvList.get(g).getInv_id()));
                                     cv.put("scanned_by", selectedUserId);
                                     cv.put("scanned", 1);
+                                    cv.put("reconc_id", reconc_id);
                                     databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                                    int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom);
+                                    int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom,selectedUserId,reconc_id);
                                     count = Integer.parseInt(scannedTotalCount)+1;
                                     scannedTotalCount = String.valueOf(count);
                                     setscancount(String.valueOf(count),String.valueOf(scanned));
@@ -603,6 +611,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             cv.put("room_id", selectedRoom);
             cv.put("inventory_id", -1);
             cv.put("scanned_by", selectedUserId);
+            cv.put("reconc_id", reconc_id);
             cv.put("code", decodedData);
             cv.put("scanned", 1);
             databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
@@ -619,9 +628,10 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         cv.put("room_id", selectedRoom);
                         cv.put("inventory_id", Integer.parseInt(scannedInvList.get(g).getInv_id()));
                         cv.put("scanned_by", selectedUserId);
+                        cv.put("reconc_id", reconc_id);
                         cv.put("scanned", 1);
                         databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                        int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom);
+                        int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom,selectedUserId,reconc_id);
                         count = Integer.parseInt(scannedTotalCount)+1;
                         scannedTotalCount = String.valueOf(count);
                         setscancount(String.valueOf(count),String.valueOf(scanned));

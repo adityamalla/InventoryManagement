@@ -256,6 +256,12 @@ public class RFIDActivity extends AppCompatActivity {
                     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
                     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
                     try {
+                        ContentValues cv = new ContentValues();
+                        cv.put("location_id", selectedFacil);
+                        cv.put("user_id", selectedUserId);
+                        cv.put("room_id", selectedRoom);
+                        int reconc_id = databaseHandler.insertReconciliaionData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        Log.e("fff",reconc_id+"**");
                         int inventoryCount = databaseHandler.checkCount(db,selectedRoom);
                         final Intent myIntent = new Intent(RFIDActivity.this,
                                 RFIDScannerActivity.class);
@@ -273,6 +279,7 @@ public class RFIDActivity extends AppCompatActivity {
                         myIntent.putExtra("selectedFacil", selectedFacil+"");
                         myIntent.putExtra("selectedRoomName", selectedRoomName);
                         myIntent.putExtra("selectedRoom", selectedRoom+"");
+                        myIntent.putExtra("reconc_id", reconc_id+"");
                         myIntent.putExtra("empName", empName);
                         myIntent.putExtra("total_inventory", inventoryCount+"");
                         startActivity(myIntent);

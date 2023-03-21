@@ -18,7 +18,7 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapter {
-    private ArrayList<InventoryObject> list = new ArrayList<InventoryObject>();
+    public ArrayList<InventoryObject> list = new ArrayList<InventoryObject>();
     private Context context;
     private IntentModel obj;
 
@@ -53,13 +53,6 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = inflater.inflate(R.layout.rfid_scanned_taglist, null);
         }
-
-        // Check the flag value and set the background color of the view
-        if (list.get(position).isFlag()) {
-            view.setBackgroundResource(R.color.invScanSuccess);
-        } else {
-            view.setBackgroundResource(R.color.white);
-        }
         //Handle TextView and display string from your list
         TextView productName = (TextView)view.findViewById(R.id.productName);
         TextView productCode = (TextView)view.findViewById(R.id.productcode);
@@ -71,6 +64,12 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
         else
             productCode.setText(list.get(position).getCode());
         volumne.setText(list.get(position).getVolume());
+        // Check the flag value and set the background color of the view
+        if (list.get(position).isFlag()) {
+            view.setBackgroundResource(R.color.invScanSuccess);
+        } else {
+            view.setBackgroundResource(R.color.white);
+        }
         /*invinfo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

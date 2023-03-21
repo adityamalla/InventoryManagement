@@ -45,6 +45,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_UNITS_OF_MEASURE);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_SCANNED_BARCODE_JSON_DATA);
         sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_PRIMARY_USERS);
+        sqLiteDatabase.execSQL(QueryConstants.SQL_CREATE_TABLE_RECONCILIATION_DATA);
     }
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
@@ -328,24 +329,40 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     public void insertScannedInvData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
-        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+cv.getAsString("room_id")+"" +
-                " and location_id="+cv.getAsString("location_id")+" and inventory_id="+cv.getAsString("inventory_id")), null);
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+cv.getAsString("room_id")+" and reconc_id="+cv.getAsString("reconc_id") +
+                " and location_id="+cv.getAsString("location_id")+" and scanned_by="+cv.getAsString("scanned_by")+" and inventory_id="+cv.getAsString("inventory_id")), null);
         int count = cursor1.getCount();
         cursor1.close();
         if (count==0)
         sqLiteDatabase.insert("scanned_data", null, cv);
     }
     public void insertScannedInvDataOutofLocationData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
-        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+cv.getAsString("room_id")+"" +
-                " and location_id="+cv.getAsString("location_id")+" and inventory_id="+cv.getAsString("inventory_id")+" and rfid_code='"+cv.getAsString("rfid_code")+"'"), null);
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+cv.getAsString("room_id")+" and reconc_id="+cv.getAsString("reconc_id") +
+                " and location_id="+cv.getAsString("location_id")+" and scanned_by="+cv.getAsString("scanned_by")+" and inventory_id="+cv.getAsString("inventory_id")+" and rfid_code='"+cv.getAsString("rfid_code")+"'"), null);
         int count = cursor1.getCount();
         cursor1.close();
         if (count==0)
             sqLiteDatabase.insert("scanned_data", null, cv);
     }
     public void insertScannedInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
-        sqLiteDatabase.delete("scanned_json_data", "room_id=? and location_id=? and user_id=?", new String[]{cv.getAsString("room_id"),cv.getAsString("location_id"),cv.getAsString("user_id")});
+        sqLiteDatabase.delete("scanned_json_data", "room_id=? and location_id=? and user_id=? and reconc_id=?", new String[]{cv.getAsString("room_id"),cv.getAsString("location_id"),cv.getAsString("user_id"),cv.getAsString("reconc_id")});
         sqLiteDatabase.insert("scanned_json_data", null, cv);
+    }
+    @SuppressLint("Range")
+    public int insertReconciliaionData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
+        int reconc_id = 0;
+        sqLiteDatabase.insert("reconciliation_data", null, cv);
+        String sql = "SELECT max(id) as id FROM reconciliation_data";
+        Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
+        // looping through all rows and adding to list
+        if (cursor2.moveToFirst()) {
+            do {
+                reconc_id = cursor2.getInt(cursor2.getColumnIndex("id"));
+            } while (cursor2.moveToNext());
+        }
+        cursor2.close();
+        Log.e(":::::",reconc_id+"***");
+        return reconc_id;
     }
     public void insertScannedBarcodeInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
         sqLiteDatabase.delete("scanned_json_data", "code=? and scan_type=? and user_id=?", new String[]{cv.getAsString("code"),cv.getAsString("scan_type"),cv.getAsString("user_id")});
@@ -489,17 +506,24 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return unitList;
     }
     @SuppressLint("Range")
-    public int checkScannedDataCount(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id){
+    public int checkScannedDataCount(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id,String scanned_by, String reconc_id){
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+room_id+"" +
-                " and location_id="+loc_id+" and inventory_id > 0"), null);
+                " and location_id="+loc_id+" and inventory_id > 0 and reconc_id = "+reconc_id+" and scanned_by="+scanned_by), null);
         int count = cursor1.getCount();
         cursor1.close();
         return count;
     }
     @SuppressLint("Range")
-    public String checkScannedDataFullCount(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id){
+    public String checkScannedDataFullCount(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id, String scanned_by, String reconc_id){
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+room_id+"" +
-                " and location_id="+loc_id), null);
+                " and location_id="+loc_id+" and reconc_id = "+reconc_id+" and scanned_by="+scanned_by), null);
+        int count = cursor1.getCount();
+        cursor1.close();
+        return String.valueOf(count);
+    }
+    @SuppressLint("Range")
+    public String checkSavedScannedDataFullCount(SQLiteDatabase sqLiteDatabase, String reconc_id){
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_json_data where reconc_id = "+reconc_id), null);
         int count = cursor1.getCount();
         cursor1.close();
         return String.valueOf(count);
@@ -518,10 +542,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<InventoryObject> getFoundInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
         ArrayList<InventoryObject> inv = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,ci.id,ci.quantity, ci.quantity_unit_abbreviation from chemical_inventory ci \n" +
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select " +
+                "ci.name,ci.sec_code,ci.code,sc.scanned,ci.id,ci.quantity, ci.quantity_unit_abbreviation from chemical_inventory ci \n" +
                 "join scanned_data sc on ci.id = sc.inventory_id \n" +
                 "where ci.room_id = "+room_id), null);
-        int count = 0;
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 String id = cursor.getString(cursor.getColumnIndex("id"));
@@ -531,10 +555,21 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String rfidCode = "";
                 rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
                 code = cursor.getString(cursor.getColumnIndex("code"));
+                boolean flag = false;
+                String scanned = "";
+                if(cursor.getString(cursor.getColumnIndex("scanned"))!=null) {
+                    if (cursor.getString(cursor.getColumnIndex("scanned")).trim().length() > 0) {
+                        scanned = cursor.getString(cursor.getColumnIndex("scanned"));
+                        flag = true;
+                    } else {
+                        scanned = "0";
+                    }
+                } else {
+                    scanned = "0";
+                }
                 String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,true));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,vol,true));
                 cursor.moveToNext();
-                count++;
             }
         }
         cursor.close();
@@ -542,8 +577,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor1.moveToFirst()) {
             while (!cursor1.isAfterLast()) {
                 String id = "-1";
-                String product_name = "";
-                String code = "";
+                String product_name = "N/A";
+                String code = "N/A";
                 String rfidCode = cursor1.getString(cursor1.getColumnIndex("rfid_code"));
                 String scanned="";
                 if(cursor1.getString(cursor1.getColumnIndex("scanned"))!=null) {
@@ -555,7 +590,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"",true));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true));
                 cursor1.moveToNext();
             }
         }
@@ -625,8 +660,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor1.moveToFirst()) {
             while (!cursor1.isAfterLast()) {
                 String id = "-1";
-                String product_name = "";
-                String code = "";
+                String product_name = "N/A";
+                String code = "N/A";
                 String rfidCode = cursor1.getString(cursor1.getColumnIndex("rfid_code"));
                 String scanned="";
                 if(cursor1.getString(cursor1.getColumnIndex("scanned"))!=null) {
@@ -638,14 +673,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"",true));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true));
                 cursor1.moveToNext();
             }
         }
         cursor1.close();
         return inv;
     }
-
     @SuppressLint("Range")
     public ArrayList<RFIDScanDataObj> getALLInventoryScannedList(SQLiteDatabase sqLiteDatabase){
         ArrayList<RFIDScanDataObj> inv = new ArrayList<>();
@@ -723,9 +757,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.delete("scanned_data", "room_id=?", new String[]{room_id});
         sqLiteDatabase.delete("scanned_json_data", "room_id=?", new String[]{room_id});
     }
-    public void delSavedScanData(SQLiteDatabase sqLiteDatabase, String user_id,String room_id){
-        sqLiteDatabase.delete("scanned_json_data", "user_id=? and room_id=?", new String[]{user_id,room_id});
-        sqLiteDatabase.delete("scanned_data", "room_id=?", new String[]{room_id});
+    public void delSavedScanData(SQLiteDatabase sqLiteDatabase, String user_id,String room_id, String reconc_id){
+        sqLiteDatabase.delete("scanned_json_data", "user_id=? and room_id=? and reconc_id=?", new String[]{user_id,room_id,reconc_id});
+        sqLiteDatabase.delete("scanned_data", "room_id=? and reconc_id=?", new String[]{room_id,reconc_id});
     }
     public void delSavedScanDatabyId(SQLiteDatabase sqLiteDatabase, String id){
         sqLiteDatabase.delete("scanned_json_data", "id=?", new String[]{id});
