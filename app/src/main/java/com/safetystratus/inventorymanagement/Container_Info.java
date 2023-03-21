@@ -37,6 +37,7 @@ public class Container_Info extends AppCompatActivity {
     String loggedinUsername = "";
     String loggedinUserSiteId = "";
     String md5Pwd = "";
+    String reconc_id = "";
     String selectedUserId = "";
     String sso = "";
     String site_name = "";
@@ -114,6 +115,9 @@ public class Container_Info extends AppCompatActivity {
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
             token = intent.getStringExtra("token");
+        }
+        if (intent.getStringExtra("reconc_id") != null) {
+            reconc_id = intent.getStringExtra("reconc_id");
         }
         if(intent.getStringExtra("empName")!=null) {
             empName = intent.getStringExtra("empName");
@@ -254,6 +258,7 @@ public class Container_Info extends AppCompatActivity {
                         ScanBarcodeBulkActivity.class);
             }
             myIntent.putExtra("user_id", selectedUserId);
+            myIntent.putExtra("reconc_id", reconc_id);
             myIntent.putExtra("site_id", loggedinUserSiteId);
             myIntent.putExtra("token", token);
             myIntent.putExtra("sso", sso);

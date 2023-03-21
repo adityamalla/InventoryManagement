@@ -198,7 +198,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         tagList = (ListView)findViewById(R.id.invList);
         //spinner = (ProgressBar)findViewById(R.id.progressBar1);
-        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"2",null,selectedSearchValue,selectedFacilName,selectedFacil,selectedRoomName,selectedRoom,total_inventory);
+        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"2",null,selectedSearchValue,selectedFacilName,selectedFacil,selectedRoomName,selectedRoom,total_inventory,reconc_id);
         if (json_data_from_continue.trim().length()>0) {
             try {
                 JSONObject obj = new JSONObject(json_data_from_continue.toString());
@@ -490,6 +490,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 myIntent.putExtra("token", token);
                 myIntent.putExtra("sso", sso);
                 myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("reconc_id", reconc_id+"");
                 myIntent.putExtra("loggedinUsername", loggedinUsername);
                 myIntent.putExtra("site_name", site_name);
                 myIntent.putExtra("empName",empName);

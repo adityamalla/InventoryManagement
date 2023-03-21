@@ -144,7 +144,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         filter.addAction(getResources().getString(R.string.activity_intent_filter_action));
         registerReceiver(myBroadcastReceiver, filter);
-        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"0",codelistfromIntent,"","","","","","");
+        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"0",codelistfromIntent,"","","","","","","");
         scanRFID.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

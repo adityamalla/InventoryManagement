@@ -164,9 +164,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return scanInfo;
     }
     @SuppressLint("Range")
-    public boolean deletePendingScan(SQLiteDatabase sqLiteDatabase,String id){
+    public boolean deletePendingScan(SQLiteDatabase sqLiteDatabase,String id, String reconc_id){
         boolean deleted = false;
         sqLiteDatabase.delete("scanned_json_data", "id=?", new String[]{id});
+        sqLiteDatabase.delete("scanned_data", "reconc_id=?", new String[]{reconc_id});
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data where id="+id), null);
         if(cursor.getCount()==0)
             deleted = true;

@@ -121,7 +121,7 @@ public class CustomizedListView extends BaseAdapter {
                 dlgAlert.setPositiveButton("Discard",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
-                                boolean deleted = databaseHandler.deletePendingScan(db,scanInfo.getId());
+                                boolean deleted = databaseHandler.deletePendingScan(db,scanInfo.getId(),scanInfo.getReconc_id());
                                 if(deleted){
                                     final Intent myIntent = new Intent(activity,
                                             ContinueActivity.class);

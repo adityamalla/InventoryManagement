@@ -149,7 +149,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         spinner = (ProgressBar)findViewById(R.id.progressBarBulkUpdate);
         rfidHandler = new RFIDHandlerBulkUpdate();
         rfidHandler.onCreate(this);
-        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"1",codelistfromIntent,"","","","","","");
+        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"1",codelistfromIntent,"","","","","","","");
         updateDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

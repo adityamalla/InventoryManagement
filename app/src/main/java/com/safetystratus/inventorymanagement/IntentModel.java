@@ -19,11 +19,12 @@ public class IntentModel {
     public String selectedRoomName;
     public String selectedRoom;
     public String total_inventory;
+    public String reconc_id;
 
     public IntentModel(String site_id, String user_id, String token,
                        String md5, String sso, String empName, String site_name,
                        String loggedinUsername, String flag, ArrayList<String> codelistfromIntent,
-                       String selectedSearchValue, String selectedFacilName, String selectedFacil, String selectedRoomName, String selectedRoom,String total_inventory) {
+                       String selectedSearchValue, String selectedFacilName, String selectedFacil, String selectedRoomName, String selectedRoom,String total_inventory, String reconc_id) {
         this.site_id = site_id;
         this.user_id = user_id;
         this.token = token;
@@ -40,6 +41,15 @@ public class IntentModel {
         this.selectedRoomName = selectedRoomName;
         this.selectedRoom = selectedRoom;
         this.total_inventory = total_inventory;
+        this.reconc_id = reconc_id;
+    }
+
+    public String getReconc_id() {
+        return reconc_id;
+    }
+
+    public void setReconc_id(String reconc_id) {
+        this.reconc_id = reconc_id;
     }
 
     public String getSelectedSearchValue() {

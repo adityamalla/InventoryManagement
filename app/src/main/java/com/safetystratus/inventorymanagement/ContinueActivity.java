@@ -105,7 +105,7 @@ public class ContinueActivity extends AppCompatActivity {
         }
         pendingScansList = (ListView) findViewById(R.id.pendingScanList);
         msg = (TextView) findViewById(R.id.msg);
-        IntentModel model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"",null,"","","","","","");
+        IntentModel model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"",null,"","","","","","","");
         ArrayList<ScanInfo> listPendingScans = new ArrayList<ScanInfo>();
         listPendingScans = databaseHandler.getPendingScans(db);
         if (listPendingScans.size()==0){

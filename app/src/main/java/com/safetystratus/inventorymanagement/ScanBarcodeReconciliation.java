@@ -198,7 +198,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         tagList = (ListView)findViewById(R.id.invList);
         //spinner = (ProgressBar)findViewById(R.id.progressBar1);
-        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"2",null,selectedSearchValue,selectedFacilName,selectedFacil,selectedRoomName,selectedRoom,total_inventory);
+        model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"2",null,selectedSearchValue,selectedFacilName,selectedFacil,selectedRoomName,selectedRoom,total_inventory,reconc_id);
         IntentFilter filter = new IntentFilter();
         filter.addCategory(Intent.CATEGORY_DEFAULT);
         filter.addAction(getResources().getString(R.string.activity_intent_filter_action));
@@ -210,7 +210,8 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             public void onClick(View view) {
                 if(found.isChecked()){
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
-                    tagList.removeAllViewsInLayout();
+                    ArrayList<InventoryObject> dataList = adapter.list;
+                    dataList.clear();
                     adapter.notifyDataSetChanged();
                     ArrayList<InventoryObject> invList = databaseHandler.getFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList,model, ScanBarcodeReconciliation.this);
@@ -223,7 +224,8 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             public void onClick(View view) {
                 if(notfound.isChecked()){
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
-                    tagList.removeAllViewsInLayout();
+                    ArrayList<InventoryObject> dataList = adapter.list;
+                    dataList.clear();
                     adapter.notifyDataSetChanged();
                     ArrayList<InventoryObject> invList = databaseHandler.getNotFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList,model, ScanBarcodeReconciliation.this);
@@ -236,7 +238,8 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             public void onClick(View view) {
                 if(all.isChecked()){
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
-                    tagList.removeAllViewsInLayout();
+                    ArrayList<InventoryObject> dataList = adapter.list;
+                    dataList.clear();
                     adapter.notifyDataSetChanged();
                     ArrayList<InventoryObject> invList = databaseHandler.getALLInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList,model, ScanBarcodeReconciliation.this);
@@ -262,6 +265,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             myIntent.putExtra("selectedRoomName", selectedRoomName);
             myIntent.putExtra("selectedRoom", selectedRoom+"");
             myIntent.putExtra("empName", empName);
+            myIntent.putExtra("reconc_id", reconc_id);
             myIntent.putExtra("total_inventory", total_inventory+"");
             myIntent.putExtra("pageLoadTemp", "-1");
             myIntent.putExtra("scannedInvList", scannedInvList);
@@ -449,12 +453,13 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             public void onClick(View view) {
                 if(enteredBarCodeValue.getText().toString().trim().length()>0){
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
-                    tagList.removeAllViewsInLayout();
+                    ArrayList<InventoryObject> dataList = adapter.list;
+                    dataList.clear();
                     adapter.notifyDataSetChanged();
                     int count = 0;
                     Log.e("oooooo",databaseHandler.checkScannedBarcodeDataAvailable(db,enteredBarCodeValue.getText().toString())+"**");
                     if(!databaseHandler.checkScannedBarcodeDataAvailable(db,enteredBarCodeValue.getText().toString())){
-                        scannedInvList.add(new InventoryObject("","","-1",enteredBarCodeValue.getText().toString(),"1","",true));
+                        scannedInvList.add(new InventoryObject("N/A","N/A","-1",enteredBarCodeValue.getText().toString(),"1","N/A",true));
                         ContentValues cv = new ContentValues();
                         cv.put("location_id", selectedFacil);
                         cv.put("room_id", selectedRoom);
@@ -467,13 +472,11 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         count = Integer.parseInt(scannedTotalCount)+1;
                         scannedTotalCount = String.valueOf(count);
                         scanCount.setText(String.valueOf(count));
-                    }else{
+                    }
+                    else{
                         for (int g=0;g<scannedInvList.size();g++){
-                            Log.e("TESGGGGGG1",scannedInvList.get(g).getCode());
                             if (scannedInvList.get(g).getCode().equalsIgnoreCase(enteredBarCodeValue.getText().toString())){
-                                Log.e("TESGGGGGG2",enteredBarCodeValue.getText().toString()+"---"+scannedInvList.get(g).isFlag());
                                 if(!scannedInvList.get(g).isFlag()) {
-                                    Log.e("TESGGGGGG3",enteredBarCodeValue.getText().toString());
                                     scannedInvList.get(g).setFlag(true);
                                     ContentValues cv = new ContentValues();
                                     cv.put("location_id", selectedFacil);
