@@ -191,9 +191,11 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         rfidHandler.onCreate(this);
         all.setChecked(true);
         scannedInvList = new ArrayList<InventoryObject>();
-        if(intent.getSerializableExtra("scannedInvList")!=null)
+        if(intent.getSerializableExtra("scannedInvList")!=null) {
             scannedInvList = (ArrayList<InventoryObject>) intent.getSerializableExtra("scannedInvList");
-        else
+        }else
+            scannedInvList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+        if (scannedInvList.size()==0)
             scannedInvList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         tagList = (ListView)findViewById(R.id.invList);
@@ -241,8 +243,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             public void onClick(View view) {
                 if(found.isChecked()){
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
-                    ArrayList<InventoryObject> dataList = adapter.list;
-                    dataList.clear();
+                    tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
                     ArrayList<InventoryObject> invList = databaseHandler.getFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList,model, RFIDScannerActivity.this);
@@ -255,8 +256,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             public void onClick(View view) {
                 if(notfound.isChecked()){
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
-                    ArrayList<InventoryObject> dataList = adapter.list;
-                    dataList.clear();
+                    tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
                     ArrayList<InventoryObject> invList = databaseHandler.getNotFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList,model, RFIDScannerActivity.this);
@@ -269,8 +269,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             public void onClick(View view) {
                 if(all.isChecked()){
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
-                    ArrayList<InventoryObject> dataList = adapter.list;
-                    dataList.clear();
+                    tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
                     ArrayList<InventoryObject> invList = databaseHandler.getALLInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList,model, RFIDScannerActivity.this);
