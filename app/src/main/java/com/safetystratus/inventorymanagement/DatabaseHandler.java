@@ -151,11 +151,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             while (!cursor.isAfterLast()) {
                 String room_id = cursor.getString(cursor.getColumnIndex("room_id"));
                 String location_id = cursor.getString(cursor.getColumnIndex("location_id"));
+                String reconc_id = cursor.getString(cursor.getColumnIndex("reconc_id"));
                 String roomName = getRoomName(sqLiteDatabase,room_id);
                 String locName = getFacilName(sqLiteDatabase,location_id);
                 scanInfo.add(
                         new ScanInfo(cursor.getString(cursor.getColumnIndex("id")),
-                                cursor.getString(cursor.getColumnIndex("room_id")),roomName,location_id,locName,cursor.getString(cursor.getColumnIndex("json_data"))));
+                                cursor.getString(cursor.getColumnIndex("room_id")),roomName,location_id,locName,cursor.getString(cursor.getColumnIndex("json_data")),reconc_id));
                 cursor.moveToNext();
             }
         }
@@ -759,6 +760,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     public void delSavedScanData(SQLiteDatabase sqLiteDatabase, String user_id,String room_id, String reconc_id){
         sqLiteDatabase.delete("scanned_json_data", "user_id=? and room_id=? and reconc_id=?", new String[]{user_id,room_id,reconc_id});
+        sqLiteDatabase.delete("scanned_data", "room_id=? and reconc_id=?", new String[]{room_id,reconc_id});
+    }
+    public void delSavedScanDataOnly(SQLiteDatabase sqLiteDatabase, String user_id,String room_id, String reconc_id){
         sqLiteDatabase.delete("scanned_data", "room_id=? and reconc_id=?", new String[]{room_id,reconc_id});
     }
     public void delSavedScanDatabyId(SQLiteDatabase sqLiteDatabase, String id){

@@ -9,14 +9,24 @@ public class ScanInfo implements Serializable {
     private String facility_id;
     private String facility_name;
     private String json_data;
+    private String reconc_id;
 
-    public ScanInfo(String id, String room_id,String room_name, String facility_id,String facility_name, String json_data) {
+    public ScanInfo(String id, String room_id,String room_name, String facility_id,String facility_name, String json_data, String reconc_id) {
         this.id = id;
         this.room_id = room_id;
         this.room_name = room_name;
         this.facility_id = facility_id;
         this.facility_name = facility_name;
         this.json_data = json_data;
+        this.reconc_id = reconc_id;
+    }
+
+    public String getReconc_id() {
+        return reconc_id;
+    }
+
+    public void setReconc_id(String reconc_id) {
+        this.reconc_id = reconc_id;
     }
 
     public String getRoom_name() {

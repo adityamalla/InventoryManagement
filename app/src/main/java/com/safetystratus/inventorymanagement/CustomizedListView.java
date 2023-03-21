@@ -103,6 +103,7 @@ public class CustomizedListView extends BaseAdapter {
                 myIntent.putExtra("selectedFacil", scanInfo.getFacility_id()+"");
                 myIntent.putExtra("selectedRoomName", scanInfo.getRoom_name());
                 myIntent.putExtra("selectedRoom", scanInfo.getRoom_id()+"");
+                myIntent.putExtra("reconc_id", scanInfo.getReconc_id()+"");
                 int inventoryCount = databaseHandler.checkCount(db,scanInfo.getRoom_id());
                 myIntent.putExtra("total_inventory", inventoryCount+"");
                 activity.startActivity(myIntent);
