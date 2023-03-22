@@ -394,19 +394,24 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     JSONObjectCodelist = JSONObjectCodelist+codelistfromIntent.get(h)+",";
                     ContentValues cv = new ContentValues();
                     cv.put("code", codelistfromIntent.get(h));
+                    if(selectedRoom.trim().length()==0||selectedRoom==null||selectedRoom=="null"){
+                        selectedRoom = "-1";
+                    }
+                    if(selectedOwner.trim().length()==0||selectedOwner==null||selectedOwner=="null"){
+                        selectedOwner = "-1";
+                    }
+                    if(selectedStatus.trim().length()==0||selectedStatus==null||selectedStatus=="null"){
+                        selectedStatus = "-1";
+                    }
+                    if(selectedPrimaryUserId.trim().length()==0||selectedPrimaryUserId==null||selectedPrimaryUserId=="null"){
+                        selectedPrimaryUserId = "-1";
+                    }
                     cv.put("room_id", Integer.parseInt(selectedRoom));
                     cv.put("object_id", Integer.parseInt(selectedOwner));
                     cv.put("object_table", "site_users");
                     cv.put("owner", selectedOwnerName);
                     cv.put("room", selectedRoomName);
-                    if(selectedStatus!=null) {
-                        if (selectedStatus.trim().length() > 0 && selectedStatus != "null")
-                            cv.put("status_id", Integer.parseInt(selectedStatus));
-                        else
-                            cv.put("status_id", (Integer) null);
-                    }else{
-                        cv.put("status_id", (Integer) null);
-                    }
+                    cv.put("status_id", Integer.parseInt(selectedStatus));
                     cv.put("status", selectedStatusName);
                     cv.put("notes", note);
                     cv.put("comment", comment);
@@ -426,6 +431,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     cv_save.put("room_id", -1);
                     cv_save.put("scan_type", "bulkupdate");
                     cv_save.put("json_data", jsonString);
+                    Log.e("jsonnnnn",jsonString);
                     databaseHandler.insertScannedBarcodeInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                     if (connected) {
                         ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonDataBulkUpdate(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
@@ -533,6 +539,18 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     JSONObjectCodelist = JSONObjectCodelist+codelistfromIntent.get(h)+",";
                 }
                 JSONObjectCodelist = JSONObjectCodelist.substring(0,JSONObjectCodelist.length()-1);
+                if(selectedRoom.trim().length()==0||selectedRoom==null||selectedRoom=="null"){
+                    selectedRoom = "-1";
+                }
+                if(selectedOwner.trim().length()==0||selectedOwner==null||selectedOwner=="null"){
+                    selectedOwner = "-1";
+                }
+                if(selectedStatus.trim().length()==0||selectedStatus==null||selectedStatus=="null"){
+                    selectedStatus = "-1";
+                }
+                if(selectedPrimaryUserId.trim().length()==0||selectedPrimaryUserId==null||selectedPrimaryUserId=="null"){
+                    selectedPrimaryUserId = "-1";
+                }
                 BulkUpdateModel inv = new BulkUpdateModel(JSONObjectCodelist,selectedStatus,selectedRoom,selectedOwner,selectedPrimaryUserId,note,comment,"site_users",selectedUserId,loggedinUserSiteId,token);
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";

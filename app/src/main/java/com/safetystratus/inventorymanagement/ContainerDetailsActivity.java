@@ -550,6 +550,15 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 comment = comments.getText().toString();
                 ContentValues cv = new ContentValues();
                 cv.put("code", code.getText().toString());
+                if(selectedRoom.trim().length()==0||selectedRoom==null||selectedRoom=="null"){
+                    selectedRoom = "-1";
+                }
+                if(selectedOwner.trim().length()==0||selectedOwner==null||selectedOwner=="null"){
+                    selectedOwner = "-1";
+                }
+                if(selectedStatus.trim().length()==0||selectedStatus==null||selectedStatus=="null"){
+                    selectedStatus = "-1";
+                }
                 cv.put("room_id", Integer.parseInt(selectedRoom));
                 cv.put("object_id", Integer.parseInt(selectedOwner));
                 cv.put("object_table", "site_users");
@@ -713,6 +722,15 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 conc_val = concentration.getText().toString();
                 note = notes.getText().toString();
                 comment = comments.getText().toString();
+                if(selectedRoom.trim().length()==0||selectedRoom==null||selectedRoom=="null"){
+                    selectedRoom = "-1";
+                }
+                if(selectedOwner.trim().length()==0||selectedOwner==null||selectedOwner=="null"){
+                    selectedOwner = "-1";
+                }
+                if(selectedStatus.trim().length()==0||selectedStatus==null||selectedStatus=="null"){
+                    selectedStatus = "-1";
+                }
                 ContentValues cv = new ContentValues();
                 cv.put("code", code.getText().toString());
                 cv.put("room_id", Integer.parseInt(selectedRoom));

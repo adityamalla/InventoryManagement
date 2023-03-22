@@ -44,8 +44,10 @@ import com.zebra.rfid.api3.TagData;
 import net.sqlcipher.database.SQLiteDatabase;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.regex.Pattern;
 
 public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandlerBulkUpdate.ResponseHandlerInterface {
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
@@ -396,17 +398,23 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         super.onPostResume();
         rfidHandler.onResume();
     }
+    private static final Pattern HEX_PATTERN = Pattern.compile("[0-9a-fA-F]+");
 
+    public static boolean isHex(String input) {
+        return HEX_PATTERN.matcher(input).matches();
+    }
     @Override
     public void handleTagdata(TagData[] tagData) {
         final StringBuilder sb = new StringBuilder();
         final int[] scanCounts = {0};
         for (int index = 0; index < tagData.length; index++) {
-            byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
-            try {
-                sb.append(new String(bytes, "UTF-8") + "&&&");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+            if(isHex(tagData[index].getTagID())) {
+                if(tagData[index].getTagID().startsWith("0000000000000000")){
+                    sb.append( tagData[index].getTagID().substring(16,tagData[index].getTagID().length())+ "&&&");
+                }else {
+                    byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
+                    sb.append(new String(bytes, StandardCharsets.UTF_8) + "&&&");
+                }
             }
         }
         runOnUiThread(new Runnable() {

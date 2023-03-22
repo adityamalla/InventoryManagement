@@ -766,8 +766,24 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                         scannedInvList.add(new InventoryObject(newList.get(k),"N/A","-1","N/A","1","N/A",true));
                     }
                 }
-                CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList,model, RFIDScannerActivity.this);
-                tagList.setAdapter(adapter);
+                if(found.isChecked()){
+                    CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
+                    tagList.removeAllViewsInLayout();
+                    adapter.notifyDataSetChanged();
+                    ArrayList<InventoryObject> invList = databaseHandler.getFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+                    CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList,model, RFIDScannerActivity.this);
+                    tagList.setAdapter(adapter1);
+                }else if (notfound.isChecked()){
+                    CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
+                    tagList.removeAllViewsInLayout();
+                    adapter.notifyDataSetChanged();
+                    ArrayList<InventoryObject> invList = databaseHandler.getNotFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+                    CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList,model, RFIDScannerActivity.this);
+                    tagList.setAdapter(adapter1);
+                }else {
+                    CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList, model, RFIDScannerActivity.this);
+                    tagList.setAdapter(adapter);
+                }
                 int scannedCount = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom,selectedUserId,reconc_id);
                 scannedTotalCount = databaseHandler.checkScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom,selectedUserId,reconc_id);
                 setscancount(String.valueOf(scannedCount), scannedTotalCount);
