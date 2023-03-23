@@ -39,6 +39,9 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.google.android.gms.common.util.Hex;
+import com.zebra.rfid.api3.ENUM_TRIGGER_MODE;
+import com.zebra.rfid.api3.InvalidUsageException;
+import com.zebra.rfid.api3.OperationFailureException;
 import com.zebra.rfid.api3.TagData;
 
 import net.sqlcipher.database.SQLiteDatabase;
@@ -187,6 +190,13 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         scanBarcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                try {
+                    rfidHandler.reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.BARCODE_MODE, true);
+                } catch (InvalidUsageException e) {
+                    e.printStackTrace();
+                } catch (OperationFailureException e) {
+                    e.printStackTrace();
+                }
                 final Intent myIntent = new Intent(BulkUpdateActivity.this,
                         ScanBarcodeBulkActivity.class);
                 myIntent.putExtra("user_id", selectedUserId);
@@ -328,6 +338,13 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         int id = item.getItemId();
         if (id == android.R.id.home) {
             //unregisterReceiver(myBroadcastReceiver);
+            try {
+                rfidHandler.reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.BARCODE_MODE, true);
+            } catch (InvalidUsageException e) {
+                e.printStackTrace();
+            } catch (OperationFailureException e) {
+                e.printStackTrace();
+            }
             rfidHandler.onDestroy();
             final Intent myIntent = new Intent(BulkUpdateActivity.this,
                     HomeActivity.class);
@@ -403,6 +420,16 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
     public static boolean isHex(String input) {
         return HEX_PATTERN.matcher(input).matches();
     }
+    public static boolean containsNonAscii(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) > 127) {
+                Log.e("---",str+"---"+true);
+                return true; // non-ASCII character found
+            }
+        }
+        Log.e("---",str+"---"+false);
+        return false; // no non-ASCII characters found
+    }
     @Override
     public void handleTagdata(TagData[] tagData) {
         final StringBuilder sb = new StringBuilder();
@@ -413,6 +440,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                     sb.append( tagData[index].getTagID().substring(16,tagData[index].getTagID().length())+ "&&&");
                 }else {
                     byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
+                    if(!containsNonAscii(new String(bytes, StandardCharsets.UTF_8)))
                     sb.append(new String(bytes, StandardCharsets.UTF_8) + "&&&");
                 }
             }

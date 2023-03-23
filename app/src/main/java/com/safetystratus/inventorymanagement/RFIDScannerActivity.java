@@ -523,6 +523,13 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         });
     }
     public void backToHome() {
+        try {
+            rfidHandler.reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.BARCODE_MODE, true);
+        } catch (InvalidUsageException e) {
+            e.printStackTrace();
+        } catch (OperationFailureException e) {
+            e.printStackTrace();
+        }
         String scannedCount = databaseHandler.checkScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom,selectedUserId,reconc_id);
         if (Integer.parseInt(scannedCount)>0){
             String savedscannedCount = databaseHandler.checkSavedScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), reconc_id);
