@@ -42,6 +42,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.common.util.Hex;
 import com.google.gson.Gson;
+import com.zebra.rfid.api3.ENUM_TRIGGER_MODE;
+import com.zebra.rfid.api3.InvalidUsageException;
+import com.zebra.rfid.api3.OperationFailureException;
 import com.zebra.rfid.api3.TagData;
 import net.sqlcipher.database.SQLiteDatabase;
 import org.json.JSONArray;
@@ -286,6 +289,13 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         scanBarcode.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                try {
+                    rfidHandler.reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.BARCODE_MODE, true);
+                } catch (InvalidUsageException e) {
+                    e.printStackTrace();
+                } catch (OperationFailureException e) {
+                    e.printStackTrace();
+                }
                 final Intent myIntent = new Intent(RFIDScannerActivity.this,
                         ScanBarcodeReconciliation.class);
                 myIntent.putExtra("user_id", selectedUserId);
@@ -661,6 +671,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     sb.append( tagData[index].getTagID().substring(16,tagData[index].getTagID().length())+ "&&&");
                 }else {
                     byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
+                    if(!containsNonAscii(new String(bytes, StandardCharsets.UTF_8)))
                     sb.append(new String(bytes, StandardCharsets.UTF_8) + "&&&");
                 }
             }
@@ -729,17 +740,21 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
                 ArrayList<String> rfids = new ArrayList<String>();
                 for (int i = 0; i < scannedInvList.size(); i++) {
-                    if (newList.contains(scannedInvList.get(i).getRfidCode())){
-                        if(!scannedInvList.get(i).isFlag()) {
-                            scannedInvList.get(i).setFlag(true);
-                            ContentValues cv = new ContentValues();
-                            cv.put("location_id", selectedFacil);
-                            cv.put("room_id", selectedRoom);
-                            cv.put("inventory_id", Integer.parseInt(scannedInvList.get(i).getInv_id()));
-                            cv.put("scanned_by", selectedUserId);
-                            cv.put("scanned", 1);
-                            cv.put("reconc_id", reconc_id);
-                            databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                    if(scannedInvList.get(i).getRfidCode()!=null) {
+                        if (scannedInvList.get(i).getRfidCode().trim().length() > 0) {
+                            if (newList.contains(scannedInvList.get(i).getRfidCode())) {
+                                if (!scannedInvList.get(i).isFlag()) {
+                                    scannedInvList.get(i).setFlag(true);
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("location_id", selectedFacil);
+                                    cv.put("room_id", selectedRoom);
+                                    cv.put("inventory_id", Integer.parseInt(scannedInvList.get(i).getInv_id()));
+                                    cv.put("scanned_by", selectedUserId);
+                                    cv.put("scanned", 1);
+                                    cv.put("reconc_id", reconc_id);
+                                    databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                }
+                            }
                         }
                     }
                     rfids.add(scannedInvList.get(i).getRfidCode());
@@ -818,5 +833,16 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
 
     public static boolean isHex(String input) {
         return HEX_PATTERN.matcher(input).matches();
+    }
+
+    public static boolean containsNonAscii(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) > 127) {
+                Log.e("---",str+"---"+true);
+                return true; // non-ASCII character found
+            }
+        }
+        Log.e("---",str+"---"+false);
+        return false; // no non-ASCII characters found
     }
 }

@@ -59,14 +59,17 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
         TextView volumne = (TextView)view.findViewById(R.id.volumeofitem);
         ImageView invinfo = (ImageView)view.findViewById(R.id.invinfo);
         productName.setText(list.get(position).getProductName());
-        if(list.get(position).getRfidCode().trim().length()>0) {
-            if(!list.get(position).getRfidCode().equalsIgnoreCase("N/A"))
-                productCode.setText(list.get(position).getRfidCode());
-            else
+        if(list.get(position).getRfidCode()!=null) {
+            if (list.get(position).getRfidCode().trim().length() > 0) {
+                if (!list.get(position).getRfidCode().equalsIgnoreCase("N/A"))
+                    productCode.setText(list.get(position).getRfidCode());
+                else
+                    productCode.setText(list.get(position).getCode());
+            } else
                 productCode.setText(list.get(position).getCode());
-        }
-        else
+        }else{
             productCode.setText(list.get(position).getCode());
+        }
         volumne.setText(list.get(position).getVolume());
         // Check the flag value and set the background color of the view
         if (list.get(position).isFlag()) {
