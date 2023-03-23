@@ -331,13 +331,19 @@ public class HomeActivity extends AppCompatActivity {
                 else{
                     URL = ApiConstants.syncpostscanneddata;
                 }
+                JSONObject obj = new JSONObject(jsonList.get(k).getObjectName());
+                String reconc_id = "-4";
+                if (obj.has("reconc_id")) {
+                     reconc_id = obj.getString("reconc_id");
+                }
+                String finalReconc_id = reconc_id;
                 JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonList.get(k).getObjectName()),
                         new Response.Listener<JSONObject>() {
                             @Override
                             public void onResponse(JSONObject response) {
                                 //Process os success response
                                 String res = response.toString();
-                                databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId());
+                                databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId(), finalReconc_id);
                                 ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                                 if (jsonListModified.size()==0){
                                     progressSync.dismiss();
@@ -570,7 +576,7 @@ public class HomeActivity extends AppCompatActivity {
             db.delete(QueryConstants.TABLE_NAME_MENU_CATEGORIES, null, null);
             db.delete(QueryConstants.TABLE_NAME_MENU_ITEMS, null, null);
             db.delete(QueryConstants.TABLE_NAME_SETTINGS, null, null);
-            db.delete(QueryConstants.TABLE_NAME_SCANNED_DATA, null, null);
+            //db.delete(QueryConstants.TABLE_NAME_SCANNED_DATA, null, null);
             db.delete(QueryConstants.TABLE_NAME_UOM, null, null);
             db.delete(QueryConstants.TABLE_NAME_INV_STATUS, null, null);
             //db.delete(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, null);

@@ -9,13 +9,23 @@ public class RFIDPostScanObj implements Serializable {
     public String site_id;
     public String room_id;
     public String inventory_details;
+    public String reconc_id;
 
-    public RFIDPostScanObj(String user_id, String token, String site_id,String room_id, String inventory_details) {
+    public RFIDPostScanObj(String user_id, String token, String site_id,String room_id, String inventory_details,String reconc_id) {
         this.user_id = user_id;
         this.token = token;
         this.site_id = site_id;
         this.room_id = room_id;
         this.inventory_details = inventory_details;
+        this.reconc_id = reconc_id;
+    }
+
+    public String getReconc_id() {
+        return reconc_id;
+    }
+
+    public void setReconc_id(String reconc_id) {
+        this.reconc_id = reconc_id;
     }
 
     public String getRoom_id() {

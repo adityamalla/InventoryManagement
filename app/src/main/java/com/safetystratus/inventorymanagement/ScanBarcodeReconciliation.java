@@ -186,7 +186,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         }
         if (scannedTotalCount.trim().length() > 0){
             int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom,selectedUserId,reconc_id);
-            setscancount(String.valueOf(scanned), scannedTotalCount);
+            setscancount(scannedTotalCount,String.valueOf(scanned));
         }else
             scanCount.setText("0");
         all.setChecked(true);
@@ -215,7 +215,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
-                    ArrayList<InventoryObject> invList1 = databaseHandler.getFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+                    ArrayList<InventoryObject> invList1 = databaseHandler.getFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id);
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
                     tagList.setAdapter(adapter1);
                 }
@@ -228,7 +228,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
-                    ArrayList<InventoryObject> invList1 = databaseHandler.getNotFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+                    ArrayList<InventoryObject> invList1 = databaseHandler.getNotFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id);
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
                     tagList.setAdapter(adapter1);
                 }
@@ -241,7 +241,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
-                    ArrayList<InventoryObject> invList1 = databaseHandler.getALLInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+                    ArrayList<InventoryObject> invList1 = databaseHandler.getALLInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id);
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
                     tagList.setAdapter(adapter1);
                 }
@@ -277,10 +277,10 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Gson gson = new Gson();
-                ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),reconc_id);
                 String rfidJson = gson.toJson(rfidScanDataObjs);
                 RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
-                        token,loggedinUserSiteId,selectedRoom,rfidJson
+                        token,loggedinUserSiteId,selectedRoom,rfidJson,reconc_id
                 );
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";
@@ -314,9 +314,9 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Gson gson = new Gson();
-                ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),reconc_id);
                 RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
-                        token,loggedinUserSiteId,selectedRoom,gson.toJson(rfidScanDataObjs)
+                        token,loggedinUserSiteId,selectedRoom,gson.toJson(rfidScanDataObjs),reconc_id
                 );
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";
@@ -489,6 +489,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                     databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                                     int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom,selectedUserId,reconc_id);
                                     count = Integer.parseInt(scannedTotalCount)+1;
+                                    Log.e("55555",count+"---"+scanned);
                                     scannedTotalCount = String.valueOf(count);
                                     setscancount(String.valueOf(count),String.valueOf(scanned));
                                 }
@@ -646,7 +647,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList,model, ScanBarcodeReconciliation.this);
         tagList.setAdapter(adapter);
     }
-    public void setscancount(String count, String total_scan_count){
+    public void setscancount(String total_scan_count, String count){
         if(progressSynStart!=null) {
             if(progressSynStart.isShowing())
                 progressSynStart.dismiss();
