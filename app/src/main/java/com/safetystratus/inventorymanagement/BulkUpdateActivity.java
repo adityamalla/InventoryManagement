@@ -283,6 +283,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         addtoList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideKeyboard(BulkUpdateActivity.this);
                 if (enteredCodeValue.getText().toString().trim().length()>0){
                     codelistfromIntent.add(enteredCodeValue.getText().toString());
                     //instantiate custom adapter
@@ -320,6 +321,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                             });
                     dlgAlert.create().show();
                 }
+                enteredCodeValue.setText("");
             }
         });
     }

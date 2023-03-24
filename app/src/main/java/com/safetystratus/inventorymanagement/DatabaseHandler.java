@@ -542,7 +542,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
 
     @SuppressLint("Range")
-    public ArrayList<InventoryObject> getFoundInventoryList(SQLiteDatabase sqLiteDatabase, String room_id, String rec_id){
+    public ArrayList<InventoryObject> getFoundInventoryList(SQLiteDatabase sqLiteDatabase, String room_id, String rec_id, String scanType){
         ArrayList<InventoryObject> inv = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("select " +
                 "ci.name,ci.sec_code,ci.code,sc.scanned,ci.id,ci.quantity, ci.quantity_unit_abbreviation from chemical_inventory ci \n" +
@@ -557,6 +557,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String rfidCode = "";
                 rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
                 code = cursor.getString(cursor.getColumnIndex("code"));
+                Log.e("code>>>>",code);
                 boolean flag = false;
                 String scanned = "";
                 if(cursor.getString(cursor.getColumnIndex("scanned"))!=null) {
@@ -575,13 +576,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
         }
         cursor.close();
-        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("select rfid_code,scanned from scanned_data where room_id = "+room_id+" and inventory_id=-1 and reconc_id="+rec_id), null);
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("select rfid_code,scanned,code from scanned_data where room_id = "+room_id+" and inventory_id=-1 and reconc_id="+rec_id), null);
         if (cursor1.moveToFirst()) {
             while (!cursor1.isAfterLast()) {
                 String id = "-1";
                 String product_name = "N/A";
-                String code = "N/A";
                 String rfidCode = cursor1.getString(cursor1.getColumnIndex("rfid_code"));
+                String code = cursor1.getString(cursor1.getColumnIndex("code"));
                 String scanned="";
                 if(cursor1.getString(cursor1.getColumnIndex("scanned"))!=null) {
                     if (cursor1.getString(cursor1.getColumnIndex("scanned")).trim().length() > 0) {
@@ -600,7 +601,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return inv;
     }
     @SuppressLint("Range")
-    public ArrayList<InventoryObject> getNotFoundInventoryList(SQLiteDatabase sqLiteDatabase, String room_id, String rec_id){
+    public ArrayList<InventoryObject> getNotFoundInventoryList(SQLiteDatabase sqLiteDatabase, String room_id, String rec_id, String scanType){
         ArrayList<InventoryObject> inv = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,ci.id,ci.quantity, ci.quantity_unit_abbreviation from chemical_inventory ci \n" +
                 "where ci.room_id="+room_id+" and ci.id not in(select inventory_id from scanned_data sc where sc.room_id="+room_id+" and sc.reconc_id="+rec_id+");"), null);
@@ -624,8 +625,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return inv;
     }
     @SuppressLint("Range")
-    public ArrayList<InventoryObject> getALLInventoryList(SQLiteDatabase sqLiteDatabase, String room_id, String rec_id){
+    public ArrayList<InventoryObject> getALLInventoryList(SQLiteDatabase sqLiteDatabase, String room_id, String rec_id, String scanType){
         ArrayList<InventoryObject> inv = new ArrayList<>();
+        ArrayList<InventoryObject> invListNotFound = getNotFoundInventoryList(sqLiteDatabase,room_id,rec_id,scanType);
+        for (int y = 0;y<invListNotFound.size();y++){
+            inv.add(invListNotFound.get(y));
+        }
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,sc.scanned,ci.id,ci.quantity, ci.quantity_unit_abbreviation from chemical_inventory ci \n" +
                 "left join scanned_data sc on ci.id = sc.inventory_id \n" +
                 "where ci.room_id = "+room_id+" and sc.reconc_id="+rec_id), null);
@@ -658,13 +663,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
         }
         cursor.close();
-        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("select rfid_code,scanned from scanned_data where room_id = "+room_id+" and inventory_id=-1 and reconc_id="+rec_id), null);
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("select rfid_code,scanned,code from scanned_data where room_id = "+room_id+" and inventory_id=-1 and reconc_id="+rec_id), null);
         if (cursor1.moveToFirst()) {
             while (!cursor1.isAfterLast()) {
                 String id = "-1";
                 String product_name = "N/A";
-                String code = "N/A";
                 String rfidCode = cursor1.getString(cursor1.getColumnIndex("rfid_code"));
+                String code = cursor1.getString(cursor1.getColumnIndex("code"));
                 String scanned="";
                 if(cursor1.getString(cursor1.getColumnIndex("scanned"))!=null) {
                     if (cursor1.getString(cursor1.getColumnIndex("scanned")).trim().length() > 0) {
@@ -680,10 +685,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
         }
         cursor1.close();
-        ArrayList<InventoryObject> invListNotFound = getNotFoundInventoryList(sqLiteDatabase,room_id,rec_id);
-        for (int y = 0;y<invListNotFound.size();y++){
-            inv.add(invListNotFound.get(y));
-        }
         return inv;
     }
     @SuppressLint("Range")

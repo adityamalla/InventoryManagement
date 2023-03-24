@@ -153,6 +153,7 @@ public class ScanBarcodeActivity extends AppCompatActivity {
                         dlgAlert.create().show();
                     }
                 }
+                enteredBarcode.setText("");
             }
         });
     }

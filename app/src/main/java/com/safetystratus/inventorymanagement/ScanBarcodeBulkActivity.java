@@ -264,6 +264,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
         addtoList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                hideKeyboard(ScanBarcodeBulkActivity.this);
                 if(enteredBarCodeValue.getText().toString().trim().length()>0){
                     codelistfromIntent.add(enteredBarCodeValue.getText().toString());
                     //instantiate custom adapter
@@ -301,6 +302,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
                             });
                     dlgAlert.create().show();
                 }
+                enteredBarCodeValue.setText("");
             }
         });
     }
