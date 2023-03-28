@@ -263,7 +263,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<InventoryObject> getInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
         ArrayList<InventoryObject> inv = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT sec_code,name,code,id,quantity, quantity_unit_abbreviation \n" +
-                "FROM  chemical_inventory where room_id="+room_id), null);
+                "FROM  chemical_inventory where room_id="+room_id+" and status_id != 2 and status_id != 5 "), null);
+        int count = 0;
+        int recCount = cursor.getCount();
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                String id = cursor.getString(cursor.getColumnIndex("id"));
+                String product_name = "";
+                String code = "";
+                product_name = cursor.getString(cursor.getColumnIndex("name"));
+                String rfidCode = "";
+                rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                code = cursor.getString(cursor.getColumnIndex("code"));
+                String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,false));
+                cursor.moveToNext();
+                count++;
+            }
+        }
+        cursor.close();
+        return inv;
+    }
+    @SuppressLint("Range")
+    public ArrayList<InventoryObject> getDisposedInventoryList(SQLiteDatabase sqLiteDatabase, String room_id){
+        ArrayList<InventoryObject> inv = new ArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT sec_code,name,code,id,quantity, quantity_unit_abbreviation \n" +
+                "FROM  chemical_inventory where room_id="+room_id+" and status_id = 2"), null);
         int count = 0;
         int recCount = cursor.getCount();
         if (cursor.moveToFirst()) {
@@ -341,6 +366,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void insertScannedInvDataOutofLocationData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+cv.getAsString("room_id")+" and reconc_id="+cv.getAsString("reconc_id") +
                 " and location_id="+cv.getAsString("location_id")+" and scanned_by="+cv.getAsString("scanned_by")+" and inventory_id="+cv.getAsString("inventory_id")+" and rfid_code='"+cv.getAsString("rfid_code")+"'"), null);
+        int count = cursor1.getCount();
+        cursor1.close();
+        if (count==0)
+            sqLiteDatabase.insert("scanned_data", null, cv);
+    }
+    public void insertScannedInvDataOutofLocationDataBarcode(SQLiteDatabase sqLiteDatabase, ContentValues cv){
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+cv.getAsString("room_id")+" and reconc_id="+cv.getAsString("reconc_id") +
+                " and location_id="+cv.getAsString("location_id")+" and scanned_by="+cv.getAsString("scanned_by")+" and inventory_id="+cv.getAsString("inventory_id")+" and code='"+cv.getAsString("code")+"'"), null);
         int count = cursor1.getCount();
         cursor1.close();
         if (count==0)
@@ -510,7 +543,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public int checkScannedDataCount(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id,String scanned_by, String reconc_id){
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+room_id+"" +
-                " and location_id="+loc_id+" and inventory_id > 0 and reconc_id = "+reconc_id+" and scanned_by="+scanned_by), null);
+                " and location_id="+loc_id+" and inventory_id > 0 and reconc_id = "+reconc_id+" and scanned_by="+scanned_by+" and inventory_id in (select id from chemical_inventory where status_id!=2 and status_id!=5)"), null);
         int count = cursor1.getCount();
         cursor1.close();
         return count;
@@ -533,6 +566,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public boolean checkScannedBarcodeDataAvailable(SQLiteDatabase sqLiteDatabase,  String code){
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from chemical_inventory where lower(code)=lower('"+code+"')"), null);
+        int count = cursor1.getCount();
+        cursor1.close();
+        if(count>0)
+            return true;
+        else
+            return false;
+    }
+
+    @SuppressLint("Range")
+    public boolean checkScannedRFIDCodeDataAvailable(SQLiteDatabase sqLiteDatabase,  String code){
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from chemical_inventory where lower(sec_code)=lower('"+code+"') and status_id!=5"), null);
         int count = cursor1.getCount();
         cursor1.close();
         if(count>0)
@@ -604,7 +648,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<InventoryObject> getNotFoundInventoryList(SQLiteDatabase sqLiteDatabase, String room_id, String rec_id, String scanType){
         ArrayList<InventoryObject> inv = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,ci.id,ci.quantity, ci.quantity_unit_abbreviation from chemical_inventory ci \n" +
-                "where ci.room_id="+room_id+" and ci.id not in(select inventory_id from scanned_data sc where sc.room_id="+room_id+" and sc.reconc_id="+rec_id+");"), null);
+                "where ci.room_id="+room_id+" and ci.status_id != 2 and ci.status_id != 5 and ci.id not in(select inventory_id from scanned_data sc where sc.room_id="+room_id+" and sc.reconc_id="+rec_id+");"), null);
         int count = 0;
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
@@ -633,7 +677,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,sc.scanned,ci.id,ci.quantity, ci.quantity_unit_abbreviation from chemical_inventory ci \n" +
                 "left join scanned_data sc on ci.id = sc.inventory_id \n" +
-                "where ci.room_id = "+room_id+" and sc.reconc_id="+rec_id), null);
+                "where ci.room_id = "+room_id+" and ci.status_id != 2 and ci.status_id != 5 and sc.reconc_id="+rec_id), null);
         int count = 0;
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
@@ -894,6 +938,5 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void updateInventoryDetails(SQLiteDatabase sqLiteDatabase, ContentValues cv){
         sqLiteDatabase.update(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, cv, "code=?", new String[]{cv.getAsString("code")});
     }
-
 }
 

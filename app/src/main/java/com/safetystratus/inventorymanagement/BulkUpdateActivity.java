@@ -340,14 +340,16 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         int id = item.getItemId();
         if (id == android.R.id.home) {
             //unregisterReceiver(myBroadcastReceiver);
-            try {
-                rfidHandler.reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.BARCODE_MODE, true);
-            } catch (InvalidUsageException e) {
-                e.printStackTrace();
-            } catch (OperationFailureException e) {
-                e.printStackTrace();
+            if(rfidHandler!=null) {
+                try {
+                    rfidHandler.reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.BARCODE_MODE, true);
+                } catch (InvalidUsageException e) {
+                    e.printStackTrace();
+                } catch (OperationFailureException e) {
+                    e.printStackTrace();
+                }
+                rfidHandler.onDestroy();
             }
-            rfidHandler.onDestroy();
             final Intent myIntent = new Intent(BulkUpdateActivity.this,
                     HomeActivity.class);
             myIntent.putExtra("user_id", selectedUserId);

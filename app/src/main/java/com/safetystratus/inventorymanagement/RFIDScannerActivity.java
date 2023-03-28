@@ -744,7 +744,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             @Override
             public void run() {
                 //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
-                //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
+                ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
                 ArrayList<String> rfids = new ArrayList<String>();
                 for (int i = 0; i < scannedInvList.size(); i++) {
                     if(scannedInvList.get(i).getRfidCode()!=null) {
@@ -765,6 +765,27 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                         }
                     }
                     rfids.add(scannedInvList.get(i).getRfidCode());
+                }
+                for (int i = 0; i < disposedinvList.size(); i++) {
+                    if(disposedinvList.get(i).getRfidCode()!=null) {
+                        if (disposedinvList.get(i).getRfidCode().trim().length() > 0) {
+                            if (newList.contains(disposedinvList.get(i).getRfidCode())) {
+                                if (!disposedinvList.get(i).isFlag()) {
+                                    disposedinvList.get(i).setFlag(true);
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("location_id", selectedFacil);
+                                    cv.put("room_id", selectedRoom);
+                                    Log.e("dispossedd id >>",disposedinvList.get(i).getInv_id()+"**");
+                                    cv.put("inventory_id", Integer.parseInt(disposedinvList.get(i).getInv_id()));
+                                    cv.put("scanned_by", selectedUserId);
+                                    cv.put("scanned", 1);
+                                    cv.put("reconc_id", reconc_id);
+                                    databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                }
+                            }
+                        }
+                    }
+                    rfids.add(disposedinvList.get(i).getRfidCode());
                 }
                 for (int k=0;k < scannedOutOflocationListfromContinue.size();k++){
                         /*scannedInvList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(k),"","-1","","1","",true));

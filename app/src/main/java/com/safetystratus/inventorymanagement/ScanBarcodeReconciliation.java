@@ -469,7 +469,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         cv.put("code", enteredBarCodeValue.getText().toString());
                         cv.put("scanned", 1);
                         cv.put("reconc_id", reconc_id);
-                        databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        databaseHandler.insertScannedInvDataOutofLocationDataBarcode(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                         count = Integer.parseInt(scannedTotalCount)+1;
                         scannedTotalCount = String.valueOf(count);
                         scanCount.setText(String.valueOf(count));
@@ -491,6 +491,26 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                     count = Integer.parseInt(scannedTotalCount)+1;
                                     scannedTotalCount = String.valueOf(count);
                                     setscancount(String.valueOf(count),String.valueOf(scanned));
+                                }
+                            }
+                        }
+                        ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
+                        for (int i = 0; i < disposedinvList.size(); i++) {
+                            if (disposedinvList.get(i).getCode().equalsIgnoreCase(enteredBarCodeValue.getText().toString())){
+                                if (!disposedinvList.get(i).isFlag()) {
+                                    disposedinvList.get(i).setFlag(true);
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("location_id", selectedFacil);
+                                    cv.put("room_id", selectedRoom);
+                                    Log.e("dispossedd id >>",disposedinvList.get(i).getInv_id()+"**");
+                                    cv.put("inventory_id", Integer.parseInt(disposedinvList.get(i).getInv_id()));
+                                    cv.put("scanned_by", selectedUserId);
+                                    cv.put("scanned", 1);
+                                    cv.put("reconc_id", reconc_id);
+                                    databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                    count = Integer.parseInt(scannedTotalCount)+1;
+                                    scannedTotalCount = String.valueOf(count);
+                                    scanCount.setText(String.valueOf(count));
                                 }
                             }
                         }
@@ -641,7 +661,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             cv.put("reconc_id", reconc_id);
             cv.put("code", decodedData);
             cv.put("scanned", 1);
-            databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+            databaseHandler.insertScannedInvDataOutofLocationDataBarcode(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
             count = Integer.parseInt(scannedTotalCount)+1;
             scannedTotalCount = String.valueOf(count);
             scanCount.setText(scannedTotalCount);
@@ -662,6 +682,26 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         count = Integer.parseInt(scannedTotalCount)+1;
                         scannedTotalCount = String.valueOf(count);
                         setscancount(String.valueOf(count),String.valueOf(scanned));
+                    }
+                }
+            }
+            ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
+            for (int i = 0; i < disposedinvList.size(); i++) {
+                if (disposedinvList.get(i).getCode().equalsIgnoreCase(decodedData)){
+                    if (!disposedinvList.get(i).isFlag()) {
+                        disposedinvList.get(i).setFlag(true);
+                        ContentValues cv = new ContentValues();
+                        cv.put("location_id", selectedFacil);
+                        cv.put("room_id", selectedRoom);
+                        Log.e("dispossedd id >>",disposedinvList.get(i).getInv_id()+"**");
+                        cv.put("inventory_id", Integer.parseInt(disposedinvList.get(i).getInv_id()));
+                        cv.put("scanned_by", selectedUserId);
+                        cv.put("scanned", 1);
+                        cv.put("reconc_id", reconc_id);
+                        databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        count = Integer.parseInt(scannedTotalCount)+1;
+                        scannedTotalCount = String.valueOf(count);
+                        scanCount.setText(String.valueOf(count));
                     }
                 }
             }
