@@ -1,6 +1,10 @@
 package com.safetystratus.inventorymanagement;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.media.AudioManager;
+import android.media.ToneGenerator;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.TextView;
@@ -9,6 +13,7 @@ import com.google.android.gms.common.util.Hex;
 import com.zebra.rfid.api3.ACCESS_OPERATION_CODE;
 import com.zebra.rfid.api3.ACCESS_OPERATION_STATUS;
 import com.zebra.rfid.api3.Antennas;
+import com.zebra.rfid.api3.BEEPER_VOLUME;
 import com.zebra.rfid.api3.ENUM_TRANSPORT;
 import com.zebra.rfid.api3.ENUM_TRIGGER_MODE;
 import com.zebra.rfid.api3.HANDHELD_TRIGGER_EVENT_TYPE;
@@ -35,12 +40,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 class RFIDHandlerBulkUpdate implements Readers.RFIDReaderEventHandler {
 
     final static String TAG = "RFID_SAMPLE";
     // RFID Reader
     private static Readers readers;
+    public static ToneGenerator toneGenerator;
     private static ArrayList<ReaderDevice> availableRFIDReaderList;
     private static ReaderDevice readerDevice;
     public static RFIDReader reader;
@@ -58,6 +66,7 @@ class RFIDHandlerBulkUpdate implements Readers.RFIDReaderEventHandler {
     private BulkUpdateActivity context;
     public static StartTrigger settings_startTrigger;
     public static Boolean isBatchModeInventoryRunning = false;
+    public static BEEPER_VOLUME beeperVolume = BEEPER_VOLUME.HIGH_BEEP;
 
     // general
     private int MAX_POWER = 270;
@@ -278,6 +287,7 @@ class RFIDHandlerBulkUpdate implements Readers.RFIDReaderEventHandler {
                     // Establish connection to the RFID Reader
                     reader.connect();
                     ConfigureReader();
+                    beeperSettings();
                     return "Connected";
                 }
             } catch (InvalidUsageException e) {
@@ -405,6 +415,7 @@ class RFIDHandlerBulkUpdate implements Readers.RFIDReaderEventHandler {
             if (myTags != null) {
                 for (int index = 0; index < myTags.length; index++) {
                     Log.d(TAG, "Tag ID " + myTags[index].getTagID());
+                    startbeepingTimer();
                     if (myTags[index].getOpCode() == ACCESS_OPERATION_CODE.ACCESS_OPERATION_READ &&
                             myTags[index].getOpStatus() == ACCESS_OPERATION_STATUS.ACCESS_SUCCESS) {
                         if (myTags[index].getMemoryBankData().length() > 0) {
@@ -502,6 +513,82 @@ class RFIDHandlerBulkUpdate implements Readers.RFIDReaderEventHandler {
     public void locationing(final String locateTag,final RfidListeners rfidListeners) {
         locationingController.locationing(locateTag,rfidListeners);
     }
+    private boolean beepON = false;
+    public Timer tbeep;
+
+    public void startbeepingTimer() {
+        if (beeperVolume != BEEPER_VOLUME.QUIET_BEEP) {
+            if (!beepON) {
+                beepON = true;
+                beep();
+                if (tbeep == null) {
+                    TimerTask task = new TimerTask() {
+                        @Override
+                        public void run() {
+                            stopbeepingTimer();
+                            beepON = false;
+                        }
+                    };
+                    tbeep = new Timer();
+                    tbeep.schedule(task, 10);
+                }
+            }
+        }
+    }
+
+    /**
+     * method to stop timer
+     */
+    public void stopbeepingTimer() {
+        if (tbeep != null && toneGenerator != null) {
+            toneGenerator.stopTone();
+            tbeep.cancel();
+            tbeep.purge();
+        }
+        tbeep = null;
+    }
+
+    public void beep() {
+        if (toneGenerator != null) {
+            int toneType = ToneGenerator.TONE_PROP_BEEP;
+            toneGenerator.startTone(toneType);
+        }
+    }
+    private void beeperSettings() {
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.pref_beeper), Context.MODE_PRIVATE);
+        int  volume;
+        if(reader != null && reader.getHostName() != null ){
+            volume= sharedPref.getInt(context.getString(R.string.beeper_volume), 0);
+        }else{
+            volume= sharedPref.getInt(context.getString(R.string.beeper_volume), 3);
+        }
+        Log.e("volume>>>",volume+"***");
+        int streamType = AudioManager.STREAM_DTMF;
+        int percantageVolume = 100;
+        if (volume == 0) {
+            beeperVolume = BEEPER_VOLUME.HIGH_BEEP;
+            percantageVolume = 100;
+        }
+        if (volume == 1) {
+            beeperVolume = BEEPER_VOLUME.MEDIUM_BEEP;
+            percantageVolume = 75;
+        }
+        if (volume == 2) {
+            beeperVolume = BEEPER_VOLUME.LOW_BEEP;
+            percantageVolume = 50;
+        }
+        if (volume == 3) {
+            beeperVolume = BEEPER_VOLUME.QUIET_BEEP;
+            percantageVolume = 0;
+        }
+
+        try {
+            toneGenerator = new ToneGenerator(streamType, percantageVolume);
+        } catch (RuntimeException exception) {
+            toneGenerator = null;
+        }
+    }
+
 
 }
 

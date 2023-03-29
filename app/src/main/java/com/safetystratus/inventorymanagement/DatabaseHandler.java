@@ -216,7 +216,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public int checkCount(SQLiteDatabase sqLiteDatabase, String room_id){
         int count = 0;
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM chemical_inventory where room_id="+room_id), null);
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM chemical_inventory where room_id="+room_id+" and status_id!=2 and status_id!=5"), null);
         count = cursor.getCount();
         cursor.close();
         return count;
@@ -843,7 +843,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     @SuppressLint("Range")
     public MyObject[] getAutoSearchRoomsData(SQLiteDatabase sqLiteDatabase, String searchTerm,String facil_id) {
-        String sql = "SELECT room,id FROM fi_facil_rooms where status = 'active' and room like '%"+searchTerm+"%' and facil_id="+facil_id;
+        String sql = "";
+        if(facil_id.trim().length()>0)
+            sql = "SELECT room,id FROM fi_facil_rooms where status = 'active' and room like '%"+searchTerm+"%' and facil_id="+facil_id;
+        else
+            sql = "SELECT room,id FROM fi_facil_rooms where status = 'active' and room like '%"+searchTerm+"%' ";
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();
         MyObject[] ObjectItemData = new MyObject[recCount];

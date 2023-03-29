@@ -285,7 +285,12 @@ public class RoomList extends AppCompatActivity {
                 MyObject[] myObjects = null;
                 if (String.valueOf(s).trim().length() > 2) {
                     myObjects = getItemsFromDb(String.valueOf(s));
-                    tableRooms.removeAllViews();
+                    //}
+                }else if (String.valueOf(s).trim().length()==0){
+                    myObjects =  databaseHandler.getAutoSearchRoomsData( databaseHandler.getWritableDatabase(PASS_PHRASE), "",selectedFacil);
+                }
+                tableRooms.removeAllViews();
+                if(myObjects!=null) {
                     for (int i = 0; i < myObjects.length; i++) {
                         final TextView roomName = new TextView(RoomList.this);
                         roomName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
@@ -378,7 +383,6 @@ public class RoomList extends AppCompatActivity {
                             }
                         });
                     }
-                    //}
                 }
             }
         });

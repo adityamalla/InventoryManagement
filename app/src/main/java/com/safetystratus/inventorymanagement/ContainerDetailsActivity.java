@@ -239,18 +239,19 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 selectedStatus = inv.getStatus_id();
                 selectedStatusName = inv.getStatus();
             }
-            if(selectedConcUnit.trim().length()==0){
+            if(selectedConcUnit.trim().length()==0&&!inv.getConcentration_unit_abbrevation_id().equalsIgnoreCase("-1")){
                 selectedConcUnit = inv.getConcentration_unit_abbrevation_id();
                 selectedConcUnitName = inv.getConcentration_unit_abbrevation();
             }
-            if(selectedQuanUnit.trim().length()==0){
+            if(selectedQuanUnit.trim().length()==0&&!inv.getVolume_mass_unit_id().equalsIgnoreCase("-1")){
                 selectedQuanUnit = inv.getVolume_mass_unit_id();
                 selectedQuanUnitName = inv.getVolume_mass_unit();
             }
-            if(quan_val.trim().length()==0){
+            if(quan_val.trim().length()==0&&!inv.getVolume_mass().equalsIgnoreCase("-1")){
                 quan_val = inv.getVolume_mass();
             }
-            if(conc_val.trim().length()==0){
+            Log.e("yyyyy",conc_val.trim().length()+"---"+conc_val+"--"+inv.getConcentration());
+            if(conc_val.trim().length()==0&&!inv.getConcentration().equalsIgnoreCase("-1")){
                 conc_val = inv.getConcentration();
             }
             if(note.trim().length()==0){
@@ -571,36 +572,50 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 cv.put("quantity_unit_abbreviation", selectedQuanUnitName);
                 cv.put("concentration_unit_abbrevation", selectedConcUnitName);
                 if(quan_val!=null) {
-                    if (quan_val.trim().length() > 0 && quan_val != "null")
+                    if (quan_val.trim().length() > 0 && quan_val != "null") {
                         cv.put("quantity", Integer.parseInt(quan_val));
-                    else
-                        cv.put("quantity", (Integer) null);
+                    }
+                    else {
+                        cv.put("quantity", -1);
+                        quan_val = "-1";
+                    }
                 }else{
-                    cv.put("quantity", (Integer) null);
+                    cv.put("quantity", -1);
+                    quan_val = "-1";
                 }
                 if(conc_val!=null) {
-                    if (conc_val.trim().length() > 0 && conc_val != "null")
+                    if (conc_val.trim().length() > 0 && conc_val != "null") {
                         cv.put("concentration", Integer.parseInt(conc_val));
-                    else
-                        cv.put("concentration", (Integer) null);
+                    }
+                    else {
+                        cv.put("concentration", -1);
+                        conc_val = "-1";
+                    }
                 }else{
-                    cv.put("concentration", (Integer) null);
+                    cv.put("concentration",-1);
+                    conc_val = "-1";
                 }
                 if(selectedQuanUnit!=null) {
                     if (selectedQuanUnit.trim().length() > 0 && selectedQuanUnit != "null")
                         cv.put("quantity_unit_abbreviation_id", Integer.parseInt(selectedQuanUnit));
-                    else
-                        cv.put("quantity_unit_abbreviation_id", (Integer) null);
+                    else {
+                        cv.put("quantity_unit_abbreviation_id", -1);
+                        selectedQuanUnit = "-1";
+                    }
                 }else{
-                    cv.put("quantity_unit_abbreviation_id", (Integer) null);
+                    cv.put("quantity_unit_abbreviation_id", -1);
+                    selectedQuanUnit = "-1";
                 }
                 if(selectedConcUnit!=null) {
                     if (selectedConcUnit.trim().length() > 0 && selectedConcUnit != "null")
                         cv.put("concentration_unit_abbrevation_id", Integer.parseInt(selectedConcUnit));
-                    else
-                        cv.put("concentration_unit_abbrevation_id", (Integer) null);
+                    else {
+                        cv.put("concentration_unit_abbrevation_id", -1);
+                        selectedConcUnit = "-1";
+                    }
                 }else{
-                    cv.put("concentration_unit_abbrevation_id", (Integer) null);
+                    cv.put("concentration_unit_abbrevation_id", -1);
+                    selectedConcUnit = "-1";
                 }
                 databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString(),"");
@@ -745,36 +760,50 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 cv.put("quantity_unit_abbreviation", selectedQuanUnitName);
                 cv.put("concentration_unit_abbrevation", selectedConcUnitName);
                 if(quan_val!=null) {
-                    if (quan_val.trim().length() > 0 && quan_val != "null")
+                    if (quan_val.trim().length() > 0 && quan_val != "null") {
                         cv.put("quantity", Integer.parseInt(quan_val));
-                    else
-                        cv.put("quantity", (Integer) null);
+                    }
+                    else {
+                        cv.put("quantity", -1);
+                        quan_val = "-1";
+                    }
                 }else{
-                    cv.put("quantity", (Integer) null);
+                    cv.put("quantity", -1);
+                    quan_val = "-1";
                 }
                 if(conc_val!=null) {
-                    if (conc_val.trim().length() > 0 && conc_val != "null")
+                    if (conc_val.trim().length() > 0 && conc_val != "null") {
                         cv.put("concentration", Integer.parseInt(conc_val));
-                    else
-                        cv.put("concentration", (Integer) null);
+                    }
+                    else {
+                        cv.put("concentration", -1);
+                        conc_val = "-1";
+                    }
                 }else{
-                    cv.put("concentration", (Integer) null);
+                    cv.put("concentration",-1);
+                    conc_val = "-1";
                 }
                 if(selectedQuanUnit!=null) {
                     if (selectedQuanUnit.trim().length() > 0 && selectedQuanUnit != "null")
                         cv.put("quantity_unit_abbreviation_id", Integer.parseInt(selectedQuanUnit));
-                    else
-                        cv.put("quantity_unit_abbreviation_id", (Integer) null);
+                    else {
+                        cv.put("quantity_unit_abbreviation_id", -1);
+                        selectedQuanUnit = "-1";
+                    }
                 }else{
-                    cv.put("quantity_unit_abbreviation_id", (Integer) null);
+                    cv.put("quantity_unit_abbreviation_id", -1);
+                    selectedQuanUnit = "-1";
                 }
                 if(selectedConcUnit!=null) {
                     if (selectedConcUnit.trim().length() > 0 && selectedConcUnit != "null")
                         cv.put("concentration_unit_abbrevation_id", Integer.parseInt(selectedConcUnit));
-                    else
-                        cv.put("concentration_unit_abbrevation_id", (Integer) null);
+                    else {
+                        cv.put("concentration_unit_abbrevation_id", -1);
+                        selectedConcUnit = "-1";
+                    }
                 }else{
-                    cv.put("concentration_unit_abbrevation_id", (Integer) null);
+                    cv.put("concentration_unit_abbrevation_id", -1);
+                    selectedConcUnit = "-1";
                 }
                 databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString(),"");
@@ -836,6 +865,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     reconc_id = obj.getString("reconc_id");
                 }
                 String finalReconc_id = reconc_id;
+                Log.e("hhjjj",jsonList.get(k).getObjectName());
                 JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonList.get(k).getObjectName()),
                         new Response.Listener<JSONObject>() {
                             @Override
@@ -843,7 +873,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                                 //Process os success response
                                 String res = response.toString();
                                 databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId(),finalReconc_id);
-                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonDataBarcodeUpdate(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                                 if (jsonListModified.size()==0){
                                     progressSync.dismiss();
                                     final Intent myIntent = new Intent(ContainerDetailsActivity.this,

@@ -203,7 +203,11 @@ public class BuildingList extends AppCompatActivity {
                 MyObject[] myObjects = null;
                 if (String.valueOf(s).trim().length()>2) {
                     myObjects = getItemsFromDb(String.valueOf(s));
-                    tableBuildings.removeAllViews();
+                }else if (String.valueOf(s).trim().length()==0){
+                    myObjects =  databaseHandler.getAutoSearchBuildingsData( databaseHandler.getWritableDatabase(PASS_PHRASE), "");
+                }
+                tableBuildings.removeAllViews();
+                if(myObjects!=null) {
                     for (int i = 0; i < myObjects.length; i++) {
                         final TextView buildingName = new TextView(BuildingList.this);
                         buildingName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
