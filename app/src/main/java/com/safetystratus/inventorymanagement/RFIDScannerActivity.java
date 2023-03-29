@@ -20,12 +20,15 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+
+import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -523,12 +526,14 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         });
     }
     public void backToHome() {
-        try {
-            rfidHandler.reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.BARCODE_MODE, true);
-        } catch (InvalidUsageException e) {
-            e.printStackTrace();
-        } catch (OperationFailureException e) {
-            e.printStackTrace();
+        if(rfidHandler!=null) {
+            try {
+                rfidHandler.reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.BARCODE_MODE, true);
+            } catch (InvalidUsageException e) {
+                e.printStackTrace();
+            } catch (OperationFailureException e) {
+                e.printStackTrace();
+            }
         }
         String scannedCount = databaseHandler.checkScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom,selectedUserId,reconc_id);
         if (Integer.parseInt(scannedCount)>0){
@@ -735,11 +740,13 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     public void triggerReleaseEventRecieved() {
         rfidHandler.stopInventory();
         try {
-            Thread.sleep(5000);
+            Thread.sleep(7500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
         newList = new ArrayList<String>(new HashSet<String>(newList));
+        /*SyncTagsScanned sc = new SyncTagsScanned(RFIDScannerActivity.this);
+        sc.execute();*/
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -787,18 +794,11 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     }
                     rfids.add(disposedinvList.get(i).getRfidCode());
                 }
+
                 for (int k=0;k < scannedOutOflocationListfromContinue.size();k++){
-                        /*scannedInvList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(k),"","-1","","1","",true));
-                        ContentValues cv = new ContentValues();
-                        cv.put("location_id", selectedFacil);
-                        cv.put("room_id", selectedRoom);
-                        cv.put("inventory_id", -1);
-                        cv.put("scanned_by", selectedUserId);
-                        cv.put("rfid_code", newList.get(k));
-                        cv.put("scanned", 1);
-                        databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                        */rfids.add(scannedOutOflocationListfromContinue.get(k));
+                        rfids.add(scannedOutOflocationListfromContinue.get(k));
                 }
+
                 for (int k=0;k < newList.size();k++){
                     if (!rfids.contains(newList.get(k))){
                         //invList.add(new InventoryObject(newList.get(k),"","-1","","1","",true));
@@ -814,6 +814,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                         scannedInvList.add(new InventoryObject(newList.get(k),"N/A","-1","N/A","1","N/A",true));
                     }
                 }
+
                 if(found.isChecked()){
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
@@ -831,9 +832,11 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 }else {
                     CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList, model, RFIDScannerActivity.this);
                     tagList.setAdapter(adapter);
+
                 }
                 int scannedCount = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom,selectedUserId,reconc_id);
                 scannedTotalCount = databaseHandler.checkScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom,selectedUserId,reconc_id);
+
                 setscancount(String.valueOf(scannedCount), scannedTotalCount);
             }
         });
@@ -872,5 +875,152 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         }
         Log.e("---",str+"---"+false);
         return false; // no non-ASCII characters found
+    }
+    class SyncTagsScanned extends AsyncTask<Void, Void, Void> {
+        public SyncTagsScanned(Context context) {
+
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
+                    ArrayList<String> rfids = new ArrayList<String>();
+                    for (int i = 0; i < scannedInvList.size(); i++) {
+                        if (scannedInvList.get(i).getRfidCode() != null) {
+                            if (scannedInvList.get(i).getRfidCode().trim().length() > 0) {
+                                if (newList.contains(scannedInvList.get(i).getRfidCode())) {
+                                    if (!scannedInvList.get(i).isFlag()) {
+                                        scannedInvList.get(i).setFlag(true);
+                                        ContentValues cv = new ContentValues();
+                                        cv.put("location_id", selectedFacil);
+                                        cv.put("room_id", selectedRoom);
+                                        cv.put("inventory_id", Integer.parseInt(scannedInvList.get(i).getInv_id()));
+                                        cv.put("scanned_by", selectedUserId);
+                                        cv.put("scanned", 1);
+                                        cv.put("reconc_id", reconc_id);
+                                        databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                    }
+                                }
+                            }
+                        }
+                        rfids.add(scannedInvList.get(i).getRfidCode());
+                    }
+                    Log.e("Tessssss000", "**");
+                    for (int i = 0; i < disposedinvList.size(); i++) {
+                        if (disposedinvList.get(i).getRfidCode() != null) {
+                            if (disposedinvList.get(i).getRfidCode().trim().length() > 0) {
+                                if (newList.contains(disposedinvList.get(i).getRfidCode())) {
+                                    if (!disposedinvList.get(i).isFlag()) {
+                                        disposedinvList.get(i).setFlag(true);
+                                        ContentValues cv = new ContentValues();
+                                        cv.put("location_id", selectedFacil);
+                                        cv.put("room_id", selectedRoom);
+                                        Log.e("dispossedd id >>", disposedinvList.get(i).getInv_id() + "**");
+                                        cv.put("inventory_id", Integer.parseInt(disposedinvList.get(i).getInv_id()));
+                                        cv.put("scanned_by", selectedUserId);
+                                        cv.put("scanned", 1);
+                                        cv.put("reconc_id", reconc_id);
+                                        databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                    }
+                                }
+                            }
+                        }
+                        rfids.add(disposedinvList.get(i).getRfidCode());
+                    }
+                    Log.e("Tessssss0001", "**");
+
+                    for (int k = 0; k < scannedOutOflocationListfromContinue.size(); k++) {
+                        /*scannedInvList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(k),"","-1","","1","",true));
+                        ContentValues cv = new ContentValues();
+                        cv.put("location_id", selectedFacil);
+                        cv.put("room_id", selectedRoom);
+                        cv.put("inventory_id", -1);
+                        cv.put("scanned_by", selectedUserId);
+                        cv.put("rfid_code", newList.get(k));
+                        cv.put("scanned", 1);
+                        databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        */
+                        rfids.add(scannedOutOflocationListfromContinue.get(k));
+                    }
+                    Log.e("Tessssss0002", "**");
+
+                    for (int k = 0; k < newList.size(); k++) {
+                        if (!rfids.contains(newList.get(k))) {
+                            //invList.add(new InventoryObject(newList.get(k),"","-1","","1","",true));
+                            ContentValues cv = new ContentValues();
+                            cv.put("location_id", selectedFacil);
+                            cv.put("room_id", selectedRoom);
+                            cv.put("inventory_id", -1);
+                            cv.put("scanned_by", selectedUserId);
+                            cv.put("rfid_code", newList.get(k));
+                            cv.put("reconc_id", reconc_id);
+                            cv.put("scanned", 1);
+                            databaseHandler.insertScannedInvDataOutofLocationData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                            scannedInvList.add(new InventoryObject(newList.get(k), "N/A", "-1", "N/A", "1", "N/A", true));
+                        }
+                    }
+                    Log.e("Tessssss0003", "**");
+
+                    if (found.isChecked()) {
+                        CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList) tagList.getAdapter();
+                        tagList.removeAllViewsInLayout();
+                        adapter.notifyDataSetChanged();
+                        ArrayList<InventoryObject> invList = databaseHandler.getFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom, reconc_id, "rfid");
+                        CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList, model, RFIDScannerActivity.this);
+                        tagList.setAdapter(adapter1);
+                    } else if (notfound.isChecked()) {
+                        CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList) tagList.getAdapter();
+                        tagList.removeAllViewsInLayout();
+                        adapter.notifyDataSetChanged();
+                        ArrayList<InventoryObject> invList = databaseHandler.getNotFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom, reconc_id, "rfid");
+                        CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList, model, RFIDScannerActivity.this);
+                        tagList.setAdapter(adapter1);
+                    } else {
+                        CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList, model, RFIDScannerActivity.this);
+                        tagList.setAdapter(adapter);
+                        Log.e("Tessssss0004", "**");
+
+                    }
+                    int scannedCount = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom, selectedUserId, reconc_id);
+                    scannedTotalCount = databaseHandler.checkScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom, selectedUserId, reconc_id);
+                    Log.e("Tessssss0005", "**");
+                    scanCount.setText(scannedTotalCount);
+                    Log.e("Tessssss0006","**");
+
+                    if(Integer.parseInt(total_inventory)>0) {
+                        if(scannedCount<=Integer.parseInt(total_inventory)) {
+                            int percent = (scannedCount * 100) / Integer.parseInt(total_inventory);
+                            scannedProgressPercentage.setText(percent + " %");
+                            scannedProgressCount.setText(String.valueOf(scannedCount) + "/" + total_inventory);
+                            progressVal.setProgress(percent);
+                            Log.e("Tessssss0007","**");
+
+                        }
+                    }
+                    //setscancount(String.valueOf(scannedCount), scannedTotalCount);
+                }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            // TODO Auto-generated method stub
+            //   super.onPostExecute(result);
+            super.onPostExecute(result);
+            if (progressSynStart.isShowing() || progressSynStart != null) {
+                progressSynStart.dismiss();
+                progressSynStart = null;
+            }
+        }
+
     }
 }

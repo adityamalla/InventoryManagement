@@ -201,80 +201,82 @@ public class BuildingList extends AppCompatActivity {
                 // if(s.length() != 0)
                 //{
                 MyObject[] myObjects = null;
-                myObjects = getItemsFromDb(String.valueOf(s));
-                tableBuildings.removeAllViews();
-                for (int i = 0;i<myObjects.length;i++) {
-                    final TextView buildingName = new TextView(BuildingList.this);
-                    buildingName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
-                            100, 5));
-                    buildingName.setGravity(Gravity.LEFT);
-                    buildingName.setPadding(5, 30, 0, 0);
-                    buildingName.setBackgroundResource(R.drawable.cell_shape_child);
-                    buildingName.setText(myObjects[i].getObjectName());
-                    buildingName.setId(Integer.parseInt(myObjects[i].getObjectId()));
-                    buildingName.setTextSize(16);
-                    buildingName.setTextColor(Color.parseColor("#000000"));
-                    buildingName.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                    if (selectedFacil.length() > 0) {
-                        if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(selectedFacil)) {
-                            Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
-                            img.setBounds(0, 0, 60, 60);
-                            buildingName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                if (String.valueOf(s).trim().length()>2) {
+                    myObjects = getItemsFromDb(String.valueOf(s));
+                    tableBuildings.removeAllViews();
+                    for (int i = 0; i < myObjects.length; i++) {
+                        final TextView buildingName = new TextView(BuildingList.this);
+                        buildingName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+                                100, 5));
+                        buildingName.setGravity(Gravity.LEFT);
+                        buildingName.setPadding(5, 30, 0, 0);
+                        buildingName.setBackgroundResource(R.drawable.cell_shape_child);
+                        buildingName.setText(myObjects[i].getObjectName());
+                        buildingName.setId(Integer.parseInt(myObjects[i].getObjectId()));
+                        buildingName.setTextSize(16);
+                        buildingName.setTextColor(Color.parseColor("#000000"));
+                        buildingName.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                        if (selectedFacil.length() > 0) {
+                            if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(selectedFacil)) {
+                                Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
+                                img.setBounds(0, 0, 60, 60);
+                                buildingName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                            }
                         }
-                    }
-                    final TableRow trBuilding = new TableRow(BuildingList.this);
-                    trBuilding.setId(Integer.parseInt(myObjects[i].getObjectId()));
-                    TableLayout.LayoutParams trParamsRosters = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                            TableLayout.LayoutParams.WRAP_CONTENT);
-                    trBuilding.setBackgroundResource(R.drawable.table_tr_border);
-                    //trParams.setMargins(10, 10, 10, 10);
-                    trBuilding.setLayoutParams(trParamsRosters);
-                    trBuilding.addView(buildingName);
-                    tableBuildings.addView(trBuilding, trParamsRosters);
-                    buildingName.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            for (int p = 0; p < tableBuildings.getChildCount(); p++) {
-                                View o1 = tableBuildings.getChildAt(p);
-                                if (o1 instanceof TableRow) {
-                                    for (int j = 0; j < ((TableRow) o1).getChildCount(); j++) {
-                                        View u1 = ((TableRow) o1).getChildAt(j);
-                                        Boolean match = false;
-                                        if (u1 instanceof TextView) {
-                                            ((TextView) u1).setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                        final TableRow trBuilding = new TableRow(BuildingList.this);
+                        trBuilding.setId(Integer.parseInt(myObjects[i].getObjectId()));
+                        TableLayout.LayoutParams trParamsRosters = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                                TableLayout.LayoutParams.WRAP_CONTENT);
+                        trBuilding.setBackgroundResource(R.drawable.table_tr_border);
+                        //trParams.setMargins(10, 10, 10, 10);
+                        trBuilding.setLayoutParams(trParamsRosters);
+                        trBuilding.addView(buildingName);
+                        tableBuildings.addView(trBuilding, trParamsRosters);
+                        buildingName.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                for (int p = 0; p < tableBuildings.getChildCount(); p++) {
+                                    View o1 = tableBuildings.getChildAt(p);
+                                    if (o1 instanceof TableRow) {
+                                        for (int j = 0; j < ((TableRow) o1).getChildCount(); j++) {
+                                            View u1 = ((TableRow) o1).getChildAt(j);
+                                            Boolean match = false;
+                                            if (u1 instanceof TextView) {
+                                                ((TextView) u1).setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                                            }
                                         }
                                     }
                                 }
+                                Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
+                                img.setBounds(0, 0, 60, 60);
+                                buildingName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                                Intent myIntent = null;
+                                if (fromSync.trim().length() > 0)
+                                    myIntent = new Intent(BuildingList.this,
+                                            SyncDBActivity.class);
+                                else
+                                    myIntent = new Intent(BuildingList.this,
+                                            RFIDActivity.class);
+                                myIntent.putExtra("selectedFacilName", buildingName.getText());
+                                myIntent.putExtra("selectedFacil", buildingName.getId() + "");
+                                myIntent.putExtra("user_id", user_id);
+                                myIntent.putExtra("site_id", loggedinUserSiteId);
+                                myIntent.putExtra("token", token);
+                                myIntent.putExtra("sso", sso);
+                                myIntent.putExtra("md5pwd", md5Pwd);
+                                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                myIntent.putExtra("site_name", site_name);
+                                myIntent.putExtra("fromFacil", "fromFacil");
+                                myIntent.putExtra("facillist", facillist);
+                                myIntent.putExtra("pageLoadTemp", "-1");
+                                myIntent.putExtra("selectedRoomName", "");
+                                myIntent.putExtra("selectedRoom", "");
+                                myIntent.putExtra("empName", empName);
+                                startActivity(myIntent);
                             }
-                            Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
-                            img.setBounds(0, 0, 60, 60);
-                            buildingName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                            Intent myIntent = null;
-                            if (fromSync.trim().length() > 0)
-                                myIntent = new Intent(BuildingList.this,
-                                        SyncDBActivity.class);
-                            else
-                                myIntent = new Intent(BuildingList.this,
-                                        RFIDActivity.class);
-                            myIntent.putExtra("selectedFacilName", buildingName.getText());
-                            myIntent.putExtra("selectedFacil", buildingName.getId() + "");
-                            myIntent.putExtra("user_id", user_id);
-                            myIntent.putExtra("site_id", loggedinUserSiteId);
-                            myIntent.putExtra("token", token);
-                            myIntent.putExtra("sso", sso);
-                            myIntent.putExtra("md5pwd", md5Pwd);
-                            myIntent.putExtra("loggedinUsername", loggedinUsername);
-                            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-                            myIntent.putExtra("site_name", site_name);
-                            myIntent.putExtra("fromFacil", "fromFacil");
-                            myIntent.putExtra("facillist", facillist);
-                            myIntent.putExtra("pageLoadTemp", "-1");
-                            myIntent.putExtra("selectedRoomName", "");
-                            myIntent.putExtra("selectedRoom", "");
-                            myIntent.putExtra("empName", empName);
-                            startActivity(myIntent);
-                        }
-                    });
+                        });
+                    }
                 }
                 //}
             }

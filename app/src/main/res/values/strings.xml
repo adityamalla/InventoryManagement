@@ -7,6 +7,9 @@
 <p>Safety<b>Stratus</b></p>
 ]]>
 </string>
+    <string name="pref_beeper">BeeperPreference</string>
+    <string name="beeper_volume">Beeper Volume</string>
+
     <string name="activity_intent_filter_action">com.safetystratus.ACTION</string>
     <string name="datawedge_intent_key_source">com.symbol.datawedge.source</string>
     <string name="datawedge_intent_key_label_type">com.symbol.datawedge.label_type</string>
