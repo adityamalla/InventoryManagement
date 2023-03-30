@@ -256,33 +256,114 @@ public class RFIDActivity extends AppCompatActivity {
                     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
                     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
                     try {
-                        ContentValues cv = new ContentValues();
-                        cv.put("location_id", selectedFacil);
-                        cv.put("user_id", selectedUserId);
-                        cv.put("room_id", selectedRoom);
-                        int reconc_id = databaseHandler.insertReconciliaionData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                        Log.e("fff",reconc_id+"**");
-                        int inventoryCount = databaseHandler.checkCount(db,selectedRoom);
-                        final Intent myIntent = new Intent(RFIDActivity.this,
-                                RFIDScannerActivity.class);
-                        myIntent.putExtra("user_id", selectedUserId);
-                        myIntent.putExtra("site_id", loggedinUserSiteId);
-                        myIntent.putExtra("token", token);
-                        myIntent.putExtra("sso", sso);
-                        myIntent.putExtra("md5pwd", md5Pwd);
-                        myIntent.putExtra("loggedinUsername", loggedinUsername);
-                        myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-                        myIntent.putExtra("site_name", site_name);
-                        myIntent.putExtra("selectedFacilName", selectedFacilName);
-                        myIntent.putExtra("selectedFacil", selectedFacil+"");
-                        myIntent.putExtra("selectedFacilName", selectedFacilName);
-                        myIntent.putExtra("selectedFacil", selectedFacil+"");
-                        myIntent.putExtra("selectedRoomName", selectedRoomName);
-                        myIntent.putExtra("selectedRoom", selectedRoom+"");
-                        myIntent.putExtra("reconc_id", reconc_id+"");
-                        myIntent.putExtra("empName", empName);
-                        myIntent.putExtra("total_inventory", inventoryCount+"");
-                        startActivity(myIntent);
+                        int rec_id = databaseHandler.checkReconciliationStarted(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedFacil,selectedRoom,selectedUserId);
+                        if (rec_id>0){
+                            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDActivity.this);
+                            dlgAlert.setTitle("SafetyStratus");
+                            dlgAlert.setMessage("Reconciliation has already been initiated for this location '"+selectedRoomName+"'. Would you like to proceed with the reconciliation?");
+                            dlgAlert.setPositiveButton("Continue",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            ScanInfo sc = databaseHandler.getPendingReconcScans(databaseHandler.getWritableDatabase(PASS_PHRASE),String.valueOf(rec_id));
+                                            final Intent myIntent = new Intent(RFIDActivity.this,
+                                                    RFIDScannerActivity.class);
+                                            myIntent.putExtra("user_id", selectedUserId);
+                                            myIntent.putExtra("site_id", loggedinUserSiteId);
+                                            myIntent.putExtra("token", token);
+                                            myIntent.putExtra("sso", sso);
+                                            myIntent.putExtra("md5pwd", md5Pwd);
+                                            myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                            myIntent.putExtra("site_name", site_name);
+                                            myIntent.putExtra("selectedFacilName", selectedFacilName);
+                                            myIntent.putExtra("selectedFacil", selectedFacil+"");
+                                            myIntent.putExtra("selectedRoomName", selectedRoomName);
+                                            myIntent.putExtra("selectedRoom", selectedRoom+"");
+                                            myIntent.putExtra("fromContinueInsp","true");
+                                            myIntent.putExtra("empName",empName);
+                                            myIntent.putExtra("json_data_from_continue",sc.getJson_data());
+                                            myIntent.putExtra("reconc_id", rec_id+"");
+                                            int inventoryCount = databaseHandler.checkCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+                                            myIntent.putExtra("total_inventory", inventoryCount+"");
+                                            startActivity(myIntent);
+                                        }
+                                    });
+                            dlgAlert.setNegativeButton("New",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDActivity.this);
+                                            dlgAlert.setTitle("SafetyStratus");
+                                            dlgAlert.setMessage("Are you sure you want to proceed? This action will result in the complete erasure of the previously saved reconciliation.");
+                                            dlgAlert.setPositiveButton("Yes",
+                                                    new DialogInterface.OnClickListener() {
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            ContentValues cv = new ContentValues();
+                                                            cv.put("location_id", selectedFacil);
+                                                            cv.put("user_id", selectedUserId);
+                                                            cv.put("room_id", selectedRoom);
+                                                            databaseHandler.deletePendingScanByReconc_id(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),String.valueOf(rec_id));
+                                                            int reconc_id = databaseHandler.insertReconciliaionData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                                            int inventoryCount = databaseHandler.checkCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedRoom);
+                                                            final Intent myIntent = new Intent(RFIDActivity.this,
+                                                                    RFIDScannerActivity.class);
+                                                            myIntent.putExtra("user_id", selectedUserId);
+                                                            myIntent.putExtra("site_id", loggedinUserSiteId);
+                                                            myIntent.putExtra("token", token);
+                                                            myIntent.putExtra("sso", sso);
+                                                            myIntent.putExtra("md5pwd", md5Pwd);
+                                                            myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                                            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                                            myIntent.putExtra("site_name", site_name);
+                                                            myIntent.putExtra("selectedFacilName", selectedFacilName);
+                                                            myIntent.putExtra("selectedFacil", selectedFacil+"");
+                                                            myIntent.putExtra("selectedFacilName", selectedFacilName);
+                                                            myIntent.putExtra("selectedFacil", selectedFacil+"");
+                                                            myIntent.putExtra("selectedRoomName", selectedRoomName);
+                                                            myIntent.putExtra("selectedRoom", selectedRoom+"");
+                                                            myIntent.putExtra("reconc_id", reconc_id+"");
+                                                            myIntent.putExtra("empName", empName);
+                                                            myIntent.putExtra("total_inventory", inventoryCount+"");
+                                                            startActivity(myIntent);
+                                                        }
+                                                    });
+                                            dlgAlert.setNegativeButton("No",
+                                                    new DialogInterface.OnClickListener() {
+                                                        public void onClick(DialogInterface dialog, int which) {
+                                                            return;
+                                                    }
+                                            });
+                                            dlgAlert.create().show();
+                                        }
+                                    });
+                            dlgAlert.create().show();
+                        }else{
+                            ContentValues cv = new ContentValues();
+                            cv.put("location_id", selectedFacil);
+                            cv.put("user_id", selectedUserId);
+                            cv.put("room_id", selectedRoom);
+                            int reconc_id = databaseHandler.insertReconciliaionData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                            int inventoryCount = databaseHandler.checkCount(db,selectedRoom);
+                            final Intent myIntent = new Intent(RFIDActivity.this,
+                                    RFIDScannerActivity.class);
+                            myIntent.putExtra("user_id", selectedUserId);
+                            myIntent.putExtra("site_id", loggedinUserSiteId);
+                            myIntent.putExtra("token", token);
+                            myIntent.putExtra("sso", sso);
+                            myIntent.putExtra("md5pwd", md5Pwd);
+                            myIntent.putExtra("loggedinUsername", loggedinUsername);
+                            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                            myIntent.putExtra("site_name", site_name);
+                            myIntent.putExtra("selectedFacilName", selectedFacilName);
+                            myIntent.putExtra("selectedFacil", selectedFacil+"");
+                            myIntent.putExtra("selectedFacilName", selectedFacilName);
+                            myIntent.putExtra("selectedFacil", selectedFacil+"");
+                            myIntent.putExtra("selectedRoomName", selectedRoomName);
+                            myIntent.putExtra("selectedRoom", selectedRoom+"");
+                            myIntent.putExtra("reconc_id", reconc_id+"");
+                            myIntent.putExtra("empName", empName);
+                            myIntent.putExtra("total_inventory", inventoryCount+"");
+                            startActivity(myIntent);
+                        }
+
                     }catch (Exception e){
                         e.printStackTrace();
                     }finally {

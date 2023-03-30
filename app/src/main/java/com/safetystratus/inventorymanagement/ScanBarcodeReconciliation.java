@@ -46,6 +46,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.common.util.Hex;
 import com.google.gson.Gson;
+import com.zebra.rfid.api3.ENUM_TRIGGER_MODE;
 import com.zebra.rfid.api3.InvalidUsageException;
 import com.zebra.rfid.api3.OperationFailureException;
 import com.zebra.rfid.api3.TagData;
@@ -585,18 +586,123 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         });
     }
     public void backToHome() {
-        final Intent myIntent = new Intent(ScanBarcodeReconciliation.this,
-                HomeActivity.class);
-        myIntent.putExtra("user_id", selectedUserId);
-        myIntent.putExtra("site_id", loggedinUserSiteId);
-        myIntent.putExtra("token", token);
-        myIntent.putExtra("sso", sso);
-        myIntent.putExtra("md5pwd", md5Pwd);
-        myIntent.putExtra("loggedinUsername", loggedinUsername);
-        myIntent.putExtra("site_name", site_name);
-        myIntent.putExtra("pageLoadTemp", "-1");
-        myIntent.putExtra("empName", empName);
-        startActivity(myIntent);
+        String scannedCount = databaseHandler.checkScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom,selectedUserId,reconc_id);
+        if (Integer.parseInt(scannedCount)>0){
+            String savedscannedCount = databaseHandler.checkSavedScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), reconc_id);
+            if (Integer.parseInt(savedscannedCount)==0){
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeReconciliation.this);
+                dlgAlert.setTitle("Safety Stratus");
+                dlgAlert.setMessage("Would you like to save the scanned data before navigating to the home page? If not, it will be erased.");
+                dlgAlert.setPositiveButton("Save and Continue",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                Gson gson = new Gson();
+                                ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),reconc_id);
+                                String rfidJson = gson.toJson(rfidScanDataObjs);
+                                RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
+                                        token,loggedinUserSiteId,selectedRoom,rfidJson,reconc_id
+                                );
+                                ObjectMapper mapper = new ObjectMapper();
+                                String jsonString = "";
+                                try {
+                                    jsonString = mapper.writeValueAsString(postScanObj);
+                                }catch (Exception e){
+                                    e.printStackTrace();
+                                }
+                                ContentValues cv = new ContentValues();
+                                cv.put("json_data", jsonString);
+                                cv.put("location_id", selectedFacil);
+                                cv.put("user_id", selectedUserId);
+                                cv.put("room_id", selectedRoom);
+                                cv.put("reconc_id", Integer.parseInt(reconc_id));
+                                cv.put("scan_type", "rfid");
+                                databaseHandler.insertScannedInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                //databaseHandler.delSavedScanDataOnly(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedUserId,selectedRoom,reconc_id);
+                                final Intent myIntent = new Intent(ScanBarcodeReconciliation.this,
+                                        HomeActivity.class);
+                                myIntent.putExtra("user_id", selectedUserId);
+                                myIntent.putExtra("site_id", loggedinUserSiteId);
+                                myIntent.putExtra("token", token);
+                                myIntent.putExtra("sso", sso);
+                                myIntent.putExtra("md5pwd", md5Pwd);
+                                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                myIntent.putExtra("site_name", site_name);
+                                myIntent.putExtra("pageLoadTemp", "-1");
+                                myIntent.putExtra("empName", empName);
+                                startActivity(myIntent);
+                            }
+                        });
+                dlgAlert.setNegativeButton("No",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                databaseHandler.delSavedScanDataOnly(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedUserId,selectedRoom,reconc_id);
+                                final Intent myIntent = new Intent(ScanBarcodeReconciliation.this,
+                                        HomeActivity.class);
+                                myIntent.putExtra("user_id", selectedUserId);
+                                myIntent.putExtra("site_id", loggedinUserSiteId);
+                                myIntent.putExtra("token", token);
+                                myIntent.putExtra("sso", sso);
+                                myIntent.putExtra("md5pwd", md5Pwd);
+                                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                myIntent.putExtra("site_name", site_name);
+                                myIntent.putExtra("pageLoadTemp", "-1");
+                                myIntent.putExtra("empName", empName);
+                                startActivity(myIntent);
+                            }
+                        });
+                dlgAlert.create().show();
+            }
+            else{
+                Gson gson = new Gson();
+                ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),reconc_id);
+                String rfidJson = gson.toJson(rfidScanDataObjs);
+                RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
+                        token,loggedinUserSiteId,selectedRoom,rfidJson,reconc_id
+                );
+                ObjectMapper mapper = new ObjectMapper();
+                String jsonString = "";
+                try {
+                    jsonString = mapper.writeValueAsString(postScanObj);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                ContentValues cv = new ContentValues();
+                cv.put("json_data", jsonString);
+                cv.put("location_id", selectedFacil);
+                cv.put("user_id", selectedUserId);
+                cv.put("room_id", selectedRoom);
+                cv.put("reconc_id", reconc_id);
+                cv.put("scan_type", "rfid");
+                databaseHandler.insertScannedInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                //databaseHandler.delSavedScanDataOnly(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedUserId,selectedRoom,reconc_id);
+                final Intent myIntent = new Intent(ScanBarcodeReconciliation.this,
+                        HomeActivity.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("pageLoadTemp", "-1");
+                myIntent.putExtra("empName", empName);
+                startActivity(myIntent);
+            }
+        }
+        else {
+            final Intent myIntent = new Intent(ScanBarcodeReconciliation.this,
+                    HomeActivity.class);
+            myIntent.putExtra("user_id", selectedUserId);
+            myIntent.putExtra("site_id", loggedinUserSiteId);
+            myIntent.putExtra("token", token);
+            myIntent.putExtra("sso", sso);
+            myIntent.putExtra("md5pwd", md5Pwd);
+            myIntent.putExtra("loggedinUsername", loggedinUsername);
+            myIntent.putExtra("site_name", site_name);
+            myIntent.putExtra("pageLoadTemp", "-1");
+            myIntent.putExtra("empName", empName);
+            startActivity(myIntent);
+        }
     }
 
     @Override

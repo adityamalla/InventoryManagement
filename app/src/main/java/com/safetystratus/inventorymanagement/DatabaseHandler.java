@@ -164,6 +164,25 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         return scanInfo;
     }
     @SuppressLint("Range")
+    public ScanInfo getPendingReconcScans(SQLiteDatabase sqLiteDatabase,String rec_id){
+        ScanInfo scanInfo = null;
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data where reconc_id="+rec_id), null);
+        // looping through all rows and adding to list
+        if (cursor.moveToFirst()) {
+            do {
+                String room_id = cursor.getString(cursor.getColumnIndex("room_id"));
+                String location_id = cursor.getString(cursor.getColumnIndex("location_id"));
+                String reconc_id = cursor.getString(cursor.getColumnIndex("reconc_id"));
+                String roomName = getRoomName(sqLiteDatabase,room_id);
+                String locName = getFacilName(sqLiteDatabase,location_id);
+                scanInfo = new ScanInfo(cursor.getString(cursor.getColumnIndex("id")),
+                        cursor.getString(cursor.getColumnIndex("room_id")),roomName,location_id,locName,cursor.getString(cursor.getColumnIndex("json_data")),reconc_id);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return scanInfo;
+    }
+    @SuppressLint("Range")
     public boolean deletePendingScan(SQLiteDatabase sqLiteDatabase,String id, String reconc_id){
         boolean deleted = false;
         sqLiteDatabase.delete("scanned_json_data", "id=?", new String[]{id});
@@ -173,6 +192,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             deleted = true;
         cursor.close();
         return deleted;
+    }
+    @SuppressLint("Range")
+    public void deletePendingScanByReconc_id(SQLiteDatabase sqLiteDatabase,String reconc_id){
+        sqLiteDatabase.delete("scanned_json_data", "reconc_id=?", new String[]{reconc_id});
+        sqLiteDatabase.delete("scanned_data", "reconc_id=?", new String[]{reconc_id});
     }
     @SuppressLint("Range")
     public ArrayList<MyObject> getBuildingList(SQLiteDatabase sqLiteDatabase){
@@ -547,6 +571,22 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int count = cursor1.getCount();
         cursor1.close();
         return count;
+    }
+
+    @SuppressLint("Range")
+    public int checkReconciliationStarted(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id,String scanned_by){
+        int reconc_id = -1;
+        String sql = "SELECT reconc_id from scanned_json_data where room_id="+room_id+"" +
+                " and location_id="+loc_id+" and user_id="+scanned_by;
+        Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
+        // looping through all rows and adding to list
+        if (cursor2.moveToFirst()) {
+            do {
+                reconc_id = cursor2.getInt(cursor2.getColumnIndex("reconc_id"));
+            } while (cursor2.moveToNext());
+        }
+        cursor2.close();
+        return reconc_id;
     }
     @SuppressLint("Range")
     public String checkScannedDataFullCount(SQLiteDatabase sqLiteDatabase, String loc_id, String room_id, String scanned_by, String reconc_id){
