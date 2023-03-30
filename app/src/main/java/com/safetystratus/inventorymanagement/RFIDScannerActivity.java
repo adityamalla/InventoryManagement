@@ -566,7 +566,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                                 cv.put("reconc_id", Integer.parseInt(reconc_id));
                                 cv.put("scan_type", "rfid");
                                 databaseHandler.insertScannedInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                                databaseHandler.delSavedScanDataOnly(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedUserId,selectedRoom,reconc_id);
+                                //databaseHandler.delSavedScanDataOnly(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedUserId,selectedRoom,reconc_id);
                                 final Intent myIntent = new Intent(RFIDScannerActivity.this,
                                         HomeActivity.class);
                                 myIntent.putExtra("user_id", selectedUserId);
