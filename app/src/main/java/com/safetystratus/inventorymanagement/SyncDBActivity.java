@@ -452,11 +452,48 @@ public class SyncDBActivity extends AppCompatActivity {
             db.delete(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, null);
             db.delete(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, null);
             db.delete(QueryConstants.TABLE_NAME_PRIMARY_USERS, null, null);
+            ArrayList<BatchInsertionObjectInventory> dataList = new ArrayList<BatchInsertionObjectInventory>();
+            ArrayList<BatchInsertRooms> dataListRooms = new ArrayList<BatchInsertRooms>();
+            ArrayList<BatchInsertPUs> dataListPUs = new ArrayList<BatchInsertPUs>();
             for (int i = 0, size = jsonArrayChemicalInventory.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayChemicalInventory.getJSONObject(i);
                 String id = objectInArray.getString("id");
                 if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_OT_ORGANIZATION, "id", id) == 0) {
-                    values.put("id", id);
+                    dataList.add(new BatchInsertionObjectInventory(id,
+                            objectInArray.getString("opened_date"),
+                            objectInArray.getString("name"),
+                            objectInArray.getString("room_id"),
+                            objectInArray.getString("sec_code"),
+                            objectInArray.getString("object_table"),
+                            objectInArray.getString("modified_user_id"),
+                            objectInArray.getString("modified_date"),
+                            objectInArray.getString("last_test_date"),
+                            objectInArray.getString("primary_user_id"),
+                            objectInArray.getString("lot"),
+                            objectInArray.getString("create_date"),
+                            objectInArray.getString("code"),
+                            objectInArray.getString("expiration_date"),
+                            objectInArray.getString("create_user_id"),
+                            objectInArray.getString("object_id"),
+                            objectInArray.getString("facil_id"),
+                            objectInArray.getString("room"),
+                            objectInArray.getString("receipt_date"),
+                            objectInArray.getString("notes"),
+                            objectInArray.getString("comment"),
+                            objectInArray.getString("quantity"),
+                            objectInArray.getString("concentration"),
+                            objectInArray.getString("quantity_unit_abbreviation"),
+                            objectInArray.getString("quantity_unit_abbreviation_id"),
+                            objectInArray.getString("concentration_unit_abbrevation"),
+                            objectInArray.getString("concentration_unit_abbrevation_id"),
+                            objectInArray.getString("cas_number"),
+                            objectInArray.getString("status"),
+                            objectInArray.getString("status_id"),
+                            objectInArray.getString("loc"),
+                            objectInArray.getString("loc_id"),
+                            objectInArray.getString("owner")
+                                    ));
+                    /*values.put("id", id);
                     values.put("opened_date", objectInArray.getString("opened_date"));
                     values.put("name", objectInArray.getString("name"));
                     values.put("room_id", objectInArray.getString("room_id"));
@@ -491,14 +528,15 @@ public class SyncDBActivity extends AppCompatActivity {
                     values.put("owner", objectInArray.getString("owner"));
                     db.insert(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, values);
                     Log.e("checkValues0>>",values.toString()+"**");
-                    values.clear();
+                    values.clear();*/
                 }
             }
+            databaseHandler.batchInsertChemInventory(dataList,databaseHandler.getWritableDatabase(PASS_PHRASE));
             for (int i = 0, size = jsonArrayFiFacilRooms.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayFiFacilRooms.getJSONObject(i);
                 String id = objectInArray.getString("id");
                 if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, "id", id) == 0) {
-                    values.put("room", objectInArray.getString("room"));
+                    /*values.put("room", objectInArray.getString("room"));
                     values.put("area", objectInArray.getString("area"));
                     values.put("img_src", objectInArray.getString("img_src"));
                     values.put("type_id", objectInArray.getString("type_id"));
@@ -507,16 +545,29 @@ public class SyncDBActivity extends AppCompatActivity {
                     values.put("notes", objectInArray.getString("notes"));
                     values.put("facil_id", objectInArray.getString("facil_id"));
                     db.insert(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, values);
-                    values.clear();
+                    values.clear();*/
+                    dataListRooms.add(new BatchInsertRooms(objectInArray.getString("room"),
+                            objectInArray.getString("area"),
+                            objectInArray.getString("img_src"),
+                            objectInArray.getString("type_id"),
+                            objectInArray.getString("id"),
+                            objectInArray.getString("status"),
+                            objectInArray.getString("notes"),
+                            objectInArray.getString("facil_id")));
                 }
             }
+            databaseHandler.batchInsertRooms(dataListRooms,databaseHandler.getWritableDatabase(PASS_PHRASE));
+
             for (int i = 0, size = jsonArrayPrimaryUsers.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayPrimaryUsers.getJSONObject(i);
-                values.put("primary_user", objectInArray.getString("primary_user"));
+                /*values.put("primary_user", objectInArray.getString("primary_user"));
                 values.put("primary_user_id", objectInArray.getString("primary_user_id"));
                 db.insert(QueryConstants.TABLE_NAME_PRIMARY_USERS, null, values);
-                values.clear();
+                values.clear();*/
+                dataListPUs.add(new BatchInsertPUs(objectInArray.getString("primary_user"),
+                        objectInArray.getString("primary_user_id")));
             }
+            databaseHandler.batchInsertPUs(dataListPUs,databaseHandler.getWritableDatabase(PASS_PHRASE));
             db.setTransactionSuccessful();
 
         } catch (JSONException e) {

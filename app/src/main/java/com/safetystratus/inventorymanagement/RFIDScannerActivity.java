@@ -754,6 +754,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     if (newList.contains(scannedInvList.get(i).getRfidCode())) {
                         if (!scannedInvList.get(i).isFlag()) {
                             scannedInvList.get(i).setFlag(true);
+                            //rfidHandler.startbeepingTimer();
                             /*ContentValues cv = new ContentValues();
                             cv.put("location_id", selectedFacil);
                             cv.put("room_id", selectedRoom);
@@ -776,6 +777,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     if (newList.contains(disposedinvList.get(i).getRfidCode())) {
                         if (!disposedinvList.get(i).isFlag()) {
                             disposedinvList.get(i).setFlag(true);
+                            //rfidHandler.startbeepingTimer();
                             /*ContentValues cv = new ContentValues();
                             cv.put("location_id", selectedFacil);
                             cv.put("room_id", selectedRoom);

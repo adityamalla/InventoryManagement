@@ -18,6 +18,50 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     private static DatabaseHandler instance;
     private SQLiteStatement insertStatement;
     private static final String INSERT_QUERY = "INSERT INTO scanned_data (location_id, room_id, inventory_id, scanned_by, scanned, reconc_id, rfid_code) VALUES (?, ?, ?,?,?,?,?)";
+    private static final String INSERT_QUERY_CHEM_INVENTORY = "INSERT INTO chemical_inventory" +
+            " (id,\n" +
+            "opened_date,\n" +
+            "name,\n" +
+            "room_id,\n" +
+            "sec_code,\n" +
+            "object_table,\n" +
+            "modified_user_id,\n" +
+            "modified_date,\n" +
+            "last_test_date,\n" +
+            "primary_user_id,\n" +
+            "lot,\n" +
+            "create_date,\n" +
+            "code,\n" +
+            "expiration_date,\n" +
+            "create_user_id,\n" +
+            "object_id,\n" +
+            "facil_id,\n" +
+            "room,\n" +
+            "receipt_date,\n" +
+            "notes,\n" +
+            "comment,\n" +
+            "quantity,\n" +
+            "concentration,\n" +
+            "quantity_unit_abbreviation,\n" +
+            "quantity_unit_abbreviation_id,\n" +
+            "concentration_unit_abbrevation,\n" +
+            "concentration_unit_abbrevation_id,\n" +
+            "cas_number,\n" +
+            "status,\n" +
+            "status_id,\n" +
+            "loc,\n" +
+            "loc_id,\n" +
+            "owner) VALUES (?, ?, ?,?,?,?,?,?, ?, ?,?,?,?,?,?, ?, ?,?,?,?,?,?, ?, ?,?,?,?,?,?, ?, ?,?,?)";
+    private static final String INSERT_QUERY_PRIMARY_USERS = "INSERT INTO primary_users (primary_user, primary_user_id) VALUES (?, ?)";
+    private static final String INSERT_QUERY_ROOMS = "INSERT INTO fi_facil_rooms (" +
+            "room,\n" +
+            "area, \n" +
+            "img_src, \n" +
+            "type_id, \n" +
+            "id,\n" +
+            "status,\n" +
+            "notes,\n" +
+            "facil_id) VALUES (?, ?, ?,?,?,?,?,?)";
 
     public DatabaseHandler(Context context) {
         super(context, DatabaseConstants.DATABASE_NAME, null, DatabaseConstants.DATABASE_VERSION);
@@ -1005,6 +1049,92 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             sqLiteDatabase.setTransactionSuccessful();
         } finally {
             sqLiteDatabase.endTransaction();
+            insertStatement = null;
+        }
+    }
+    public void batchInsertChemInventory(ArrayList<BatchInsertionObjectInventory> dataList, SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.beginTransaction();
+        Log.e(";;;;;;",dataList.size()+"ooo");
+        insertStatement = sqLiteDatabase.compileStatement(INSERT_QUERY_CHEM_INVENTORY);
+        try {
+            for (BatchInsertionObjectInventory data : dataList) {
+                insertStatement.bindString(1, data.getId());
+                insertStatement.bindString(2, data.getOpened_date());
+                insertStatement.bindString(3, data.getName());
+                insertStatement.bindString(4, data.getRoom_id());
+                insertStatement.bindString(5, data.getSec_code());
+                insertStatement.bindString(6, data.getObject_table());
+                insertStatement.bindString(7, data.getModified_user_id());
+                insertStatement.bindString(8, data.getModified_date());
+                insertStatement.bindString(9, data.getLast_test_date());
+                insertStatement.bindString(10, data.getPrimary_user_id());
+                insertStatement.bindString(11, data.getLot());
+                insertStatement.bindString(12, data.getCreate_date());
+                insertStatement.bindString(13, data.getCode());
+                insertStatement.bindString(14, data.getExpiration_date());
+                insertStatement.bindString(15, data.getCreate_user_id());
+                insertStatement.bindString(16, data.getObject_id());
+                insertStatement.bindString(17, data.getFacil_id());
+                insertStatement.bindString(18, data.getRoom());
+                insertStatement.bindString(19, data.getReceipt_date());
+                insertStatement.bindString(20, data.getNotes());
+                insertStatement.bindString(21, data.getComment());
+                insertStatement.bindString(22, data.getQuantity());
+                insertStatement.bindString(23, data.getConcentration());
+                insertStatement.bindString(24, data.getQuantity_unit_abbreviation());
+                insertStatement.bindString(25, data.getQuantity_unit_abbreviation_id());
+                insertStatement.bindString(26, data.getConcentration_unit_abbrevation());
+                insertStatement.bindString(27, data.getConcentration_unit_abbrevation_id());
+                insertStatement.bindString(28, data.getCas_number());
+                insertStatement.bindString(29, data.getStatus());
+                insertStatement.bindString(30, data.getStatus_id());
+                insertStatement.bindString(31, data.getLoc());
+                insertStatement.bindString(32, data.getLoc_id());
+                insertStatement.bindString(33, data.getOwner());
+                insertStatement.executeInsert();
+            }
+            sqLiteDatabase.setTransactionSuccessful();
+        } finally {
+            sqLiteDatabase.endTransaction();
+            insertStatement = null;
+        }
+    }
+    public void batchInsertRooms(ArrayList<BatchInsertRooms> dataList, SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.beginTransaction();
+        Log.e(";;;;;;",dataList.size()+"ooo");
+        insertStatement = sqLiteDatabase.compileStatement(INSERT_QUERY_ROOMS);
+        try {
+            for (BatchInsertRooms data : dataList) {
+                insertStatement.bindString(1, data.getRoom());
+                insertStatement.bindString(2, data.getArea());
+                insertStatement.bindString(3, data.getImg_src());
+                insertStatement.bindString(4, data.getType_id());
+                insertStatement.bindString(5, data.getId());
+                insertStatement.bindString(6, data.getStatus());
+                insertStatement.bindString(7, data.getNotes());
+                insertStatement.bindString(8, data.getFacil_id());
+                insertStatement.executeInsert();
+            }
+            sqLiteDatabase.setTransactionSuccessful();
+        } finally {
+            sqLiteDatabase.endTransaction();
+            insertStatement = null;
+        }
+    }
+    public void batchInsertPUs(ArrayList<BatchInsertPUs> dataList, SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.beginTransaction();
+        Log.e(";;;;;;",dataList.size()+"ooo");
+        insertStatement = sqLiteDatabase.compileStatement(INSERT_QUERY_PRIMARY_USERS);
+        try {
+            for (BatchInsertPUs data : dataList) {
+                insertStatement.bindString(1, data.getPrimary_user());
+                insertStatement.bindString(2, data.getPrimary_user_id());
+                insertStatement.executeInsert();
+            }
+            sqLiteDatabase.setTransactionSuccessful();
+        } finally {
+            sqLiteDatabase.endTransaction();
+            insertStatement = null;
         }
     }
 }
