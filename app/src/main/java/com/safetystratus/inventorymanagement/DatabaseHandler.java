@@ -8,6 +8,7 @@ import android.util.Log;
 import net.sqlcipher.Cursor;
 import net.sqlcipher.database.SQLiteDatabase;
 import net.sqlcipher.database.SQLiteOpenHelper;
+import net.sqlcipher.database.SQLiteStatement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +16,9 @@ import java.util.List;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static DatabaseHandler instance;
+    private SQLiteStatement insertStatement;
+    private static final String INSERT_QUERY = "INSERT INTO scanned_data (location_id, room_id, inventory_id, scanned_by, scanned, reconc_id, rfid_code) VALUES (?, ?, ?,?,?,?,?)";
+
     public DatabaseHandler(Context context) {
         super(context, DatabaseConstants.DATABASE_NAME, null, DatabaseConstants.DATABASE_VERSION);
     }
@@ -981,6 +985,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     public void updateInventoryDetails(SQLiteDatabase sqLiteDatabase, ContentValues cv){
         sqLiteDatabase.update(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, cv, "code=?", new String[]{cv.getAsString("code")});
+    }
+
+    public void batchInsert(ArrayList<BatchInsertionObject> dataList, SQLiteDatabase sqLiteDatabase) {
+        sqLiteDatabase.beginTransaction();
+        Log.e(";;;;;;",dataList.size()+"ooo");
+        insertStatement = sqLiteDatabase.compileStatement(INSERT_QUERY);
+        try {
+            for (BatchInsertionObject data : dataList) {
+                insertStatement.bindString(1, data.getLocation_id());
+                insertStatement.bindString(2, data.getRoom_id());
+                insertStatement.bindString(3, data.getInventory_id());
+                insertStatement.bindString(4, data.getScanned_by());
+                insertStatement.bindString(5, data.getScanned());
+                insertStatement.bindString(6, data.getReconc_id());
+                insertStatement.bindString(7, data.getRfid_code());
+                insertStatement.executeInsert();
+            }
+            sqLiteDatabase.setTransactionSuccessful();
+        } finally {
+            sqLiteDatabase.endTransaction();
+        }
     }
 }
 
