@@ -54,6 +54,7 @@ import java.util.regex.Pattern;
 
 public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandlerBulkUpdate.ResponseHandlerInterface {
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
+    private boolean backPressedOnce = false;
     boolean connected = false;
     String loggedinUsername = "";
     String loggedinUserSiteId = "";
@@ -339,29 +340,34 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            //unregisterReceiver(myBroadcastReceiver);
-            if(rfidHandler!=null) {
-                try {
-                    rfidHandler.reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.BARCODE_MODE, true);
-                } catch (InvalidUsageException e) {
-                    e.printStackTrace();
-                } catch (OperationFailureException e) {
-                    e.printStackTrace();
+            if(!backPressedOnce){
+                backPressedOnce = true;
+                if(rfidHandler!=null) {
+                    try {
+                        rfidHandler.reader.Config.setTriggerMode(ENUM_TRIGGER_MODE.BARCODE_MODE, true);
+                    } catch (InvalidUsageException e) {
+                        e.printStackTrace();
+                    } catch (OperationFailureException e) {
+                        e.printStackTrace();
+                    }
+                    rfidHandler.onDestroy();
                 }
-                rfidHandler.onDestroy();
+                final Intent myIntent = new Intent(BulkUpdateActivity.this,
+                        HomeActivity.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("pageLoadTemp", "-1");
+                myIntent.putExtra("empName", empName);
+                startActivity(myIntent);
+                finish();
             }
-            final Intent myIntent = new Intent(BulkUpdateActivity.this,
-                    HomeActivity.class);
-            myIntent.putExtra("user_id", selectedUserId);
-            myIntent.putExtra("site_id", loggedinUserSiteId);
-            myIntent.putExtra("token", token);
-            myIntent.putExtra("sso", sso);
-            myIntent.putExtra("md5pwd", md5Pwd);
-            myIntent.putExtra("loggedinUsername", loggedinUsername);
-            myIntent.putExtra("site_name", site_name);
-            myIntent.putExtra("pageLoadTemp", "-1");
-            myIntent.putExtra("empName", empName);
-            startActivity(myIntent);
+            //unregisterReceiver(myBroadcastReceiver);
+
         }
         return super.onOptionsItemSelected(item);
     }
