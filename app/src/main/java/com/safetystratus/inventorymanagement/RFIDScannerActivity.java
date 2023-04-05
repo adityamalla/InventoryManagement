@@ -59,6 +59,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.regex.Pattern;
 
@@ -113,6 +114,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     ArrayList<String> scannedOutOflocationListfromContinue = new ArrayList<String>();
     DatabaseHandler databaseHandler =null;
     SQLiteDatabase db = null;
+    ArrayList<InventoryObject> disposedinvList=null;
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,6 +217,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         if (scannedInvList.size()==0)
             scannedInvList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+        disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
+
         tagList = (ListView)findViewById(R.id.invList);
         //spinner = (ProgressBar)findViewById(R.id.progressBar1);
         model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"2",null,selectedSearchValue,selectedFacilName,selectedFacil,selectedRoomName,selectedRoom,total_inventory,reconc_id);
@@ -726,7 +730,10 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                         newList.add(element);
                     }
                 }
-                newList.replaceAll(String::trim);
+                //newList.replaceAll(String::trim);
+                synchronized(newList) {
+                    newList.replaceAll(String::trim);
+                }
             }
         });
     }
@@ -753,13 +760,19 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     }
     public void triggerReleaseEventRecieved() {
         rfidHandler.stopInventory();
-        HashSet<String> setWithoutDuplicates = new HashSet<String>(newList);
-        newList.clear();
-        newList.addAll(setWithoutDuplicates);
+        /*try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
+        synchronized(newList) {
+            HashSet<String> setWithoutDuplicates = new HashSet<String>(newList);
+            newList.clear();
+            newList.addAll(setWithoutDuplicates);
+        }
         //newListFiltered = new ArrayList<String>(new HashSet<String>(newList));
         /*SyncTagsScanned sc = new SyncTagsScanned(RFIDScannerActivity.this);
         sc.execute();*/
-        ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
         ArrayList<String> rfids = new ArrayList<String>();
         ArrayList<BatchInsertionObject> batchInsertData = new ArrayList<BatchInsertionObject>();
             for (int i = 0; i < scannedInvList.size(); i++) {
@@ -768,6 +781,12 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     if (newList.contains(scannedInvList.get(i).getRfidCode())) {
                         if (!scannedInvList.get(i).isFlag()) {
                             scannedInvList.get(i).setFlag(true);
+                            /*rfidHandler.startbeepingTimer();
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }*/
                             batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,scannedInvList.get(i).getInv_id(),selectedUserId, "1",reconc_id,""));
                         }
                     }

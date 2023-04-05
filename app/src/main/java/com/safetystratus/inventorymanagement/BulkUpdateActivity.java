@@ -350,7 +350,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                     } catch (OperationFailureException e) {
                         e.printStackTrace();
                     }
-                    rfidHandler.onDestroy();
+                    //rfidHandler.onDestroy();
                 }
                 final Intent myIntent = new Intent(BulkUpdateActivity.this,
                         HomeActivity.class);
@@ -476,7 +476,9 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                         newList.add(element);
                     }
                 }
-                newList.replaceAll(String::trim);
+                synchronized (newList){
+                    newList.replaceAll(String::trim);
+                }
             }
         });
     }
@@ -497,23 +499,25 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
     }
     public void triggerReleaseEventRecieved() {
         rfidHandler.stopInventory();
-        try {
+        /*try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }
+        }*/
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 //instantiate custom adapter
                 // Traverse through the first list
-                for (String element : newList) {
+                synchronized (newList) {
+                    for (String element : newList) {
 
-                    // If this element is not present in newList
-                    // then add it
-                    if (!codelistfromIntent.contains(element)) {
+                        // If this element is not present in newList
+                        // then add it
+                        if (!codelistfromIntent.contains(element)) {
 
-                        codelistfromIntent.add(element);
+                            codelistfromIntent.add(element);
+                        }
                     }
                 }
                 CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent,model, BulkUpdateActivity.this);

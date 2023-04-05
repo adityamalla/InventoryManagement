@@ -290,10 +290,14 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
             try {
                 if (!reader.isConnected()) {
                     // Establish connection to the RFID Reader
-                    reader.connect();
-                    ConfigureReader();
-                    beeperSettings();
-                    return "Connected";
+                    if (context!=null) {
+                        reader.connect();
+                        ConfigureReader();
+                        beeperSettings();
+                        return "Connected";
+                    }else{
+                        return "Disconnected";
+                    }
                 }
             } catch (InvalidUsageException e) {
                 e.printStackTrace();
@@ -455,7 +459,6 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
             if (myTags != null) {
                 for (int index = 0; index < myTags.length; index++) {
                     Log.d(TAG, "Tag ID " + myTags[index].getTagID());
-                    startbeepingTimer();
                     if (myTags[index].getOpCode() == ACCESS_OPERATION_CODE.ACCESS_OPERATION_READ &&
                             myTags[index].getOpStatus() == ACCESS_OPERATION_STATUS.ACCESS_SUCCESS) {
                         if (myTags[index].getMemoryBankData().length() > 0) {
@@ -557,11 +560,15 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
     public Timer tbeep;
 
     public void startbeepingTimer() {
+        Log.e("found inv","::");
         if (beeperVolume != BEEPER_VOLUME.QUIET_BEEP) {
+            Log.e("found inv1","::");
             if (!beepON) {
+                Log.e("found inv2","::");
                 beepON = true;
                 beep();
                 if (tbeep == null) {
+                    Log.e("found inv3","::");
                     TimerTask task = new TimerTask() {
                         @Override
                         public void run() {
@@ -580,16 +587,24 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
      * method to stop timer
      */
     public void stopbeepingTimer() {
+        Log.e("found inv4","::");
+
         if (tbeep != null && toneGenerator != null) {
             toneGenerator.stopTone();
             tbeep.cancel();
             tbeep.purge();
+            Log.e("found inv5","::");
+
         }
         tbeep = null;
+        Log.e("found inv6",tbeep+"::");
+
     }
 
     public void beep() {
+        Log.e("ggg0","*");
         if (toneGenerator != null) {
+            Log.e("ggg01","*");
             int toneType = ToneGenerator.TONE_PROP_BEEP;
             toneGenerator.startTone(toneType);
         }
