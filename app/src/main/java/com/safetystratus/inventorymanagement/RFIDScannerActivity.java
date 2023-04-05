@@ -61,6 +61,9 @@ import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
 public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandler.ResponseHandlerInterface {
@@ -73,7 +76,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     private TextView scannedProgressPercentage;
     private ProgressBar progressVal;
     public TextView scanCount;
-    ArrayList<String> newList = new ArrayList<String>();
+    CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList<String>();
     //ArrayList<String> newListFiltered = new ArrayList<String>();
     RFIDHandler rfidHandler;
     final static String TAG = "RFID_SAMPLE";
@@ -112,6 +115,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     ArrayList<InventoryObject> scannedInvList = null;
     ArrayList<String> scannedListfromContinue = new ArrayList<String>();
     ArrayList<String> scannedOutOflocationListfromContinue = new ArrayList<String>();
+    ArrayList<String> rfidTagsExisting = new ArrayList<String>();
     DatabaseHandler databaseHandler =null;
     SQLiteDatabase db = null;
     ArrayList<InventoryObject> disposedinvList=null;
@@ -218,7 +222,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             scannedInvList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
-
+        for (int t=0;t<scannedInvList.size();t++){
+            rfidTagsExisting.add(scannedInvList.get(t).getRfidCode());
+        }
         tagList = (ListView)findViewById(R.id.invList);
         //spinner = (ProgressBar)findViewById(R.id.progressBar1);
         model = new IntentModel(loggedinUserSiteId,selectedUserId,token,md5Pwd,sso,empName,site_name,loggedinUsername,"2",null,selectedSearchValue,selectedFacilName,selectedFacil,selectedRoomName,selectedRoom,total_inventory,reconc_id);
@@ -693,19 +699,19 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         super.onDestroy();
         rfidHandler.onDestroy();
     }
-
+public String  flag = "";
     @Override
     public void handleTagdata(TagData[] tagData) {
         final StringBuilder sb = new StringBuilder();
         final int[] scanCounts = {0};
         for (int index = 0; index < tagData.length; index++) {
-            if(isHex(tagData[index].getTagID())) {
-                if(tagData[index].getTagID().startsWith("0000000000000000")){
-                    sb.append( tagData[index].getTagID().substring(16,tagData[index].getTagID().length())+ "&&&");
-                }else {
+            if (isHex(tagData[index].getTagID())) {
+                if (tagData[index].getTagID().startsWith("0000000000000000")) {
+                    sb.append(tagData[index].getTagID().substring(16, tagData[index].getTagID().length()) + "&&&");
+                } else {
                     byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
-                    if(!containsNonAscii(new String(bytes, StandardCharsets.UTF_8)))
-                    sb.append(new String(bytes, StandardCharsets.UTF_8) + "&&&");
+                    if (!containsNonAscii(new String(bytes, StandardCharsets.UTF_8)))
+                        sb.append(new String(bytes, StandardCharsets.UTF_8) + "&&&");
                 }
             }
         }
@@ -719,25 +725,30 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     list.add(tagList[u]);
                 }
                 // Create a new ArrayList
-
                 // Traverse through the first list
                 for (String element : list) {
-
                     // If this element is not present in newList
                     // then add it
                     if (!newList.contains(element)) {
 
                         newList.add(element);
+                        if (!flag.contains(element.trim())) {
+                            if (rfidTagsExisting.contains(element.trim())) {
+                                rfidHandler.startbeepingTimer();
+                                flag = flag + element.trim() + ",";
+                                try {
+                                    Thread.sleep(200);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
                     }
                 }
-                //newList.replaceAll(String::trim);
-                synchronized(newList) {
                     newList.replaceAll(String::trim);
-                }
             }
         });
     }
-
     @Override
     public void handleTriggerPress(boolean pressed) {
 
@@ -760,33 +771,17 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     }
     public void triggerReleaseEventRecieved() {
         rfidHandler.stopInventory();
-        /*try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
-        synchronized(newList) {
             HashSet<String> setWithoutDuplicates = new HashSet<String>(newList);
             newList.clear();
             newList.addAll(setWithoutDuplicates);
-        }
-        //newListFiltered = new ArrayList<String>(new HashSet<String>(newList));
-        /*SyncTagsScanned sc = new SyncTagsScanned(RFIDScannerActivity.this);
-        sc.execute();*/
-        ArrayList<String> rfids = new ArrayList<String>();
         ArrayList<BatchInsertionObject> batchInsertData = new ArrayList<BatchInsertionObject>();
+        ArrayList<String> rfids = new ArrayList<String>();
             for (int i = 0; i < scannedInvList.size(); i++) {
             if(scannedInvList.get(i).getRfidCode()!=null) {
                 if (scannedInvList.get(i).getRfidCode().trim().length() > 0) {
                     if (newList.contains(scannedInvList.get(i).getRfidCode())) {
                         if (!scannedInvList.get(i).isFlag()) {
                             scannedInvList.get(i).setFlag(true);
-                            /*rfidHandler.startbeepingTimer();
-                            try {
-                                Thread.sleep(500);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }*/
                             batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,scannedInvList.get(i).getInv_id(),selectedUserId, "1",reconc_id,""));
                         }
                     }
@@ -820,6 +815,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         }
         if(batchInsertData!=null)
         databaseHandler.batchInsert(batchInsertData,databaseHandler.getWritableDatabase(PASS_PHRASE));
+
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -894,7 +890,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 return true; // non-ASCII character found
             }
         }
-        Log.e("---",str+"---"+false);
         return false; // no non-ASCII characters found
     }
 }
