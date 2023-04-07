@@ -683,8 +683,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 "where ci.room_id = "+room_id+" and sc.reconc_id="+rec_id), null);
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
-                if (cursor.getString(cursor.getColumnIndex("sec_code")).trim().length()>0) {
-                    invCodes.add(cursor.getString(cursor.getColumnIndex("sec_code")));
+                if(cursor.getString(cursor.getColumnIndex("sec_code"))!=null) {
+                    if (cursor.getString(cursor.getColumnIndex("sec_code")).trim().length() > 0) {
+                        invCodes.add(cursor.getString(cursor.getColumnIndex("sec_code")));
+                    }
                 }
                 cursor.moveToNext();
             }
@@ -693,8 +695,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("select rfid_code,scanned,code from scanned_data where room_id = "+room_id+" and inventory_id=-1 and reconc_id="+rec_id), null);
         if (cursor1.moveToFirst()) {
             while (!cursor1.isAfterLast()) {
-                if (cursor1.getString(cursor1.getColumnIndex("rfid_code")).trim().length()>0) {
-                    invCodes.add(cursor1.getString(cursor1.getColumnIndex("rfid_code")));
+                if(cursor1.getString(cursor1.getColumnIndex("rfid_code"))!=null) {
+                    if (cursor1.getString(cursor1.getColumnIndex("rfid_code")).trim().length() > 0) {
+                        invCodes.add(cursor1.getString(cursor1.getColumnIndex("rfid_code")));
+                    }
                 }
                 cursor1.moveToNext();
             }
