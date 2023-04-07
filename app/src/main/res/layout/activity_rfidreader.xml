@@ -197,7 +197,7 @@
         android:layout_height="30dp"
         android:layout_marginTop="0dp"
         android:paddingLeft="0dp"
-        android:text="Scaning in progress.."
+        android:text="Scanning in progress.."
         android:textSize="12sp"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium"

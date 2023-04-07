@@ -77,6 +77,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     private ProgressBar progressVal;
     public TextView scanCount;
     CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList<String>();
+    CopyOnWriteArrayList<String> scannedTagList = new CopyOnWriteArrayList<String>();
     //ArrayList<String> newListFiltered = new ArrayList<String>();
     RFIDHandler rfidHandler;
     final static String TAG = "RFID_SAMPLE";
@@ -204,11 +205,12 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             scannedTotalCount = intent.getStringExtra("scannedTotalCount");
         }
         int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom,selectedUserId, reconc_id);
-        setscancount(String.valueOf(scanned), scannedTotalCount);
         /*if (intent.getStringExtra("total_inventory") != null) {
             total_inventory = intent.getStringExtra("total_inventory");
         }*/
         // RFID Handler
+        scannedTagList = databaseHandler.getScannedRFIDCodes(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedRoom, reconc_id);
+        setscancount(String.valueOf(scanned), String.valueOf(scannedTagList.size()));
         rfidHandler = new RFIDHandler();
         rfidHandler.onCreate(this);
         all.setChecked(true);
@@ -217,7 +219,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             scannedInvList = (ArrayList<InventoryObject>) intent.getSerializableExtra("scannedInvList");
         }else
             scannedInvList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
-        Log.e("hhhhh",scannedInvList.size()+"***");
         if (scannedInvList.size()==0)
             scannedInvList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
         //ArrayList<InventoryObject> invList = databaseHandler.getInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
@@ -699,7 +700,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         super.onDestroy();
         rfidHandler.onDestroy();
     }
-public String  flag = "";
     @Override
     public void handleTagdata(TagData[] tagData) {
         final StringBuilder sb = new StringBuilder();
@@ -730,9 +730,8 @@ public String  flag = "";
                     // If this element is not present in newList
                     // then add it
                     if (!newList.contains(element)) {
-
                         newList.add(element);
-                        if (!flag.contains(element.trim())) {
+                        /*if (!flag.contains(element.trim())) {
                             if (rfidTagsExisting.contains(element.trim())) {
                                 rfidHandler.startbeepingTimer();
                                 flag = flag + element.trim() + ",";
@@ -742,7 +741,7 @@ public String  flag = "";
                                     e.printStackTrace();
                                 }
                             }
-                        }
+                        }*/
                     }
                 }
                     newList.replaceAll(String::trim);
@@ -774,8 +773,8 @@ public String  flag = "";
             HashSet<String> setWithoutDuplicates = new HashSet<String>(newList);
             newList.clear();
             newList.addAll(setWithoutDuplicates);
-        ArrayList<BatchInsertionObject> batchInsertData = new ArrayList<BatchInsertionObject>();
-        ArrayList<String> rfids = new ArrayList<String>();
+            ArrayList<BatchInsertionObject> batchInsertData = new ArrayList<BatchInsertionObject>();
+            ArrayList<String> rfids = new ArrayList<String>();
             for (int i = 0; i < scannedInvList.size(); i++) {
             if(scannedInvList.get(i).getRfidCode()!=null) {
                 if (scannedInvList.get(i).getRfidCode().trim().length() > 0) {

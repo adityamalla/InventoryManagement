@@ -36,12 +36,14 @@ import com.zebra.rfid.api3.TagData;
 import com.zebra.rfid.api3.TriggerInfo;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 class RFIDHandlerBulkUpdate implements Readers.RFIDReaderEventHandler {
 
@@ -56,7 +58,7 @@ class RFIDHandlerBulkUpdate implements Readers.RFIDReaderEventHandler {
     // UI and context
     final int[] scanCounts = {0};
     public static boolean asciiMode = false;
-
+    public CopyOnWriteArrayList<String> tagsScanned = new CopyOnWriteArrayList<String>();
     public static Boolean isInventoryAborted;
     public static boolean isLocationingAborted;
     public static boolean isLocatingTag;
@@ -415,7 +417,7 @@ class RFIDHandlerBulkUpdate implements Readers.RFIDReaderEventHandler {
             if (myTags != null) {
                 for (int index = 0; index < myTags.length; index++) {
                     Log.d(TAG, "Tag ID " + myTags[index].getTagID());
-                    startbeepingTimer();
+                    startbeepingTimer(myTags[index].getTagID());
                     if (myTags[index].getOpCode() == ACCESS_OPERATION_CODE.ACCESS_OPERATION_READ &&
                             myTags[index].getOpStatus() == ACCESS_OPERATION_STATUS.ACCESS_SUCCESS) {
                         if (myTags[index].getMemoryBankData().length() > 0) {
@@ -516,26 +518,29 @@ class RFIDHandlerBulkUpdate implements Readers.RFIDReaderEventHandler {
     private boolean beepON = false;
     public Timer tbeep;
 
-    public void startbeepingTimer() {
-        if (beeperVolume != BEEPER_VOLUME.QUIET_BEEP) {
-            if (!beepON) {
-                beepON = true;
-                beep();
-                if (tbeep == null) {
-                    TimerTask task = new TimerTask() {
-                        @Override
-                        public void run() {
-                            stopbeepingTimer();
-                            beepON = false;
-                        }
-                    };
-                    tbeep = new Timer();
-                    tbeep.schedule(task, 10);
+    public void startbeepingTimer(String encodedtagId) {
+        if (!tagsScanned.contains(encodedtagId))
+        {
+            tagsScanned.add(encodedtagId);
+            if (beeperVolume != BEEPER_VOLUME.QUIET_BEEP) {
+                if (!beepON) {
+                    beepON = true;
+                    beep();
+                    if (tbeep == null) {
+                        TimerTask task = new TimerTask() {
+                            @Override
+                            public void run() {
+                                stopbeepingTimer();
+                                beepON = false;
+                            }
+                        };
+                        tbeep = new Timer();
+                        tbeep.schedule(task, 10);
+                    }
                 }
             }
         }
     }
-
     /**
      * method to stop timer
      */

@@ -13,6 +13,7 @@ import net.sqlcipher.database.SQLiteStatement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class DatabaseHandler extends SQLiteOpenHelper {
     private static DatabaseHandler instance;
@@ -671,6 +672,35 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             return true;
         else
             return false;
+    }
+
+    @SuppressLint("Range")
+    public CopyOnWriteArrayList<String> getScannedRFIDCodes(SQLiteDatabase sqLiteDatabase, String room_id, String rec_id){
+        CopyOnWriteArrayList<String> invCodes = new CopyOnWriteArrayList<>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select " +
+                "ci.sec_code from chemical_inventory ci \n" +
+                "join scanned_data sc on ci.id = sc.inventory_id \n" +
+                "where ci.room_id = "+room_id+" and sc.reconc_id="+rec_id), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                if (cursor.getString(cursor.getColumnIndex("sec_code")).trim().length()>0) {
+                    invCodes.add(cursor.getString(cursor.getColumnIndex("sec_code")));
+                }
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("select rfid_code,scanned,code from scanned_data where room_id = "+room_id+" and inventory_id=-1 and reconc_id="+rec_id), null);
+        if (cursor1.moveToFirst()) {
+            while (!cursor1.isAfterLast()) {
+                if (cursor1.getString(cursor1.getColumnIndex("rfid_code")).trim().length()>0) {
+                    invCodes.add(cursor1.getString(cursor1.getColumnIndex("rfid_code")));
+                }
+                cursor1.moveToNext();
+            }
+        }
+        cursor1.close();
+        return invCodes;
     }
 
     @SuppressLint("Range")

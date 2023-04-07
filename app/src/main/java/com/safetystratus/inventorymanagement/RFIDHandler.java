@@ -35,12 +35,15 @@ import com.zebra.rfid.api3.TagData;
 import com.zebra.rfid.api3.TriggerInfo;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
 
 class RFIDHandler implements Readers.RFIDReaderEventHandler {
 
@@ -58,7 +61,7 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
     TextView textViewScanCount;
     final int[] scanCounts = {0};
     public static boolean asciiMode = false;
-
+public CopyOnWriteArrayList<String> tagsScanned = new CopyOnWriteArrayList<String>();
     public static Boolean isInventoryAborted;
     public static boolean isLocationingAborted;
     public static boolean isLocatingTag;
@@ -81,6 +84,7 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
         // Status UI
         textView = activity.statusTextViewRFID;
         textViewScanCount = activity.scanCount;
+        tagsScanned = activity.scannedTagList;
         // SDK
         InitSDK();
     }
@@ -459,6 +463,7 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
             if (myTags != null) {
                 for (int index = 0; index < myTags.length; index++) {
                     Log.d(TAG, "Tag ID " + myTags[index].getTagID());
+                    startbeepingTimer(myTags[index].getTagID());
                     if (myTags[index].getOpCode() == ACCESS_OPERATION_CODE.ACCESS_OPERATION_READ &&
                             myTags[index].getOpStatus() == ACCESS_OPERATION_STATUS.ACCESS_SUCCESS) {
                         if (myTags[index].getMemoryBankData().length() > 0) {
@@ -558,26 +563,52 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
     }
     private boolean beepON = false;
     public Timer tbeep;
+    private static final Pattern HEX_PATTERN = Pattern.compile("[0-9a-fA-F]+");
 
-    public void startbeepingTimer() {
-        Log.e("found inv","::");
-        if (beeperVolume != BEEPER_VOLUME.QUIET_BEEP) {
-            Log.e("found inv1","::");
-            if (!beepON) {
-                Log.e("found inv2","::");
-                beepON = true;
-                beep();
-                if (tbeep == null) {
-                    Log.e("found inv3","::");
-                    TimerTask task = new TimerTask() {
-                        @Override
-                        public void run() {
-                            stopbeepingTimer();
-                            beepON = false;
-                        }
-                    };
-                    tbeep = new Timer();
-                    tbeep.schedule(task, 10);
+    public static boolean isHex(String input) {
+        return HEX_PATTERN.matcher(input).matches();
+    }
+    public static boolean containsNonAscii(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) > 127) {
+                Log.e("---",str+"---"+true);
+                return true; // non-ASCII character found
+            }
+        }
+        return false; // no non-ASCII characters found
+    }
+    public void startbeepingTimer(String encodedtagId) {
+        String decodedTagId = "";
+        if (isHex(encodedtagId)) {
+            if (encodedtagId.startsWith("0000000000000000")) {
+                decodedTagId = encodedtagId.substring(16, encodedtagId.length());
+            } else {
+                byte[] bytes = Hex.stringToBytes(String.valueOf(encodedtagId.toCharArray()));
+                if (!containsNonAscii(new String(bytes, StandardCharsets.UTF_8)))
+                    decodedTagId = new String(bytes, StandardCharsets.UTF_8);
+            }
+        }
+        if (!tagsScanned.contains(decodedTagId.trim()))
+        {
+            tagsScanned.add(decodedTagId.trim());
+            if (beeperVolume != BEEPER_VOLUME.QUIET_BEEP) {
+                Log.e("found inv1","::");
+                if (!beepON) {
+                    Log.e("found inv2","::");
+                    beepON = true;
+                    beep();
+                    if (tbeep == null) {
+                        Log.e("found inv3","::");
+                        TimerTask task = new TimerTask() {
+                            @Override
+                            public void run() {
+                                stopbeepingTimer();
+                                beepON = false;
+                            }
+                        };
+                        tbeep = new Timer();
+                        tbeep.schedule(task, 10);
+                    }
                 }
             }
         }
@@ -587,24 +618,17 @@ class RFIDHandler implements Readers.RFIDReaderEventHandler {
      * method to stop timer
      */
     public void stopbeepingTimer() {
-        Log.e("found inv4","::");
 
         if (tbeep != null && toneGenerator != null) {
             toneGenerator.stopTone();
             tbeep.cancel();
             tbeep.purge();
-            Log.e("found inv5","::");
-
         }
         tbeep = null;
-        Log.e("found inv6",tbeep+"::");
-
     }
 
     public void beep() {
-        Log.e("ggg0","*");
         if (toneGenerator != null) {
-            Log.e("ggg01","*");
             int toneType = ToneGenerator.TONE_PROP_BEEP;
             toneGenerator.startTone(toneType);
         }
