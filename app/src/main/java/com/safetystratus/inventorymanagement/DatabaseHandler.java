@@ -1020,7 +1020,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if(pu.trim().length()>0){
             sql = "SELECT primary_user_id as user_id,primary_user as user FROM primary_users where primary_user like '%"+searchTerm+"%'";
         }else{
-            sql = "SELECT owner as user_id,object_id as user FROM chemical_inventory where owner like '%"+searchTerm+"%' and object_table='site_users'";
+            sql = "SELECT distinct object_id as user_id,owner as user FROM chemical_inventory where owner like '%"+searchTerm+"%' and object_table='site_users'";
         }
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();

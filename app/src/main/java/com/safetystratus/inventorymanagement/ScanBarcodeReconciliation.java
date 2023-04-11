@@ -458,6 +458,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 hideKeyboard(ScanBarcodeReconciliation.this);
+                addtoList.setEnabled(false);
                 if(enteredBarCodeValue.getText().toString().trim().length()>0){
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
@@ -544,6 +545,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         //tagList.setAdapter(adapter1);
                     }
                     enteredBarCodeValue.setText("");
+                    addtoList.setEnabled(true);
                 }
                 else{
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeReconciliation.this);
@@ -552,6 +554,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
+                                    addtoList.setEnabled(true);
                                     return;
                                 }
                             });

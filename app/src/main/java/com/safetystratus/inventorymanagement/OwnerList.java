@@ -317,113 +317,119 @@ public class OwnerList extends AppCompatActivity {
                 // if(s.length() != 0)
                 //{
                 MyObject[] myObjects = null;
-                myObjects = getItemsFromDb(String.valueOf(s));
+                if (String.valueOf(s).trim().length()>2){
+                    myObjects = getItemsFromDb(String.valueOf(s));
+                }else if (String.valueOf(s).trim().length()==0){
+                    myObjects = databaseHandler.getAutoSearchOwnerData( databaseHandler.getWritableDatabase(PASS_PHRASE), "",pu);
+                }
                 tableOwner.removeAllViews();
-                for (int i = 0;i<myObjects.length;i++) {
-                    final TextView ownerName = new TextView(OwnerList.this);
-                    ownerName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
-                            100, 5));
-                    ownerName.setGravity(Gravity.LEFT);
-                    ownerName.setPadding(5, 30, 0, 0);
-                    ownerName.setBackgroundResource(R.drawable.cell_shape_child);
-                    ownerName.setText(myObjects[i].getObjectName());
-                    ownerName.setId(Integer.parseInt(myObjects[i].getObjectId()));
-                    ownerName.setTextSize(16);
-                    ownerName.setTextColor(Color.parseColor("#000000"));
-                    ownerName.setBackgroundColor(Color.parseColor("#FFFFFF"));
-                    if (pu.trim().length()>0){
-                        if (selectedPrimaryUserId.length() > 0) {
-                            if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(selectedPrimaryUserId)) {
-                                Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
-                                img.setBounds(0, 0, 60, 60);
-                                ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                if(myObjects!=null) {
+                    for (int i = 0; i < myObjects.length; i++) {
+                        final TextView ownerName = new TextView(OwnerList.this);
+                        ownerName.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
+                                100, 5));
+                        ownerName.setGravity(Gravity.LEFT);
+                        ownerName.setPadding(5, 30, 0, 0);
+                        ownerName.setBackgroundResource(R.drawable.cell_shape_child);
+                        ownerName.setText(myObjects[i].getObjectName());
+                        ownerName.setId(Integer.parseInt(myObjects[i].getObjectId()));
+                        ownerName.setTextSize(16);
+                        ownerName.setTextColor(Color.parseColor("#000000"));
+                        ownerName.setBackgroundColor(Color.parseColor("#FFFFFF"));
+                        if (pu.trim().length() > 0) {
+                            if (selectedPrimaryUserId.length() > 0) {
+                                if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(selectedPrimaryUserId)) {
+                                    Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
+                                    img.setBounds(0, 0, 60, 60);
+                                    ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                                }
+                            }
+                        } else {
+                            if (selectedOwner.length() > 0) {
+                                if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(selectedOwner)) {
+                                    Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
+                                    img.setBounds(0, 0, 60, 60);
+                                    ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                                }
                             }
                         }
-                    }else{
-                        if (selectedOwner.length() > 0) {
-                            if (Integer.parseInt(myObjects[i].getObjectId()) == Integer.parseInt(selectedOwner)) {
-                                Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
-                                img.setBounds(0, 0, 60, 60);
-                                ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                            }
-                        }
-                    }
-                    final TableRow trOwner = new TableRow(OwnerList.this);
-                    trOwner.setId(Integer.parseInt(myObjects[i].getObjectId()));
-                    TableLayout.LayoutParams trParamsRosters = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                            TableLayout.LayoutParams.WRAP_CONTENT);
-                    trOwner.setBackgroundResource(R.drawable.table_tr_border);
-                    //trParams.setMargins(10, 10, 10, 10);
-                    trOwner.setLayoutParams(trParamsRosters);
-                    trOwner.addView(ownerName);
-                    tableOwner.addView(trOwner, trParamsRosters);
-                    ownerName.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            for (int p = 0; p < tableOwner.getChildCount(); p++) {
-                                View o1 = tableOwner.getChildAt(p);
-                                if (o1 instanceof TableRow) {
-                                    for (int j = 0; j < ((TableRow) o1).getChildCount(); j++) {
-                                        View u1 = ((TableRow) o1).getChildAt(j);
-                                        Boolean match = false;
-                                        if (u1 instanceof TextView) {
-                                            ((TextView) u1).setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                        final TableRow trOwner = new TableRow(OwnerList.this);
+                        trOwner.setId(Integer.parseInt(myObjects[i].getObjectId()));
+                        TableLayout.LayoutParams trParamsRosters = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
+                                TableLayout.LayoutParams.WRAP_CONTENT);
+                        trOwner.setBackgroundResource(R.drawable.table_tr_border);
+                        //trParams.setMargins(10, 10, 10, 10);
+                        trOwner.setLayoutParams(trParamsRosters);
+                        trOwner.addView(ownerName);
+                        tableOwner.addView(trOwner, trParamsRosters);
+                        ownerName.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                for (int p = 0; p < tableOwner.getChildCount(); p++) {
+                                    View o1 = tableOwner.getChildAt(p);
+                                    if (o1 instanceof TableRow) {
+                                        for (int j = 0; j < ((TableRow) o1).getChildCount(); j++) {
+                                            View u1 = ((TableRow) o1).getChildAt(j);
+                                            Boolean match = false;
+                                            if (u1 instanceof TextView) {
+                                                ((TextView) u1).setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+                                            }
                                         }
                                     }
                                 }
+                                Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
+                                img.setBounds(0, 0, 60, 60);
+                                ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
+                                Intent myIntent = null;
+                                if (fromBulkUpdate.trim().length() > 0) {
+                                    myIntent = new Intent(OwnerList.this,
+                                            BulkContainerUpdate.class);
+                                } else {
+                                    myIntent = new Intent(OwnerList.this, ContainerDetailsActivity.class);
+                                }
+                                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                                myIntent.putExtra("selectedRoom", selectedRoom + "");
+                                myIntent.putExtra("selectedStatusName", selectedStatusName);
+                                myIntent.putExtra("selectedStatus", selectedStatus + "");
+                                myIntent.putExtra("selectedFacil", selectedFacil + "");
+                                myIntent.putExtra("decodedData", decodedData + "");
+                                myIntent.putExtra("user_id", user_id);
+                                myIntent.putExtra("site_id", loggedinUserSiteId);
+                                myIntent.putExtra("token", request_token);
+                                myIntent.putExtra("sso", sso);
+                                myIntent.putExtra("md5pwd", md5Pwd);
+                                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                myIntent.putExtra("codelistfromIntent", codelistfromIntent);
+                                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                if (pu.trim().length() > 0) {
+                                    myIntent.putExtra("selectedOwnerName", selectedOwnerName);
+                                    myIntent.putExtra("selectedOwner", selectedOwner + "");
+                                    myIntent.putExtra("selectedPrimaryUserName", ownerName.getText().toString());
+                                    myIntent.putExtra("selectedPrimaryUserId", ownerName.getId() + "");
+                                } else {
+                                    myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
+                                    myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId + "");
+                                    myIntent.putExtra("selectedOwnerName", ownerName.getText().toString());
+                                    myIntent.putExtra("selectedOwner", ownerName.getId() + "");
+                                }
+                                myIntent.putExtra("site_name", site_name);
+                                myIntent.putExtra("ownerList", ownerList);
+                                myIntent.putExtra("primaryUsersList", primaryUsersList);
+                                myIntent.putExtra("pageLoadTemp", "-1");
+                                myIntent.putExtra("empName", empName);
+                                myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
+                                myIntent.putExtra("selectedConcUnit", selectedConcUnit + "");
+                                myIntent.putExtra("selectedQuanUnit", selectedQuanUnit);
+                                myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName + "");
+                                myIntent.putExtra("quan_val", quan_val + "");
+                                myIntent.putExtra("conc_val", conc_val + "");
+                                myIntent.putExtra("note", note + "");
+                                myIntent.putExtra("comment", comment + "");
+                                startActivity(myIntent);
                             }
-                            Drawable img = getResources().getDrawable(R.drawable.ic_icons8_checkmark);
-                            img.setBounds(0, 0, 60, 60);
-                            ownerName.setCompoundDrawablesWithIntrinsicBounds(null, null, img, null);
-                            Intent myIntent = null;
-                            if(fromBulkUpdate.trim().length()>0){
-                                myIntent = new Intent(OwnerList.this,
-                                        BulkContainerUpdate.class);
-                            }else{
-                                myIntent = new Intent(OwnerList.this, ContainerDetailsActivity.class);
-                            }
-                            myIntent.putExtra("selectedFacilName", selectedFacilName);
-                            myIntent.putExtra("selectedRoomName", selectedRoomName);
-                            myIntent.putExtra("selectedRoom", selectedRoom+"");
-                            myIntent.putExtra("selectedStatusName", selectedStatusName);
-                            myIntent.putExtra("selectedStatus", selectedStatus+"");
-                            myIntent.putExtra("selectedFacil", selectedFacil+"");
-                            myIntent.putExtra("decodedData", decodedData+"");
-                            myIntent.putExtra("user_id", user_id);
-                            myIntent.putExtra("site_id", loggedinUserSiteId);
-                            myIntent.putExtra("token", request_token);
-                            myIntent.putExtra("sso", sso);
-                            myIntent.putExtra("md5pwd", md5Pwd);
-                            myIntent.putExtra("loggedinUsername", loggedinUsername);
-                            myIntent.putExtra("codelistfromIntent", codelistfromIntent);
-                            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-                            if(pu.trim().length()>0){
-                                myIntent.putExtra("selectedOwnerName",selectedOwnerName );
-                                myIntent.putExtra("selectedOwner", selectedOwner+"");
-                                myIntent.putExtra("selectedPrimaryUserName", ownerName.getText().toString());
-                                myIntent.putExtra("selectedPrimaryUserId", ownerName.getId()+"");
-                            }else{
-                                myIntent.putExtra("selectedPrimaryUserName", selectedPrimaryUserName);
-                                myIntent.putExtra("selectedPrimaryUserId", selectedPrimaryUserId+"");
-                                myIntent.putExtra("selectedOwnerName", ownerName.getText().toString());
-                                myIntent.putExtra("selectedOwner", ownerName.getId()+"");
-                            }
-                            myIntent.putExtra("site_name", site_name);
-                            myIntent.putExtra("ownerList",ownerList);
-                            myIntent.putExtra("primaryUsersList",primaryUsersList);
-                            myIntent.putExtra("pageLoadTemp", "-1");
-                            myIntent.putExtra("empName", empName);
-                            myIntent.putExtra("selectedConcUnitName", selectedConcUnitName);
-                            myIntent.putExtra("selectedConcUnit", selectedConcUnit+"");
-                            myIntent.putExtra("selectedQuanUnit", selectedQuanUnit);
-                            myIntent.putExtra("selectedQuanUnitName", selectedQuanUnitName+"");
-                            myIntent.putExtra("quan_val", quan_val+"");
-                            myIntent.putExtra("conc_val", conc_val+"");
-                            myIntent.putExtra("note", note+"");
-                            myIntent.putExtra("comment", comment+"");
-                            startActivity(myIntent);
-                        }
-                    });
+                        });
+                    }
                 }
                 //}
             }
