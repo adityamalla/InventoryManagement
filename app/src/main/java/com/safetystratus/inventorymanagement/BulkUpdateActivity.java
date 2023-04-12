@@ -286,29 +286,31 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
             public void onClick(View view) {
                 hideKeyboard(BulkUpdateActivity.this);
                 if (enteredCodeValue.getText().toString().trim().length()>0){
-                    codelistfromIntent.add(enteredCodeValue.getText().toString());
-                    //instantiate custom adapter
-                    CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent,model, BulkUpdateActivity.this);
-                    codeList.setAdapter(adapter);
-                    if (codeList.getAdapter().getCount() > 0) {
-                        spinner.setVisibility(View.GONE);
-                        empty_list_text_view.setVisibility(View.GONE);
-                        codeList.setVisibility(View.VISIBLE);
-                        clearAll.setVisibility(View.VISIBLE);
-                        enteredCodeValue.setText("");
-                        ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
-                        ConstraintSet constraintSet = new ConstraintSet();
-                        constraintSet.clone(constraintLayout);
-                        constraintSet.connect(R.id.scanBarcode,ConstraintSet.START,R.id.codeList,ConstraintSet.START,0);
-                        constraintSet.connect(R.id.scanBarcode,ConstraintSet.END,R.id.codeList,ConstraintSet.END,0);
-                        constraintSet.connect(R.id.scanBarcode,ConstraintSet.TOP,R.id.codeList,ConstraintSet.BOTTOM,0);
-                        constraintSet.applyTo(constraintLayout);
-                        ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) scanBarcode.getLayoutParams();
-                        newLayoutParams.topMargin = 20;
-                        newLayoutParams.leftMargin = 0;
-                        newLayoutParams.rightMargin = 0;
-                        newLayoutParams.bottomMargin = 0;
-                        scanBarcode.setLayoutParams(newLayoutParams);
+                    if(!codelistfromIntent.contains(enteredCodeValue.getText().toString())) {
+                        codelistfromIntent.add(enteredCodeValue.getText().toString());
+                        //instantiate custom adapter
+                        CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, model, BulkUpdateActivity.this);
+                        codeList.setAdapter(adapter);
+                        if (codeList.getAdapter().getCount() > 0) {
+                            spinner.setVisibility(View.GONE);
+                            empty_list_text_view.setVisibility(View.GONE);
+                            codeList.setVisibility(View.VISIBLE);
+                            clearAll.setVisibility(View.VISIBLE);
+                            enteredCodeValue.setText("");
+                            ConstraintLayout constraintLayout = findViewById(R.id.bulkupdateConstraintLayout);
+                            ConstraintSet constraintSet = new ConstraintSet();
+                            constraintSet.clone(constraintLayout);
+                            constraintSet.connect(R.id.scanBarcode, ConstraintSet.START, R.id.codeList, ConstraintSet.START, 0);
+                            constraintSet.connect(R.id.scanBarcode, ConstraintSet.END, R.id.codeList, ConstraintSet.END, 0);
+                            constraintSet.connect(R.id.scanBarcode, ConstraintSet.TOP, R.id.codeList, ConstraintSet.BOTTOM, 0);
+                            constraintSet.applyTo(constraintLayout);
+                            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) scanBarcode.getLayoutParams();
+                            newLayoutParams.topMargin = 20;
+                            newLayoutParams.leftMargin = 0;
+                            newLayoutParams.rightMargin = 0;
+                            newLayoutParams.bottomMargin = 0;
+                            scanBarcode.setLayoutParams(newLayoutParams);
+                        }
                     }
                 }else{
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(BulkUpdateActivity.this);

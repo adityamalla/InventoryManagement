@@ -266,28 +266,30 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
             public void onClick(View view) {
                 hideKeyboard(ScanBarcodeBulkActivity.this);
                 if(enteredBarCodeValue.getText().toString().trim().length()>0){
-                    codelistfromIntent.add(enteredBarCodeValue.getText().toString());
-                    //instantiate custom adapter
-                    CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent,model, ScanBarcodeBulkActivity.this);
-                    barcodeList.setAdapter(adapter);
-                    if (barcodeList.getAdapter().getCount() > 0) {
-                        empty_list_text_view.setVisibility(View.GONE);
-                        barcodeList.setVisibility(View.VISIBLE);
-                        clearAll.setVisibility(View.VISIBLE);
-                        enteredBarCodeValue.setText("");
-                        ConstraintLayout constraintLayout = findViewById(R.id.bulkupdatebarcodeConstraintLayout);
-                        ConstraintSet constraintSet = new ConstraintSet();
-                        constraintSet.clone(constraintLayout);
-                        constraintSet.connect(R.id.scanRFID,ConstraintSet.START,R.id.barcodeList,ConstraintSet.START,0);
-                        constraintSet.connect(R.id.scanRFID,ConstraintSet.END,R.id.barcodeList,ConstraintSet.END,0);
-                        constraintSet.connect(R.id.scanRFID,ConstraintSet.TOP,R.id.barcodeList,ConstraintSet.BOTTOM,0);
-                        constraintSet.applyTo(constraintLayout);
-                        ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) scanRFID.getLayoutParams();
-                        newLayoutParams.topMargin = 20;
-                        newLayoutParams.leftMargin = 0;
-                        newLayoutParams.rightMargin = 0;
-                        newLayoutParams.bottomMargin = 0;
-                        scanRFID.setLayoutParams(newLayoutParams);
+                    if(!codelistfromIntent.contains(enteredBarCodeValue.getText().toString())) {
+                        codelistfromIntent.add(enteredBarCodeValue.getText().toString());
+                        //instantiate custom adapter
+                        CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent, model, ScanBarcodeBulkActivity.this);
+                        barcodeList.setAdapter(adapter);
+                        if (barcodeList.getAdapter().getCount() > 0) {
+                            empty_list_text_view.setVisibility(View.GONE);
+                            barcodeList.setVisibility(View.VISIBLE);
+                            clearAll.setVisibility(View.VISIBLE);
+                            enteredBarCodeValue.setText("");
+                            ConstraintLayout constraintLayout = findViewById(R.id.bulkupdatebarcodeConstraintLayout);
+                            ConstraintSet constraintSet = new ConstraintSet();
+                            constraintSet.clone(constraintLayout);
+                            constraintSet.connect(R.id.scanRFID, ConstraintSet.START, R.id.barcodeList, ConstraintSet.START, 0);
+                            constraintSet.connect(R.id.scanRFID, ConstraintSet.END, R.id.barcodeList, ConstraintSet.END, 0);
+                            constraintSet.connect(R.id.scanRFID, ConstraintSet.TOP, R.id.barcodeList, ConstraintSet.BOTTOM, 0);
+                            constraintSet.applyTo(constraintLayout);
+                            ConstraintLayout.LayoutParams newLayoutParams = (ConstraintLayout.LayoutParams) scanRFID.getLayoutParams();
+                            newLayoutParams.topMargin = 20;
+                            newLayoutParams.leftMargin = 0;
+                            newLayoutParams.rightMargin = 0;
+                            newLayoutParams.bottomMargin = 0;
+                            scanRFID.setLayoutParams(newLayoutParams);
+                        }
                     }
                 }
                 else{
