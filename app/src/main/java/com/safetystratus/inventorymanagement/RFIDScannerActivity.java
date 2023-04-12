@@ -237,7 +237,10 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 for (int i = 0; i < n; ++i) {
                     JSONObject details = inventory_details.getJSONObject(i);
                     if(details.getInt("inventory_id")==-1){
-                        scannedOutOflocationListfromContinue.add(String.valueOf(details.getString("rfid_code")));
+                        if (details.getString("rfid_code").trim().length()>0)
+                            scannedOutOflocationListfromContinue.add(String.valueOf(details.getString("rfid_code")));
+                        else
+                            scannedOutOflocationListfromContinue.add(String.valueOf(details.getString("code")));
                     }else{
                         scannedListfromContinue.add(String.valueOf(details.getInt("inventory_id")));
                     }
