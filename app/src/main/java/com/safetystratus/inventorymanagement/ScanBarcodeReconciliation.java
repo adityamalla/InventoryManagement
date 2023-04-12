@@ -545,7 +545,18 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         //tagList.setAdapter(adapter1);
                     }
                     enteredBarCodeValue.setText("");
-                    addtoList.setEnabled(true);
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeReconciliation.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Barcode added to the scanned list!!");
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    addtoList.setEnabled(true);
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
+                    //addtoList.setEnabled(true);
                 }
                 else{
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeReconciliation.this);
