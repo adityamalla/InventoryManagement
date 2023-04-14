@@ -232,7 +232,7 @@ public CopyOnWriteArrayList<String> tagsScanned = new CopyOnWriteArrayList<Strin
         protected String doInBackground(Void... voids) {
             Log.d(TAG, "ConnectionTask");
             GetAvailableReader();
-            if (reader != null)
+            if (reader != null&&context!=null)
                 return connect();
             return "Failed to find or connect reader";
         }
