@@ -195,7 +195,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<ScanInfo> getPendingScans(SQLiteDatabase sqLiteDatabase){
         ArrayList<ScanInfo> scanInfo = new ArrayList<>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data"), null);
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT * FROM scanned_json_data where scan_type='rfid'"), null);
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 String room_id = cursor.getString(cursor.getColumnIndex("room_id"));
