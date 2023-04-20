@@ -366,7 +366,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                 myIntent.putExtra("pageLoadTemp", "-1");
                 myIntent.putExtra("empName", empName);
                 startActivity(myIntent);
-                finish();
+                //finish();
             }
             //unregisterReceiver(myBroadcastReceiver);
 

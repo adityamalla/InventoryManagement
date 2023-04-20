@@ -606,7 +606,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                                     myIntent.putExtra("pageLoadTemp", "-1");
                                     myIntent.putExtra("empName", empName);
                                     startActivity(myIntent);
-                                    finish();
+                                    //finish();
                                 }
                             });
                     dlgAlert.setNegativeButton("No",
@@ -625,7 +625,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                                     myIntent.putExtra("pageLoadTemp", "-1");
                                     myIntent.putExtra("empName", empName);
                                     startActivity(myIntent);
-                                    finish();
+                                    //finish();
                                 }
                             });
                     dlgAlert.create().show();
@@ -665,7 +665,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     myIntent.putExtra("pageLoadTemp", "-1");
                     myIntent.putExtra("empName", empName);
                     startActivity(myIntent);
-                    finish();
+                    //finish();
                 }
             }
             else {
@@ -681,7 +681,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 myIntent.putExtra("pageLoadTemp", "-1");
                 myIntent.putExtra("empName", empName);
                 startActivity(myIntent);
-                finish();
+                //finish();
             }
     }
 

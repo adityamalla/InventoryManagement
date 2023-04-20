@@ -648,7 +648,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                     myIntent.putExtra("pageLoadTemp", "-1");
                                     myIntent.putExtra("empName", empName);
                                     startActivity(myIntent);
-                                    finish();
+                                    //finish();
                                 }
                             });
                     dlgAlert.setNegativeButton("No",
@@ -667,7 +667,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                     myIntent.putExtra("pageLoadTemp", "-1");
                                     myIntent.putExtra("empName", empName);
                                     startActivity(myIntent);
-                                    finish();
+                                    //finish();
                                 }
                             });
                     dlgAlert.create().show();
@@ -707,7 +707,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     myIntent.putExtra("pageLoadTemp", "-1");
                     myIntent.putExtra("empName", empName);
                     startActivity(myIntent);
-                    finish();
+                    //finish();
                 }
             }
             else {
@@ -723,7 +723,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                 myIntent.putExtra("pageLoadTemp", "-1");
                 myIntent.putExtra("empName", empName);
                 startActivity(myIntent);
-                finish();
+                //finish();
             }
     }
 
