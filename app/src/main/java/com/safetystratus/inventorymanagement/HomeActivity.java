@@ -275,15 +275,29 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(connected){
-                    try {
-                        ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
-                        //SyncInventory sdb = new SyncInventory();
-                        //sdb.execute(jsonList);
-                        uploadScannedInventoryData(jsonList);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
+                    int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedUserId);
+                    if(scannedJsonData > 0) {
+                        try {
+                            ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                            //SyncInventory sdb = new SyncInventory();
+                            //sdb.execute(jsonList);
+                            uploadScannedInventoryData(jsonList);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
 
+                        }
+                    }else{
+                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(HomeActivity.this);
+                        dlgAlert.setTitle("Safety Stratus");
+                        dlgAlert.setMessage("There is no saved data to upload to CMS!");
+                        dlgAlert.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        return;
+                                    }
+                                });
+                        dlgAlert.create().show();
                     }
                 }else{
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(HomeActivity.this);
