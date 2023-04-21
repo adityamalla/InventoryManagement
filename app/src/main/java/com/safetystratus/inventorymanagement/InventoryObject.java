@@ -9,10 +9,11 @@ public class InventoryObject implements Serializable {
     public String code;
     public String scanned;
     public String volume;
+    public String test_frequency;
     public boolean flag;
 
 
-    public InventoryObject(String rfidCode, String productName, String inv_id, String code, String scanned, String volume, boolean flag) {
+    public InventoryObject(String rfidCode, String productName, String inv_id, String code, String scanned, String volume, boolean flag, String test_frequency) {
         this.rfidCode = rfidCode;
         this.productName = productName;
         this.inv_id = inv_id;
@@ -20,6 +21,15 @@ public class InventoryObject implements Serializable {
         this.scanned = scanned;
         this.volume = volume;
         this.flag = flag;
+        this.test_frequency = test_frequency;
+    }
+
+    public String getTest_frequency() {
+        return test_frequency;
+    }
+
+    public void setTest_frequency(String test_frequency) {
+        this.test_frequency = test_frequency;
     }
 
     public String getVolume() {

@@ -491,6 +491,7 @@ public class SyncDBActivity extends AppCompatActivity {
                             objectInArray.getString("status_id"),
                             objectInArray.getString("loc"),
                             objectInArray.getString("loc_id"),
+                            objectInArray.getString("test_frequency"),
                             objectInArray.getString("owner")
                                     ));
                     /*values.put("id", id);

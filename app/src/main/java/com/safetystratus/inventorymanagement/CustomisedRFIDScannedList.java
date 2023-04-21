@@ -58,6 +58,7 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
         TextView productCode = (TextView)view.findViewById(R.id.productcode);
         TextView volumne = (TextView)view.findViewById(R.id.volumeofitem);
         ImageView invinfo = (ImageView)view.findViewById(R.id.invinfo);
+        ImageView timeicon = (ImageView)view.findViewById(R.id.timeicon);
         productName.setText(list.get(position).getProductName());
         if(list.get(position).getRfidCode()!=null) {
             if (list.get(position).getRfidCode().trim().length() > 0) {
@@ -76,6 +77,11 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
             view.setBackgroundResource(R.color.invScanSuccess);
         } else {
             view.setBackgroundResource(R.color.white);
+        }
+        if (Integer.parseInt(list.get(position).getTest_frequency())>0){
+            timeicon.setVisibility(View.VISIBLE);
+        }else{
+            timeicon.setVisibility(View.INVISIBLE);
         }
         /*invinfo.setOnClickListener(new View.OnClickListener() {
             @Override

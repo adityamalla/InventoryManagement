@@ -41,6 +41,7 @@ public class QueryConstants {
             "    \t status_id integer,\n" +
             "    \t facil_id integer,\n" +
             "    \t loc_id integer,\n" +
+            "    \t test_frequency integer,\n" +
             "    \t primary_user_id integer,\n" +
             "    \t quantity_unit_abbreviation_id integer,\n" +
             "    \t concentration_unit_abbrevation_id integer,\n" +

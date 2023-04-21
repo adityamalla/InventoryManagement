@@ -35,9 +35,13 @@ public class BatchInsertionObjectInventory implements Serializable {
     public String status_id;
     public String loc;
     public String loc_id;
+    public String test_frequency;
     public String owner;
 
-    public BatchInsertionObjectInventory(String id, String opened_date, String name, String room_id, String sec_code, String object_table, String modified_user_id, String modified_date, String last_test_date, String primary_user_id, String lot, String create_date, String code, String expiration_date, String create_user_id, String object_id, String facil_id, String room, String receipt_date, String notes, String comment, String quantity, String concentration, String quantity_unit_abbreviation, String quantity_unit_abbreviation_id, String concentration_unit_abbrevation, String concentration_unit_abbrevation_id, String cas_number, String status, String status_id, String loc, String loc_id, String owner) {
+    public BatchInsertionObjectInventory(String id, String opened_date, String name, String room_id, String sec_code, String object_table, String modified_user_id, String modified_date, String last_test_date,
+                                         String primary_user_id, String lot, String create_date, String code, String expiration_date, String create_user_id, String object_id,
+                                         String facil_id, String room, String receipt_date, String notes, String comment, String quantity, String concentration, String quantity_unit_abbreviation,
+                                         String quantity_unit_abbreviation_id, String concentration_unit_abbrevation, String concentration_unit_abbrevation_id, String cas_number, String status, String status_id, String loc, String loc_id, String test_frequency, String owner) {
         this.id = id;
         this.opened_date = opened_date;
         this.name = name;
@@ -70,7 +74,16 @@ public class BatchInsertionObjectInventory implements Serializable {
         this.status_id = status_id;
         this.loc = loc;
         this.loc_id = loc_id;
+        this.test_frequency = test_frequency;
         this.owner = owner;
+    }
+
+    public String getTest_frequency() {
+        return test_frequency;
+    }
+
+    public void setTest_frequency(String test_frequency) {
+        this.test_frequency = test_frequency;
     }
 
     public String getId() {

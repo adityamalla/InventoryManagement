@@ -465,7 +465,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
                     int count = 0;
                     if(!databaseHandler.checkScannedBarcodeDataAvailable(db,enteredBarCodeValue.getText().toString())){
-                        scannedInvList.add(new InventoryObject("N/A","N/A","-1",enteredBarCodeValue.getText().toString(),"1","N/A",true));
+                        scannedInvList.add(new InventoryObject("N/A","N/A","-1",enteredBarCodeValue.getText().toString(),"1","N/A",true,"0"));
                         ContentValues cv = new ContentValues();
                         cv.put("location_id", selectedFacil);
                         cv.put("room_id", selectedRoom);
@@ -780,7 +780,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         }
         int count = 0;
         if(!databaseHandler.checkScannedBarcodeDataAvailable(db,decodedData)){
-            scannedInvList.add(new InventoryObject("","","-1",decodedData,"1","",true));
+            scannedInvList.add(new InventoryObject("","","-1",decodedData,"1","",true,"0"));
             ContentValues cv = new ContentValues();
             cv.put("location_id", selectedFacil);
             cv.put("room_id", selectedRoom);

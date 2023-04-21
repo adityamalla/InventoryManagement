@@ -257,7 +257,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         }
         if (scannedOutOflocationListfromContinue.size()>0){
             for (int h=0;h<scannedOutOflocationListfromContinue.size();h++) {
-                scannedInvList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(h),"N/A","-1","N/A","1","N/A",true));
+                scannedInvList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(h),"N/A","-1","N/A","1","N/A",true,"0"));
             }
         }
         if (scannedListfromContinue.size()>0){
@@ -812,7 +812,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         for (int k=0;k < newList.size();k++){
             if (!rfids.contains(newList.get(k))){
                 batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,"-1",selectedUserId, "1",reconc_id,newList.get(k)));
-                scannedInvList.add(new InventoryObject(newList.get(k),"N/A","-1","N/A","1","N/A",true));
+                scannedInvList.add(new InventoryObject(newList.get(k),"N/A","-1","N/A","1","N/A",true,"0"));
             }
         }
         if(batchInsertData!=null)
