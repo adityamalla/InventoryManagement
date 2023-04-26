@@ -379,7 +379,11 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
             decodedData = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_data_legacy));
             decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type_legacy));
         }
-        codelistfromIntent.add(decodedData);
+        if (decodedData.contains("LBL")){
+            decodedData = decodedData.replaceAll("LBL","");
+        }
+        if (!codelistfromIntent.contains(decodedData.trim()))
+            codelistfromIntent.add(decodedData.trim());
         //instantiate custom adapter
         CustomizedListViewBulkUpdate adapter = new CustomizedListViewBulkUpdate(codelistfromIntent,model, ScanBarcodeBulkActivity.this);
         barcodeList.setAdapter(adapter);
