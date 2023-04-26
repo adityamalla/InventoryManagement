@@ -446,13 +446,17 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (count==0)
             sqLiteDatabase.insert("scanned_data", null, cv);
     }
-    public void insertScannedInvDataOutofLocationDataBarcode(SQLiteDatabase sqLiteDatabase, ContentValues cv){
-        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id="+cv.getAsString("room_id")+" and reconc_id="+cv.getAsString("reconc_id") +
-                " and location_id="+cv.getAsString("location_id")+" and scanned_by="+cv.getAsString("scanned_by")+" and inventory_id="+cv.getAsString("inventory_id")+" and code='"+cv.getAsString("code")+"'"), null);
+    public boolean insertScannedInvDataOutofLocationDataBarcode(SQLiteDatabase sqLiteDatabase, ContentValues cv) {
+        boolean isInserted = false;
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from scanned_data where room_id=" + cv.getAsString("room_id") + " and reconc_id=" + cv.getAsString("reconc_id") +
+                " and location_id=" + cv.getAsString("location_id") + " and scanned_by=" + cv.getAsString("scanned_by") + " and inventory_id=" + cv.getAsString("inventory_id") + " and code='" + cv.getAsString("code") + "'"), null);
         int count = cursor1.getCount();
         cursor1.close();
-        if (count==0)
+        if (count == 0) {
             sqLiteDatabase.insert("scanned_data", null, cv);
+            isInserted = true;
+        }
+        return isInserted;
     }
     public void insertScannedInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
         sqLiteDatabase.delete("scanned_json_data", "room_id=? and location_id=? and user_id=? and reconc_id=?", new String[]{cv.getAsString("room_id"),cv.getAsString("location_id"),cv.getAsString("user_id"),cv.getAsString("reconc_id")});
