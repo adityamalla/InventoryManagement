@@ -781,6 +781,9 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type_legacy));
         }
         int count = 0;
+        if (decodedData.contains("LBL")){
+            decodedData = decodedData.replaceAll("LBL","");
+        }
         if(!databaseHandler.checkScannedBarcodeDataAvailable(db,decodedData)) {
             scannedInvList.add(new InventoryObject("", "", "-1", decodedData, "1", "", true, "0"));
             ContentValues cv = new ContentValues();
