@@ -702,6 +702,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                         invCodes.add(cursor1.getString(cursor1.getColumnIndex("rfid_code")));
                     }
                 }
+                if(cursor1.getString(cursor1.getColumnIndex("code"))!=null) {
+                    if (cursor1.getString(cursor1.getColumnIndex("code")).trim().length() > 0) {
+                        invCodes.add(cursor1.getString(cursor1.getColumnIndex("code")));
+                    }
+                }
                 cursor1.moveToNext();
             }
         }

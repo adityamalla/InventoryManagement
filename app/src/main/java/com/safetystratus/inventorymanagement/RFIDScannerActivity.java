@@ -205,9 +205,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             scannedTotalCount = intent.getStringExtra("scannedTotalCount");
         }
         int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom,selectedUserId, reconc_id);
-        /*if (intent.getStringExtra("total_inventory") != null) {
-            total_inventory = intent.getStringExtra("total_inventory");
-        }*/
         // RFID Handler
         scannedTagList = databaseHandler.getScannedRFIDCodes(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedRoom, reconc_id);
         setscancount(String.valueOf(scanned), String.valueOf(scannedTagList.size()));
@@ -341,7 +338,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                 myIntent.putExtra("scannedInvList", scannedInvList);
                 myIntent.putExtra("total_inventory", total_inventory+"");
-                myIntent.putExtra("scannedTotalCount", scannedTotalCount+"");
+                myIntent.putExtra("scannedTotalCount", scannedTagList.size()+"");
                 myIntent.putExtra("flag","2");
                 startActivity(myIntent);
             }
