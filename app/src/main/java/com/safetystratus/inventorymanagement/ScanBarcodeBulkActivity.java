@@ -265,13 +265,11 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 hideKeyboard(ScanBarcodeBulkActivity.this);
-                if(enteredBarCodeValue.getText().toString().trim().length()>0){
-                    String enteredBarcode = enteredBarCodeValue.getText().toString().trim();
-                    if (enteredBarcode.contains("LBL")){
-                        enteredBarcode = enteredBarcode.replaceAll("LBL","");
-                    }else if (enteredBarcode.contains("lbl")){
-                        enteredBarcode = enteredBarcode.replaceAll("lbl","");
-                    }
+                String enteredBarcode = enteredBarCodeValue.getText().toString().trim();
+                if (enteredBarcode.toUpperCase().contains("LBL")){
+                    enteredBarcode = enteredBarcode.toUpperCase().replaceAll("LBL","");
+                }
+                if(enteredBarcode.trim().length()>0){
                     if(!codelistfromIntent.contains(enteredBarcode)) {
                         codelistfromIntent.add(enteredBarcode);
                         //instantiate custom adapter

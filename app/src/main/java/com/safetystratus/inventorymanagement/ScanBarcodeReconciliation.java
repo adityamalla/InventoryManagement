@@ -459,13 +459,11 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             public void onClick(View view) {
                 hideKeyboard(ScanBarcodeReconciliation.this);
                 addtoList.setEnabled(false);
-                if(enteredBarCodeValue.getText().toString().trim().length()>0){
-                    String enteredbarcode = enteredBarCodeValue.getText().toString().trim();
-                    if (enteredbarcode.contains("LBL")){
-                        enteredbarcode = enteredbarcode.replaceAll("LBL","");
-                    }else if (enteredbarcode.contains("lbl")){
-                        enteredbarcode = enteredbarcode.replaceAll("lbl","");
-                    }
+                String enteredbarcode = enteredBarCodeValue.getText().toString().trim();
+                if (enteredbarcode.toUpperCase().contains("LBL")){
+                    enteredbarcode = enteredbarcode.toUpperCase().replaceAll("LBL","");
+                }
+                if(enteredbarcode.trim().length()>0){
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
