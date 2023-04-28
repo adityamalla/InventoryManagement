@@ -460,18 +460,24 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                 hideKeyboard(ScanBarcodeReconciliation.this);
                 addtoList.setEnabled(false);
                 if(enteredBarCodeValue.getText().toString().trim().length()>0){
+                    String enteredbarcode = enteredBarCodeValue.getText().toString().trim();
+                    if (enteredbarcode.contains("LBL")){
+                        enteredbarcode = enteredbarcode.replaceAll("LBL","");
+                    }else if (enteredbarcode.contains("lbl")){
+                        enteredbarcode = enteredbarcode.replaceAll("lbl","");
+                    }
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
                     int count = 0;
-                    if(!databaseHandler.checkScannedBarcodeDataAvailable(db,enteredBarCodeValue.getText().toString())) {
-                        scannedInvList.add(new InventoryObject("N/A", "N/A", "-1", enteredBarCodeValue.getText().toString(), "1", "N/A", true, "0"));
+                    if(!databaseHandler.checkScannedBarcodeDataAvailable(db,enteredbarcode)) {
+                        scannedInvList.add(new InventoryObject("N/A", "N/A", "-1", enteredbarcode, "1", "N/A", true, "0"));
                         ContentValues cv = new ContentValues();
                         cv.put("location_id", selectedFacil);
                         cv.put("room_id", selectedRoom);
                         cv.put("inventory_id", -1);
                         cv.put("scanned_by", selectedUserId);
-                        cv.put("code", enteredBarCodeValue.getText().toString());
+                        cv.put("code", enteredbarcode);
                         cv.put("scanned", 1);
                         cv.put("reconc_id", reconc_id);
                         boolean isInserted = databaseHandler.insertScannedInvDataOutofLocationDataBarcode(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
@@ -483,7 +489,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     }
                     else{
                         for (int g=0;g<scannedInvList.size();g++){
-                            if (scannedInvList.get(g).getCode().equalsIgnoreCase(enteredBarCodeValue.getText().toString())){
+                            if (scannedInvList.get(g).getCode().equalsIgnoreCase(enteredbarcode)){
                                 if(!scannedInvList.get(g).isFlag()) {
                                     scannedInvList.get(g).setFlag(true);
                                     ContentValues cv = new ContentValues();
@@ -503,7 +509,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         }
                         ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
                         for (int i = 0; i < disposedinvList.size(); i++) {
-                            if (disposedinvList.get(i).getCode().equalsIgnoreCase(enteredBarCodeValue.getText().toString())){
+                            if (disposedinvList.get(i).getCode().equalsIgnoreCase(enteredbarcode)){
                                 if (!disposedinvList.get(i).isFlag()) {
                                     disposedinvList.get(i).setFlag(true);
                                     ContentValues cv = new ContentValues();
