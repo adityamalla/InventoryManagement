@@ -356,6 +356,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     if(connected){
                         String URL = ApiConstants.syncpostscanneddata;
                         String finalJsonString = jsonString;
+                        Log.e("TestJsonBarcde>>>",jsonString);
                         RequestQueue requestQueue = Volley.newRequestQueue(ScanBarcodeReconciliation.this);
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
                                 new Response.Listener<JSONObject>() {
@@ -785,62 +786,71 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type_legacy));
         }
         int count = 0;
-        if (decodedData.contains("LBL")){
-            decodedData = decodedData.replaceAll("LBL","");
+        if (decodedData.contains("LBL")) {
+            decodedData = decodedData.replaceAll("LBL", "");
         }
-        if(!databaseHandler.checkScannedBarcodeDataAvailable(db,decodedData)) {
-            scannedInvList.add(new InventoryObject("", "", "-1", decodedData, "1", "", true, "0"));
-            ContentValues cv = new ContentValues();
-            cv.put("location_id", selectedFacil);
-            cv.put("room_id", selectedRoom);
-            cv.put("inventory_id", -1);
-            cv.put("scanned_by", selectedUserId);
-            cv.put("reconc_id", reconc_id);
-            cv.put("code", decodedData);
-            cv.put("scanned", 1);
-            boolean isInserted = databaseHandler.insertScannedInvDataOutofLocationDataBarcode(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-            if (isInserted) {
-                count = Integer.parseInt(scannedTotalCount) + 1;
-                scannedTotalCount = String.valueOf(count);
-                scanCount.setText(scannedTotalCount);
-            }
-        }else{
-            for (int g=0;g<scannedInvList.size();g++){
-                if (scannedInvList.get(g).getCode().equalsIgnoreCase(decodedData)){
-                    if(!scannedInvList.get(g).isFlag()) {
-                        scannedInvList.get(g).setFlag(true);
-                        ContentValues cv = new ContentValues();
-                        cv.put("location_id", selectedFacil);
-                        cv.put("room_id", selectedRoom);
-                        cv.put("inventory_id", Integer.parseInt(scannedInvList.get(g).getInv_id()));
-                        cv.put("scanned_by", selectedUserId);
-                        cv.put("reconc_id", reconc_id);
-                        cv.put("scanned", 1);
-                        databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                        int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom,selectedUserId,reconc_id);
-                        count = Integer.parseInt(scannedTotalCount)+1;
-                        scannedTotalCount = String.valueOf(count);
-                        setscancount(String.valueOf(count),String.valueOf(scanned));
+        boolean validtag = false;
+        String firstLetterTest = decodedData.trim().substring(0, 1);
+        Log.e("-----",firstLetterTest+"----");
+        if(firstLetterTest.equalsIgnoreCase("C")){
+            Log.e("--00---",firstLetterTest+"----");
+            validtag = true;
+        }
+        if(validtag) {
+            if (!databaseHandler.checkScannedBarcodeDataAvailable(db, decodedData)) {
+                scannedInvList.add(new InventoryObject("", "", "-1", decodedData, "1", "", true, "0"));
+                ContentValues cv = new ContentValues();
+                cv.put("location_id", selectedFacil);
+                cv.put("room_id", selectedRoom);
+                cv.put("inventory_id", -1);
+                cv.put("scanned_by", selectedUserId);
+                cv.put("reconc_id", reconc_id);
+                cv.put("code", decodedData);
+                cv.put("scanned", 1);
+                boolean isInserted = databaseHandler.insertScannedInvDataOutofLocationDataBarcode(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                if (isInserted) {
+                    count = Integer.parseInt(scannedTotalCount) + 1;
+                    scannedTotalCount = String.valueOf(count);
+                    scanCount.setText(scannedTotalCount);
+                }
+            } else {
+                for (int g = 0; g < scannedInvList.size(); g++) {
+                    if (scannedInvList.get(g).getCode().equalsIgnoreCase(decodedData)) {
+                        if (!scannedInvList.get(g).isFlag()) {
+                            scannedInvList.get(g).setFlag(true);
+                            ContentValues cv = new ContentValues();
+                            cv.put("location_id", selectedFacil);
+                            cv.put("room_id", selectedRoom);
+                            cv.put("inventory_id", Integer.parseInt(scannedInvList.get(g).getInv_id()));
+                            cv.put("scanned_by", selectedUserId);
+                            cv.put("reconc_id", reconc_id);
+                            cv.put("scanned", 1);
+                            databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                            int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom, selectedUserId, reconc_id);
+                            count = Integer.parseInt(scannedTotalCount) + 1;
+                            scannedTotalCount = String.valueOf(count);
+                            setscancount(String.valueOf(count), String.valueOf(scanned));
+                        }
                     }
                 }
-            }
-            ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
-            for (int i = 0; i < disposedinvList.size(); i++) {
-                if (disposedinvList.get(i).getCode().equalsIgnoreCase(decodedData)){
-                    if (!disposedinvList.get(i).isFlag()) {
-                        disposedinvList.get(i).setFlag(true);
-                        ContentValues cv = new ContentValues();
-                        cv.put("location_id", selectedFacil);
-                        cv.put("room_id", selectedRoom);
-                        Log.e("dispossedd id >>",disposedinvList.get(i).getInv_id()+"**");
-                        cv.put("inventory_id", Integer.parseInt(disposedinvList.get(i).getInv_id()));
-                        cv.put("scanned_by", selectedUserId);
-                        cv.put("scanned", 1);
-                        cv.put("reconc_id", reconc_id);
-                        databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
-                        count = Integer.parseInt(scannedTotalCount)+1;
-                        scannedTotalCount = String.valueOf(count);
-                        scanCount.setText(String.valueOf(count));
+                ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
+                for (int i = 0; i < disposedinvList.size(); i++) {
+                    if (disposedinvList.get(i).getCode().equalsIgnoreCase(decodedData)) {
+                        if (!disposedinvList.get(i).isFlag()) {
+                            disposedinvList.get(i).setFlag(true);
+                            ContentValues cv = new ContentValues();
+                            cv.put("location_id", selectedFacil);
+                            cv.put("room_id", selectedRoom);
+                            Log.e("dispossedd id >>", disposedinvList.get(i).getInv_id() + "**");
+                            cv.put("inventory_id", Integer.parseInt(disposedinvList.get(i).getInv_id()));
+                            cv.put("scanned_by", selectedUserId);
+                            cv.put("scanned", 1);
+                            cv.put("reconc_id", reconc_id);
+                            databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                            count = Integer.parseInt(scannedTotalCount) + 1;
+                            scannedTotalCount = String.valueOf(count);
+                            scanCount.setText(String.valueOf(count));
+                        }
                     }
                 }
             }

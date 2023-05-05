@@ -320,6 +320,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 } catch (OperationFailureException e) {
                     e.printStackTrace();
                 }
+                scannedTagList = databaseHandler.getScannedRFIDCodes(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedRoom, reconc_id);
                 final Intent myIntent = new Intent(RFIDScannerActivity.this,
                         ScanBarcodeReconciliation.class);
                 myIntent.putExtra("user_id", selectedUserId);
@@ -421,6 +422,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     if(connected){
                         String URL = ApiConstants.syncpostscanneddata;
                         String finalJsonString = jsonString;
+                        Log.e("TestJson>>>",jsonString);
                         RequestQueue requestQueue = Volley.newRequestQueue(RFIDScannerActivity.this);
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
                                 new Response.Listener<JSONObject>() {
@@ -707,11 +709,18 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         for (int index = 0; index < tagData.length; index++) {
             if (isHex(tagData[index].getTagID())) {
                 if (tagData[index].getTagID().startsWith("0000000000000000")) {
-                    sb.append(tagData[index].getTagID().substring(16, tagData[index].getTagID().length()) + "&&&");
+                    String tagId = tagData[index].getTagID().substring(16, tagData[index].getTagID().length());
+                    String firstLetter = tagId.substring(0, 1);
+                    if(firstLetter.equalsIgnoreCase("C"))
+                        sb.append(tagId + "&&&");
                 } else {
                     byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
-                    if (!containsNonAscii(new String(bytes, StandardCharsets.UTF_8)))
-                        sb.append(new String(bytes, StandardCharsets.UTF_8) + "&&&");
+                    if (!containsNonAscii(new String(bytes, StandardCharsets.UTF_8))) {
+                        String tag_Id = new String(bytes, StandardCharsets.UTF_8);
+                        String firstLetter_tag_id = tag_Id.substring(0, 1);
+                        if (firstLetter_tag_id.equalsIgnoreCase("C"))
+                            sb.append(tag_Id+"&&&");
+                    }
                 }
             }
         }
