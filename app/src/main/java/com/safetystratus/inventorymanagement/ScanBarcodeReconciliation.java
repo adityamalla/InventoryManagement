@@ -789,6 +789,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         if (decodedData.contains("LBL")) {
             decodedData = decodedData.replaceAll("LBL", "");
         }
+        decodedData = decodedData.replaceAll("\u0000", "");
         boolean validtag = false;
         String firstLetterTest = decodedData.trim().substring(0, 1);
         Log.e("-----",firstLetterTest+"----");

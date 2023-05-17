@@ -711,15 +711,19 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 if (tagData[index].getTagID().startsWith("0000000000000000")) {
                     String tagId = tagData[index].getTagID().substring(16, tagData[index].getTagID().length());
                     String firstLetter = tagId.substring(0, 1);
-                    if(firstLetter.equalsIgnoreCase("C"))
-                        sb.append(tagId + "&&&");
+                    if(firstLetter.equalsIgnoreCase("C")) {
+                        String outputString = tagId.replaceAll("\u0000", "");
+                        sb.append(outputString + "&&&");
+                    }
                 } else {
                     byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
                     if (!containsNonAscii(new String(bytes, StandardCharsets.UTF_8))) {
                         String tag_Id = new String(bytes, StandardCharsets.UTF_8);
                         String firstLetter_tag_id = tag_Id.substring(0, 1);
-                        if (firstLetter_tag_id.equalsIgnoreCase("C"))
-                            sb.append(tag_Id+"&&&");
+                        if (firstLetter_tag_id.equalsIgnoreCase("C")) {
+                            String outputString = tag_Id.replaceAll("\u0000", "");
+                            sb.append(outputString + "&&&");
+                        }
                     }
                 }
             }
