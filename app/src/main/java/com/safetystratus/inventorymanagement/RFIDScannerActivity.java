@@ -712,8 +712,10 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     String tagId = tagData[index].getTagID().substring(16, tagData[index].getTagID().length());
                     String firstLetter = tagId.substring(0, 1);
                     if(firstLetter.equalsIgnoreCase("C")) {
-                        String outputString = tagId.replaceAll("\u0000", "");
-                        sb.append(outputString + "&&&");
+                        if (tagId.trim().length()==8) {
+                            String outputString = tagId.replaceAll("\u0000", "");
+                            sb.append(outputString + "&&&");
+                        }
                     }
                 } else {
                     byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
@@ -721,8 +723,10 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                         String tag_Id = new String(bytes, StandardCharsets.UTF_8);
                         String firstLetter_tag_id = tag_Id.substring(0, 1);
                         if (firstLetter_tag_id.equalsIgnoreCase("C")) {
-                            String outputString = tag_Id.replaceAll("\u0000", "");
-                            sb.append(outputString + "&&&");
+                            if (tag_Id.trim().length()==8) {
+                                String outputString = tag_Id.replaceAll("\u0000", "");
+                                sb.append(outputString + "&&&");
+                            }
                         }
                     }
                 }

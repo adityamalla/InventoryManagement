@@ -449,11 +449,26 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         for (int index = 0; index < tagData.length; index++) {
             if(isHex(tagData[index].getTagID())) {
                 if(tagData[index].getTagID().startsWith("0000000000000000")){
-                    sb.append( tagData[index].getTagID().substring(16,tagData[index].getTagID().length())+ "&&&");
+                    String tagId = tagData[index].getTagID().substring(16, tagData[index].getTagID().length());
+                    String firstLetter = tagId.substring(0, 1);
+                    if(firstLetter.equalsIgnoreCase("C")) {
+                        if (tagId.trim().length()==8) {
+                            String outputString = tagId.replaceAll("\u0000", "");
+                            sb.append(outputString + "&&&");
+                        }
+                    }
                 }else {
                     byte[] bytes = Hex.stringToBytes(String.valueOf(tagData[index].getTagID().toCharArray()));
-                    if(!containsNonAscii(new String(bytes, StandardCharsets.UTF_8)))
-                    sb.append(new String(bytes, StandardCharsets.UTF_8) + "&&&");
+                    if(!containsNonAscii(new String(bytes, StandardCharsets.UTF_8))){
+                        String tag_Id = new String(bytes, StandardCharsets.UTF_8);
+                        String firstLetter_tag_id = tag_Id.substring(0, 1);
+                        if (firstLetter_tag_id.equalsIgnoreCase("C")) {
+                            if (tag_Id.trim().length()==8) {
+                                String outputString = tag_Id.replaceAll("\u0000", "");
+                                sb.append(outputString + "&&&");
+                            }
+                        }
+                    }
                 }
             }
         }
