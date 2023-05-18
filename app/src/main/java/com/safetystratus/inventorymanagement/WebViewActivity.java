@@ -167,7 +167,6 @@ public class WebViewActivity extends AppCompatActivity {
                         //user does not have a pdf viewer installed
                     }
                 }else if (url.contains("print.cfm")) {
-                    Log.e("under print cfm","**");
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setDataAndType(Uri.parse(url), "application/pdf");
                     try {
@@ -182,7 +181,6 @@ public class WebViewActivity extends AppCompatActivity {
                     loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(loginIntent);
                 } else if (url.startsWith("mailto:")) {
-                    Log.e("under mailto","**");
                     MailTo mt = MailTo.parse(url);
                     Intent intent = new Intent(Intent.ACTION_SEND);
                     intent.putExtra(Intent.EXTRA_EMAIL, new String[] { mt.getTo() });
@@ -193,7 +191,6 @@ public class WebViewActivity extends AppCompatActivity {
                     view.getContext().startActivity(intent);
                     view.reload();
                 } else {
-                    Log.e("under normal","**");
                     ssWebview.loadUrl(url);
                 }
                 return false; // then it is not handled by default action
@@ -204,12 +201,10 @@ public class WebViewActivity extends AppCompatActivity {
                 view.loadUrl("about:blank");
                 webviewProgressBar.setVisibility(View.GONE);
                 if (failingUrl.contains("VALID")) {
-                    Log.e("error123",failingUrl);
                     String req_vales = failingUrl.split("//")[1];
                     String request_token = req_vales.split("/")[1];
                     String firstname = req_vales.split("/")[2];
                     String lastname = req_vales.split("/")[3];
-                    Log.e("valid url values",req_vales+"---"+request_token+"----"+firstname+"---"+lastname);
                     Intent intent = new Intent(WebViewActivity.this, HomeActivity.class);
                     intent.putExtra("username", loggedinUsername);
                     intent.putExtra("sso", "true");
@@ -230,14 +225,12 @@ public class WebViewActivity extends AppCompatActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {        //show progressbar here
                 super.onPageStarted(view, url, favicon);
-                Log.e("pagess11>",url);
                 webviewProgressBar.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 //super.onPageFinished(view,url);
-                Log.e("pagess22>",url);
                 webviewProgressBar.setVisibility(View.GONE);
 
             }
@@ -449,14 +442,12 @@ public class WebViewActivity extends AppCompatActivity {
         @Override
         public void onReceivedTitle(WebView view, String title) {
             super.onReceivedTitle(view, title);
-            Log.e("chromeUrl>",view.getUrl());
         }
         @Override
         public void onProgressChanged(WebView view, int progress) {
             if (progress == 100) {
                 //A fully loaded url will come here
                 String StrNewUrl = view.getUrl();
-                Log.e("chromeUrl111>",StrNewUrl);
             }
             super.onProgressChanged(view, progress);
         }
@@ -480,7 +471,6 @@ public class WebViewActivity extends AppCompatActivity {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
             if (url.startsWith("mailto:")) {
-                Log.e("under mailto>","$$$$$");
                 final Activity activity = mActivityRef.get();
                 if (activity != null) {
                     MailTo mt = MailTo.parse(url);

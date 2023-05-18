@@ -119,7 +119,6 @@ public class SyncDBActivity extends AppCompatActivity {
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
-        Log.e("selecteduserid4>>",selectedUserId+"**");
 
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
@@ -141,7 +140,6 @@ public class SyncDBActivity extends AppCompatActivity {
         employeeId = (EditText)findViewById(R.id.employeeId);
         building = (EditText)findViewById(R.id.building);
         syncData = (Button)findViewById(R.id.syncData);
-        Log.e("loggedinUsername>>",loggedinUsername+"**");
         employeeId.setText(loggedinUsername);
         employeeId.setEnabled(false);
         if(selectedFacilName.trim().length()>0){
@@ -157,7 +155,6 @@ public class SyncDBActivity extends AppCompatActivity {
                 ArrayList<MyObject> facillist = databaseHandler.getBuildingList(databaseHandler.getWritableDatabase(PASS_PHRASE));
                     final Intent myIntent = new Intent(SyncDBActivity.this,
                             BuildingList.class);
-                Log.e("selecteduserid5>>",selectedUserId+"**");
 
                 myIntent.putExtra("user_id", selectedUserId);
                     myIntent.putExtra("site_id", loggedinUserSiteId);
@@ -220,7 +217,6 @@ public class SyncDBActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     final Intent myIntent = new Intent(SyncDBActivity.this,
                                             HomeActivity.class);
-                                    Log.e("selecteduserid6>>",selectedUserId+"**");
                                     myIntent.putExtra("user_id", selectedUserId);
                                     myIntent.putExtra("site_id", loggedinUserSiteId);
                                     myIntent.putExtra("token", token);
@@ -244,10 +240,6 @@ public class SyncDBActivity extends AppCompatActivity {
                             progressSynStart.setCancelable(false);
                             progressSynStart.show();
                             progressSynStart.getWindow().setLayout(450, 200);
-                            Log.e("test>", loggedinUserSiteId + "*");
-                            Log.e("test1>", selectedUserId + "*");
-                            Log.e("test2>", token + "*");
-                            Log.e("test3>", selectedFacil + "*");
                             insertDbData(loggedinUserSiteId, selectedUserId, token, selectedFacil);
                         } else {
                             AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
@@ -300,7 +292,6 @@ public class SyncDBActivity extends AppCompatActivity {
             RequestQueue requestQueue = Volley.newRequestQueue(SyncDBActivity.this);
             for (int k=0;k<jsonList.size();k++){
                 int finalK = k;
-                Log.e("JSON>>>",jsonList.get(k).getObjectName()+"**");
                 JSONObject obj = new JSONObject(jsonList.get(k).getObjectName());
                 String reconc_id = "-4";
                 if (obj.has("reconc_id")) {
@@ -313,10 +304,8 @@ public class SyncDBActivity extends AppCompatActivity {
                             public void onResponse(JSONObject response) {
                                 //Process os success response
                                 String res = response.toString();
-                                Log.e("res>>>>",res);
                                 databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId(),finalReconc_id);
                                 ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
-                                Log.e("size******",jsonListModified.size()+"***");
                                 if (jsonListModified.size()==0){
                                     progressSync.dismiss();
                                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
@@ -362,7 +351,6 @@ public class SyncDBActivity extends AppCompatActivity {
                 Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                Log.e("room inv response>>",response.toString()+"**");
                 if (progressSynStart != null && progressSynStart.isShowing()){
                     progressSynStart.dismiss();
                     progressSynStart = null;
@@ -448,7 +436,6 @@ public class SyncDBActivity extends AppCompatActivity {
             JSONArray jsonArrayFiFacilRooms = obj.getJSONArray("fi_facil_rooms");
             JSONArray jsonArrayChemicalInventory = obj.getJSONArray("chemical_inventory");
             JSONArray jsonArrayPrimaryUsers = obj.getJSONArray("primary_users");
-            Log.e("test pu>>>",jsonArrayPrimaryUsers.toString());
             db.delete(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, null);
             db.delete(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, null);
             db.delete(QueryConstants.TABLE_NAME_PRIMARY_USERS, null, null);
@@ -581,7 +568,6 @@ public class SyncDBActivity extends AppCompatActivity {
         if (id == android.R.id.home) {
             final Intent myIntent = new Intent(SyncDBActivity.this,
                     HomeActivity.class);
-            Log.e("selecteduserid6>>",selectedUserId+"**");
             myIntent.putExtra("user_id", selectedUserId);
             myIntent.putExtra("site_id", loggedinUserSiteId);
             myIntent.putExtra("token", token);

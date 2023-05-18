@@ -98,8 +98,6 @@ public class CustomizedListView extends BaseAdapter {
                 myIntent.putExtra("site_name", obj.getSite_name());
                 myIntent.putExtra("fromContinueInsp","true");
                 myIntent.putExtra("empName",obj.getEmpName());
-                Log.e("1111111>>",scanInfo.getJson_data()+"**");
-                Log.e("222222>>",scanInfo.getReconc_id()+"**");
                 myIntent.putExtra("json_data_from_continue",scanInfo.getJson_data());
                 myIntent.putExtra("selectedFacilName", scanInfo.getFacility_name());
                 myIntent.putExtra("selectedFacil", scanInfo.getFacility_id()+"");

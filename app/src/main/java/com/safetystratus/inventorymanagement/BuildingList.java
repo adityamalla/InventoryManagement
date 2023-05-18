@@ -326,7 +326,6 @@ public class BuildingList extends AppCompatActivity {
         MyObject[] myObject = null;
         try {
             myObject = databaseHandler.getAutoSearchBuildingsData(db, searchTerm);
-            Log.e("TESTmyobj>>",myObject+"**");
         } catch (Exception e) {
             e.printStackTrace();
         } finally {

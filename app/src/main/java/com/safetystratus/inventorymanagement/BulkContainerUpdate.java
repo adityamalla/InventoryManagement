@@ -168,7 +168,6 @@ public class BulkContainerUpdate extends AppCompatActivity {
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
-        Log.e("selecteduserid1>>",selectedUserId+"**");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
         if (intent.getStringExtra("selectedSearchValue") != null) {
@@ -345,7 +344,6 @@ public class BulkContainerUpdate extends AppCompatActivity {
                 try {
                     note = notes.getText().toString();
                     comment = comments.getText().toString();
-                    Log.e("test1111","1111");
                     ArrayList<MyObject> primaryUsersList = databaseHandler.getPrimaryUsersList(db);
                     final Intent myIntent = new Intent(BulkContainerUpdate.this,
                             OwnerList.class);
@@ -431,7 +429,6 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     cv_save.put("room_id", -1);
                     cv_save.put("scan_type", "bulkupdate");
                     cv_save.put("json_data", jsonString);
-                    Log.e("jsonnnnn",jsonString);
                     databaseHandler.insertScannedBarcodeInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv_save);
                     if (connected) {
                         ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonDataBulkUpdate(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
@@ -613,7 +610,6 @@ public class BulkContainerUpdate extends AppCompatActivity {
                             public void onResponse(JSONObject response) {
                                 //Process os success response
                                 String res = response.toString();
-                                Log.e("res>>>>>>",res);
                                 databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId(),finalReconc_id);
                                 ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonDataBulkUpdate(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                                 if (jsonListModified.size()==0){

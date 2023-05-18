@@ -250,7 +250,6 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             if(quan_val.trim().length()==0&&!inv.getVolume_mass().equalsIgnoreCase("-1")){
                 quan_val = inv.getVolume_mass();
             }
-            Log.e("yyyyy",conc_val.trim().length()+"---"+conc_val+"--"+inv.getConcentration());
             if(conc_val.trim().length()==0&&!inv.getConcentration().equalsIgnoreCase("-1")){
                 conc_val = inv.getConcentration();
             }
@@ -280,7 +279,6 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             concentration.setText("");
             concentrationUnit.setText("");
         }
-        Log.e("pppp",selectedStatusName);
         location.setText(selectedRoomName);
         status.setText(selectedStatusName);
         concentrationUnit.setText(selectedConcUnitName);
@@ -865,7 +863,6 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     reconc_id = obj.getString("reconc_id");
                 }
                 String finalReconc_id = reconc_id;
-                Log.e("hhjjj",jsonList.get(k).getObjectName());
                 JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonList.get(k).getObjectName()),
                         new Response.Listener<JSONObject>() {
                             @Override

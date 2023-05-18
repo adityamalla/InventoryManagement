@@ -139,7 +139,6 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
-        Log.e("selecteduserid1>>",selectedUserId+"**");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
         //rfid = findViewById(R.id.rfidbtn);
@@ -435,11 +434,9 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
     public static boolean containsNonAscii(String str) {
         for (int i = 0; i < str.length(); i++) {
             if (str.charAt(i) > 127) {
-                Log.e("---",str+"---"+true);
                 return true; // non-ASCII character found
             }
         }
-        Log.e("---",str+"---"+false);
         return false; // no non-ASCII characters found
     }
     @Override

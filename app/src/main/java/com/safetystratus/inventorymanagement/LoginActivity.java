@@ -342,7 +342,6 @@ public class LoginActivity extends AppCompatActivity {
                         params.put("password", md5pwd);
                         params.put("email", uname);
                         params.put("sso", singleSignOn);
-                        Log.e("Test Response0>>",params.toString());
                         final boolean finalSingleSign = singleSign;
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(params),
                                 new Response.Listener<JSONObject>() {
@@ -350,7 +349,6 @@ public class LoginActivity extends AppCompatActivity {
                                     public void onResponse(JSONObject response) {
                                         //Process os success response
                                         try {
-                                            Log.e("Test Response>>",response.toString());
                                             if (response.getString("Message").contains("Success")) {
                                                 if (errorText.isShown()) {
                                                     errorText.setVisibility(View.GONE);

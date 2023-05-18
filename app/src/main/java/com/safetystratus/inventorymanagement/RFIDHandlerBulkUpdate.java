@@ -567,7 +567,6 @@ class RFIDHandlerBulkUpdate implements Readers.RFIDReaderEventHandler {
         }else{
             volume= sharedPref.getInt(context.getString(R.string.beeper_volume), 3);
         }
-        Log.e("volume>>>",volume+"***");
         int streamType = AudioManager.STREAM_DTMF;
         int percantageVolume = 100;
         if (volume == 0) {

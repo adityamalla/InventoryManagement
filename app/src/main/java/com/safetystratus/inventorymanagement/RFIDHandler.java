@@ -322,7 +322,6 @@ public CopyOnWriteArrayList<String> tagsScanned = new CopyOnWriteArrayList<Strin
         }else{
             volume= sharedPref.getInt(context.getString(R.string.beeper_volume), 3);
         }
-        Log.e("volume>>>",volume+"***");
         int streamType = AudioManager.STREAM_DTMF;
         int percantageVolume = 100;
         if (volume == 0) {
@@ -571,7 +570,6 @@ public CopyOnWriteArrayList<String> tagsScanned = new CopyOnWriteArrayList<Strin
     public static boolean containsNonAscii(String str) {
         for (int i = 0; i < str.length(); i++) {
             if (str.charAt(i) > 127) {
-                Log.e("---",str+"---"+true);
                 return true; // non-ASCII character found
             }
         }
@@ -592,13 +590,10 @@ public CopyOnWriteArrayList<String> tagsScanned = new CopyOnWriteArrayList<Strin
         {
             tagsScanned.add(decodedTagId.trim());
             if (beeperVolume != BEEPER_VOLUME.QUIET_BEEP) {
-                Log.e("found inv1","::");
                 if (!beepON) {
-                    Log.e("found inv2","::");
                     beepON = true;
                     beep();
                     if (tbeep == null) {
-                        Log.e("found inv3","::");
                         TimerTask task = new TimerTask() {
                             @Override
                             public void run() {

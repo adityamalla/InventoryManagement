@@ -343,7 +343,6 @@ public class PostSuccess extends AppCompatActivity {
                                     public void onResponse(JSONObject response) {
                                         //Process os success response
                                         String res = response.toString();
-                                        Log.e("res>>>>>>",res);
                                         databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId(),finalReconc_id);
                                         ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
                                         if (jsonListModified.size()==0){

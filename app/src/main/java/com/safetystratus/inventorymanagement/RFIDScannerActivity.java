@@ -422,7 +422,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     if(connected){
                         String URL = ApiConstants.syncpostscanneddata;
                         String finalJsonString = jsonString;
-                        Log.e("TestJson>>>",jsonString);
                         RequestQueue requestQueue = Volley.newRequestQueue(RFIDScannerActivity.this);
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
                                 new Response.Listener<JSONObject>() {
@@ -902,7 +901,6 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     public static boolean containsNonAscii(String str) {
         for (int i = 0; i < str.length(); i++) {
             if (str.charAt(i) > 127) {
-                Log.e("---",str+"---"+true);
                 return true; // non-ASCII character found
             }
         }

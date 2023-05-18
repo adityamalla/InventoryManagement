@@ -348,7 +348,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String rfidCode = "";
                 rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
                 code = cursor.getString(cursor.getColumnIndex("code"));
-                String test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                String test_frequency = "";
+                if(cursor.getString(cursor.getColumnIndex("test_frequency")).trim().length()>0){
+                    test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                }else {
+                    test_frequency = "0";
+                }
                 String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
                 inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,false,test_frequency));
                 cursor.moveToNext();
@@ -374,7 +379,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String rfidCode = "";
                 rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
                 code = cursor.getString(cursor.getColumnIndex("code"));
-                String test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                String test_frequency = "";
+                if(cursor.getString(cursor.getColumnIndex("test_frequency")).trim().length()>0){
+                    test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                }else {
+                    test_frequency = "0";
+                }
                 String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
                 inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,false,test_frequency));
                 cursor.moveToNext();
@@ -475,7 +485,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             } while (cursor2.moveToNext());
         }
         cursor2.close();
-        Log.e(":::::",reconc_id+"***");
         return reconc_id;
     }
     public void insertScannedBarcodeInvJSONData(SQLiteDatabase sqLiteDatabase, ContentValues cv){
@@ -728,14 +737,18 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 String id = cursor.getString(cursor.getColumnIndex("id"));
-                String test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                String test_frequency = "";
+                if(cursor.getString(cursor.getColumnIndex("test_frequency")).trim().length()>0){
+                    test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                }else {
+                    test_frequency = "0";
+                }
                 String product_name = "";
                 String code = "";
                 product_name = cursor.getString(cursor.getColumnIndex("name"));
                 String rfidCode = "";
                 rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
                 code = cursor.getString(cursor.getColumnIndex("code"));
-                Log.e("code>>>>",code);
                 boolean flag = false;
                 String scanned = "";
                 if(cursor.getString(cursor.getColumnIndex("scanned"))!=null) {
@@ -787,7 +800,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 String id = cursor.getString(cursor.getColumnIndex("id"));
-                String test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                String test_frequency = "";
+                if(cursor.getString(cursor.getColumnIndex("test_frequency")).trim().length()>0){
+                    test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                }else {
+                    test_frequency = "0";
+                }
                 String product_name = "";
                 String code = "";
                 product_name = cursor.getString(cursor.getColumnIndex("name"));
@@ -817,7 +835,12 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 String id = cursor.getString(cursor.getColumnIndex("id"));
-                String test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                String test_frequency = "";
+                if(cursor.getString(cursor.getColumnIndex("test_frequency")).trim().length()>0){
+                    test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                }else {
+                    test_frequency = "0";
+                }
                 String product_name = "";
                 String code = "";
                 String scanned = "";
@@ -1082,7 +1105,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void batchInsert(ArrayList<BatchInsertionObject> dataList, SQLiteDatabase sqLiteDatabase) {
         insertStatement = sqLiteDatabase.compileStatement(INSERT_QUERY);
         sqLiteDatabase.beginTransaction();
-        Log.e(";;;;;;",dataList.size()+"ooo");
         try {
             for (BatchInsertionObject data : dataList) {
                 insertStatement.bindString(1, data.getLocation_id());
@@ -1104,7 +1126,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void batchInsertChemInventory(ArrayList<BatchInsertionObjectInventory> dataList, SQLiteDatabase sqLiteDatabase) {
         insertStatement = sqLiteDatabase.compileStatement(INSERT_QUERY_CHEM_INVENTORY);
         sqLiteDatabase.beginTransaction();
-        Log.e(";;;;;;",dataList.size()+"ooo");
         StringBuilder values = new StringBuilder();
         try {
             for (BatchInsertionObjectInventory data : dataList) {
@@ -1269,7 +1290,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void batchInsertRooms(ArrayList<BatchInsertRooms> dataList, SQLiteDatabase sqLiteDatabase) {
         insertStatement = sqLiteDatabase.compileStatement(INSERT_QUERY_ROOMS);
         sqLiteDatabase.beginTransaction();
-        Log.e(";;;;;;",dataList.size()+"ooo");
         try {
             for (BatchInsertRooms data : dataList) {
                 insertStatement.bindString(1, data.getRoom());
@@ -1292,7 +1312,6 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public void batchInsertPUs(ArrayList<BatchInsertPUs> dataList, SQLiteDatabase sqLiteDatabase) {
         insertStatement = sqLiteDatabase.compileStatement(INSERT_QUERY_PRIMARY_USERS);
         sqLiteDatabase.beginTransaction();
-        Log.e(";;;;;;",dataList.size()+"ooo");
         try {
             for (BatchInsertPUs data : dataList) {
                 insertStatement.bindString(1, data.getPrimary_user());

@@ -327,7 +327,6 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
         if (!isReaderConnected())
             return;
         try {
-            Log.e("inperfomlocate::","**");
             reader.Actions.TagLocationing.Perform(tag,null,null);
         } catch (InvalidUsageException e) {
             e.printStackTrace();
@@ -400,7 +399,6 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
         public void eventStatusNotify(RfidStatusEvents rfidStatusEvents) {
             Log.d(TAG, "Status Notification: " + rfidStatusEvents.StatusEventData.getStatusEventType());
             if (rfidStatusEvents.StatusEventData.getStatusEventType() == STATUS_EVENT_TYPE.HANDHELD_TRIGGER_EVENT) {
-                Log.e( "Status Notification11: " , rfidStatusEvents.StatusEventData.HandheldTriggerEventData.getHandheldEvent()+"**");
                 if (rfidStatusEvents.StatusEventData.HandheldTriggerEventData.getHandheldEvent() == HANDHELD_TRIGGER_EVENT_TYPE.HANDHELD_TRIGGER_PRESSED) {
                     new AsyncTask<Void, Void, Void>() {
                         @Override

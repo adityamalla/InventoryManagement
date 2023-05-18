@@ -158,7 +158,6 @@ public class Container_Info extends AppCompatActivity {
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
-        Log.e("selecteduserid1>>",selectedUserId+"**");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
         codelistfromIntent = new ArrayList<String>();
@@ -172,7 +171,6 @@ public class Container_Info extends AppCompatActivity {
         notes = findViewById(R.id.notes);
         comments = findViewById(R.id.comm);
         volume = findViewById(R.id.volume);
-        Log.e("lll>>>",scannedCode+"***");
         InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,scannedCode,flag);
         if(inv!=null){
             productName.setText(inv.getProductName());

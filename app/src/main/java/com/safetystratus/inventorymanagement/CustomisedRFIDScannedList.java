@@ -78,9 +78,13 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
         } else {
             view.setBackgroundResource(R.color.white);
         }
-        if (Integer.parseInt(list.get(position).getTest_frequency())>0){
-            timeicon.setVisibility(View.VISIBLE);
-        }else{
+        if (list.get(position).getTest_frequency().trim().length()>0) {
+            if (Integer.parseInt(list.get(position).getTest_frequency()) > 0) {
+                timeicon.setVisibility(View.VISIBLE);
+            } else {
+                timeicon.setVisibility(View.INVISIBLE);
+            }
+        }else {
             timeicon.setVisibility(View.INVISIBLE);
         }
         /*invinfo.setOnClickListener(new View.OnClickListener() {

@@ -98,7 +98,6 @@ public class ScanBarcodeActivity extends AppCompatActivity {
         site_name = intent.getStringExtra("site_name");
         loggedinUsername = intent.getStringExtra("loggedinUsername");
         selectedUserId = intent.getStringExtra("user_id");
-        Log.e("selecteduserid1>>",selectedUserId+"**");
         loggedinUserSiteId = intent.getStringExtra("site_id");
         md5Pwd = intent.getStringExtra("md5pwd");
         if (intent.getStringExtra("selectedSearchValue") != null) {
@@ -199,7 +198,6 @@ public class ScanBarcodeActivity extends AppCompatActivity {
             decodedData = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_data_legacy));
             decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type_legacy));
         }
-        Log.e("TestDecodeData>>",decodedData+"---"+databaseHandler.checkScannedBarcodeDataAvailable(db,decodedData));
         if(databaseHandler.checkScannedBarcodeDataAvailable(db,decodedData)){
             unregisterReceiver(myBroadcastReceiver);
             final Intent myIntent = new Intent(ScanBarcodeActivity.this,

@@ -356,7 +356,6 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     if(connected){
                         String URL = ApiConstants.syncpostscanneddata;
                         String finalJsonString = jsonString;
-                        Log.e("TestJsonBarcde>>>",jsonString);
                         RequestQueue requestQueue = Volley.newRequestQueue(ScanBarcodeReconciliation.this);
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
                                 new Response.Listener<JSONObject>() {
@@ -524,7 +523,6 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                     ContentValues cv = new ContentValues();
                                     cv.put("location_id", selectedFacil);
                                     cv.put("room_id", selectedRoom);
-                                    Log.e("dispossedd id >>",disposedinvList.get(i).getInv_id()+"**");
                                     cv.put("inventory_id", Integer.parseInt(disposedinvList.get(i).getInv_id()));
                                     cv.put("scanned_by", selectedUserId);
                                     cv.put("scanned", 1);
@@ -800,11 +798,10 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             decodedData = decodedData.replaceAll("LBL", "");
         }
         decodedData = decodedData.replaceAll("\u0000", "");
+        decodedData =decodedData.trim();
         boolean validtag = false;
         String firstLetterTest = decodedData.trim().substring(0, 1);
-        Log.e("-----",firstLetterTest+"----");
         if(firstLetterTest.equalsIgnoreCase("C")){
-            Log.e("--00---",firstLetterTest+"----");
             validtag = true;
         }
         if(validtag) {
@@ -862,7 +859,6 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                             ContentValues cv = new ContentValues();
                             cv.put("location_id", selectedFacil);
                             cv.put("room_id", selectedRoom);
-                            Log.e("dispossedd id >>", disposedinvList.get(i).getInv_id() + "**");
                             cv.put("inventory_id", Integer.parseInt(disposedinvList.get(i).getInv_id()));
                             cv.put("scanned_by", selectedUserId);
                             cv.put("scanned", 1);
