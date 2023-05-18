@@ -56,6 +56,8 @@ public class WebViewActivity extends AppCompatActivity {
     private String selectedSiteId;
     private String selectedUserId;
     private String site_name;
+    private String loggedinUsername;
+    private String selectedUserRoleId;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @SuppressLint("WrongConstant")
@@ -99,6 +101,8 @@ public class WebViewActivity extends AppCompatActivity {
         ssoUrlString = getIntent().getStringExtra("ssoUrlString");
         selectedSiteId = getIntent().getStringExtra("selectedSiteId");
         selectedUserId = getIntent().getStringExtra("selectedUserId");
+        loggedinUsername = getIntent().getStringExtra("username");
+        selectedUserRoleId = getIntent().getStringExtra("selectedUserRoleId");
         site_name = getIntent().getStringExtra("site_name");
         int cameraResult = ContextCompat.checkSelfPermission(WebViewActivity.this, Manifest.permission.CAMERA);
         int storageResult = ContextCompat.checkSelfPermission(WebViewActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE);
@@ -207,13 +211,16 @@ public class WebViewActivity extends AppCompatActivity {
                     String lastname = req_vales.split("/")[3];
                     Log.e("valid url values",req_vales+"---"+request_token+"----"+firstname+"---"+lastname);
                     Intent intent = new Intent(WebViewActivity.this, HomeActivity.class);
+                    intent.putExtra("username", loggedinUsername);
                     intent.putExtra("sso", "true");
                     intent.putExtra("token", request_token);
                     intent.putExtra("firstname", firstname);
                     intent.putExtra("lastname", lastname);
+                    intent.putExtra("empName", firstname);
                     intent.putExtra("selectedUserId", selectedUserId);
-                    intent.putExtra("selectedSiteId", selectedSiteId);
+                    intent.putExtra("site_id", selectedSiteId);
                     intent.putExtra("site_name", site_name);
+                    intent.putExtra("selectedUserRoleId",selectedUserRoleId);
                     intent.putExtra("fromLogin", "1");
                     startActivity(intent);
                 }

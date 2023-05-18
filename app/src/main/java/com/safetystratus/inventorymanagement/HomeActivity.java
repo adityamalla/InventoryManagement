@@ -151,6 +151,7 @@ public class HomeActivity extends AppCompatActivity {
                     site_id[0] = loggedinUserSiteId;
                     user_id[0] = selectedUserId;
                     token[0] = request_token;
+                    insertDbData(site_id[0], user_id[0], token[0]);
                 }
             } else {
                 AlertDialog.Builder dlgAlert = new AlertDialog.Builder(HomeActivity.this);

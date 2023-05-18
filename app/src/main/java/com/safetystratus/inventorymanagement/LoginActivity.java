@@ -638,7 +638,80 @@ public class LoginActivity extends AppCompatActivity {
                                                 String userIdsArray[] = uid.split(",");
                                                 String roleIdsArray[] = roleIds.split(",");
                                                 String res = response.toString();
-                                                if (finalSingleSign) {
+                                                if (siteIdsArray.length > 1 && siteNamesArray.length > 1) {
+                                                    username = username.split(",")[0];
+                                                    ArrayList<SiteInfo> siteInfo = new ArrayList<>();
+                                                    for (int i = 0; i < siteIdsArray.length; i++) {
+                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i],roleIdsArray[i]);
+                                                        siteInfo.add(obj);
+                                                    }
+                                                    if (siteInfo.size() >= 1) {
+                                                        final Dialog dialog = new Dialog(LoginActivity.this);
+                                                        dialog.setContentView(R.layout.site_ids_listview);
+                                                        dialog.setTitle(response.getString("Message"));
+                                                        sites = (ListView) dialog.findViewById(R.id.siteIdsList);
+                                                        ArrayAdapter<SiteInfo> adapter = new ArrayAdapter<SiteInfo>(LoginActivity.this, R.layout.siteids_textview, R.id.rowSiteIdsTextView,
+                                                                siteInfo);
+                                                        adapter.sort(new Comparator<SiteInfo>() {
+                                                            @Override
+                                                            public int compare(SiteInfo lhs, SiteInfo rhs) {
+                                                                return lhs.getSiteName().compareTo(rhs.getSiteName());
+                                                            }
+                                                        });
+                                                        sites.setAdapter(adapter);
+                                                        progress.dismiss();
+                                                        dialog.show();
+                                                        final String finalUsername = username;
+                                                        sites.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                                            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                                                Object o = sites.getItemAtPosition(position);
+                                                                SiteInfo str = (SiteInfo) o; //As you are using Default String Adapter
+                                                                ////Log.e("site info-", str.getSiteId() + "--" + str.getSiteName() + "--" + str.getUserId() + "--" + finalUsername);
+                                                                String user_role_id = pref.getString("logged_in_user_role_id", null);
+                                                                if(user_role_id==null){
+                                                                    SharedPreferences.Editor myEdit = pref.edit();
+                                                                    myEdit.clear();
+                                                                    myEdit.commit();
+                                                                    myEdit.putString("logged_in_user_role_id", str.getRoleId()+"");
+                                                                    myEdit.commit();
+                                                                }else if(user_role_id!=null){
+                                                                    if(Integer.parseInt(str.getRoleId())!=Integer.parseInt(user_role_id)){
+                                                                        SharedPreferences.Editor myEdit = pref.edit();
+                                                                        myEdit.clear();
+                                                                        myEdit.commit();
+                                                                        myEdit.putString("logged_in_user_role_id", str.getRoleId()+"");
+                                                                        myEdit.commit();
+                                                                    }
+                                                                }
+                                                                    if (finalSingleSign) {
+                                                                        Uri.Builder builder = new Uri.Builder();
+                                                                        builder.scheme("https")
+                                                                                .authority("labcliq.com")
+                                                                                .appendPath("common")
+                                                                                .appendPath("app_sso_request.cfm")
+                                                                                //.appendPath("appdemo_bypass.cfm")
+                                                                                .appendQueryParameter("request_token", UUID.randomUUID().toString())
+                                                                                .appendQueryParameter("site_id", str.getSiteId())
+                                                                                .appendQueryParameter("username", finalUsername);
+                                                                        Intent intent = new Intent(LoginActivity.this, WebViewActivity.class);
+                                                                        ////Log.e("uri-->", builder.toString());
+                                                                        intent.putExtra("username", finalUsername);
+                                                                        intent.putExtra("ssoUrlString", builder.toString());
+                                                                        intent.putExtra("selectedSiteId", str.getSiteId());
+                                                                        intent.putExtra("selectedUserId", str.getUserId());
+                                                                        intent.putExtra("selectedUserRoleId", str.getRoleId());
+                                                                        intent.putExtra("site_name", str.getSiteName());
+                                                                        startActivity(intent);
+                                                                        return;
+                                                                    }
+
+
+                                                            }
+                                                        });
+
+                                                    }
+                                                }
+                                                else {
                                                     String user_role_id = pref.getString("logged_in_user_role_id", null);
                                                     if(user_role_id==null){
                                                         SharedPreferences.Editor myEdit = pref.edit();
@@ -655,23 +728,28 @@ public class LoginActivity extends AppCompatActivity {
                                                             myEdit.commit();
                                                         }
                                                     }
-                                                    Uri.Builder builder = new Uri.Builder();
-                                                    builder.scheme("https")
-                                                            .authority("labcliq.com")
-                                                            .appendPath("common")
-                                                            .appendPath("app_sso_request.cfm")
-                                                            //.appendPath("appdemo_bypass.cfm")
-                                                            .appendQueryParameter("request_token", UUID.randomUUID().toString())
-                                                            .appendQueryParameter("site_id", siteIds)
-                                                            .appendQueryParameter("username", username);
-                                                    Intent intent = new Intent(LoginActivity.this, WebViewActivity.class);
-                                                    intent.putExtra("ssoUrlString", builder.toString());
-                                                    intent.putExtra("selectedSiteId", siteIds);
-                                                    intent.putExtra("selectedUserId", uid);
-                                                    intent.putExtra("selectedUserRoleId", roleIds);
-                                                    intent.putExtra("site_name", site_names);
-                                                    startActivity(intent);
-                                                    return;
+                                                        if (finalSingleSign) {
+                                                            if (progress != null && progress.isShowing())
+                                                                progress.dismiss();
+                                                            Uri.Builder builder = new Uri.Builder();
+                                                            builder.scheme("https")
+                                                                    .authority("labcliq.com")
+                                                                    .appendPath("common")
+                                                                    .appendPath("app_sso_request.cfm")
+                                                                    //.appendPath("appdemo_bypass.cfm")
+                                                                    .appendQueryParameter("request_token", UUID.randomUUID().toString())
+                                                                    .appendQueryParameter("site_id", siteIds)
+                                                                    .appendQueryParameter("username", username);
+                                                            Intent intent = new Intent(LoginActivity.this, WebViewActivity.class);
+                                                            intent.putExtra("username", username);
+                                                            intent.putExtra("ssoUrlString", builder.toString());
+                                                            intent.putExtra("selectedSiteId", siteIds);
+                                                            intent.putExtra("selectedUserId", uid);
+                                                            intent.putExtra("selectedUserRoleId", roleIds);
+                                                            intent.putExtra("site_name", site_names);
+                                                            startActivity(intent);
+                                                            return;
+                                                        }
                                                 }
                                             } else {
                                                 errorText.setVisibility(View.VISIBLE);
