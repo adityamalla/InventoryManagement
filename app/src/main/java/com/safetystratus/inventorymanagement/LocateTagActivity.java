@@ -165,6 +165,9 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
      */
     public void stopbeep() {
         if (toneGenerator != null) {
+            rangeGraph.setValue(0);
+            rangeGraph.invalidate();
+            rangeGraph.requestLayout();
             toneGenerator.stopTone();
         }
     }
@@ -182,19 +185,27 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
                 public void run() {
                     try {
                         String str = tagSearch.getText().toString();
+
                         if(str.length()>0){
-                            StringBuffer sb = new StringBuffer();
-                            //Converting string to character array
-                            char ch[] = str.toCharArray();
-                            for(int i = 0; i < ch.length; i++) {
-                                String hexString = Integer.toHexString(ch[i]);
-                                sb.append(hexString);
-                            }
                             rangeGraph.setValue(0);
                             rangeGraph.invalidate();
                             rangeGraph.requestLayout();
-                            if(!RFIDLocationHandler.isLocatingTag )
-                                rfidHandler.performLocateInventory(sb.toString());
+                            if (str.toUpperCase().contains("LBL ")){
+                                str = str.toUpperCase().replaceAll("LBL\\s+","0000000000000000");
+                                if(!RFIDLocationHandler.isLocatingTag )
+                                    rfidHandler.performLocateInventory(str);
+                            }else{
+                                StringBuffer sb = new StringBuffer();
+                                //Converting string to character array
+                                char ch[] = str.toCharArray();
+                                for(int i = 0; i < ch.length; i++) {
+                                    String hexString = Integer.toHexString(ch[i]);
+                                    sb.append(hexString);
+                                }
+                                if(!RFIDLocationHandler.isLocatingTag )
+                                    rfidHandler.performLocateInventory(sb.toString());
+                            }
+
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
