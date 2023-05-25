@@ -380,6 +380,7 @@ public class SyncDBActivity extends AppCompatActivity {
         int socketTimeout = 60000;//3 seconds - change to what you want
         RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, 2, 2);
         objectRequest.setRetryPolicy(policy);
+        objectRequest.setShouldCache(false);
         requestQueue.add(objectRequest);
     }
 
