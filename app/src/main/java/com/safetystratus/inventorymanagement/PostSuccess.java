@@ -69,6 +69,7 @@ public class PostSuccess extends AppCompatActivity {
     String selectedRoom;
     String selectedFacil;
     ConstraintLayout header;
+    String host="";
     Button gotohome;
     TextView badge_notification;
     Button postScanData;
@@ -103,6 +104,8 @@ public class PostSuccess extends AppCompatActivity {
         tv.setVisibility(View.VISIBLE);
         gotohome = findViewById(R.id.gotohome);
         startAnotherInv = findViewById(R.id.startAnotherInvScan);
+        host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
+        Log.e("Host-->",host);
         // UI
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
@@ -325,11 +328,11 @@ public class PostSuccess extends AppCompatActivity {
                         String URL = "";
                         String scan_type = databaseHandler.getScanType(db,jsonList.get(k).getObjectId());
                         if(scan_type.trim().equalsIgnoreCase("barcode")){
-                            URL = ApiConstants.syncbarcodeScannedData;
+                            URL = "https://"+host+ApiConstants.syncbarcodeScannedData;
                         }else if(scan_type.trim().equalsIgnoreCase("bulkupdate")){
-                            URL = ApiConstants.syncbulkbarcodeScannedData;
+                            URL = "https://"+host+ApiConstants.syncbulkbarcodeScannedData;
                         }else{
-                            URL = ApiConstants.syncpostscanneddata;
+                            URL = "https://"+host+ApiConstants.syncpostscanneddata;
                         }
                         JSONObject obj = new JSONObject(jsonList.get(k).getObjectName());
                         String reconc_id = "-4";

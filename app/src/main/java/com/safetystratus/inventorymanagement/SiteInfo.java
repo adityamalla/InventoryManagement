@@ -7,12 +7,32 @@ public class SiteInfo implements Serializable {
     public String siteName;
     public String userId;
     public String roleId;
+    public String sso_host;
+    public String api_host;
 
-    public SiteInfo(String siteId, String siteName,String userId, String roleId) {
+    public SiteInfo(String siteId, String siteName,String userId, String roleId, String sso_host,String api_host) {
         this.siteId = siteId;
         this.siteName = siteName;
         this.userId = userId;
         this.roleId = roleId;
+        this.sso_host = sso_host;
+        this.api_host = api_host;
+    }
+
+    public String getApi_host() {
+        return api_host;
+    }
+
+    public void setApi_host(String api_host) {
+        this.api_host = api_host;
+    }
+
+    public String getSso_host() {
+        return sso_host;
+    }
+
+    public void setSso_host(String sso_host) {
+        this.sso_host = sso_host;
     }
 
     public String getRoleId() {

@@ -343,11 +343,13 @@ public class LoginActivity extends AppCompatActivity {
                         params.put("email", uname);
                         params.put("sso", singleSignOn);
                         final boolean finalSingleSign = singleSign;
+                        Log.e("----",URL);
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(params),
                                 new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject response) {
                                         //Process os success response
+                                        Log.e("----",response.toString());
                                         try {
                                             if (response.getString("Message").contains("Success")) {
                                                 if (errorText.isShown()) {
@@ -371,16 +373,18 @@ public class LoginActivity extends AppCompatActivity {
                                                 String uid = response.getString("user_ids");
                                                 String roleIds = response.getString("role_ids");
                                                 String site_names = response.getString("site_names");
+                                                String api_hosts = response.getString("api_hosts");
                                                 String siteIdsArray[] = siteIds.split(",");
                                                 String siteNamesArray[] = site_names.split(",");
                                                 String userIdsArray[] = uid.split(",");
                                                 String roleIdsArray[] = roleIds.split(",");
+                                                String api_hostsArray[] = api_hosts.split(",");
                                                 String res = response.toString();
                                                 if (siteIdsArray.length > 1 && siteNamesArray.length > 1) {
                                                     username = username.split(",")[0];
                                                     ArrayList<SiteInfo> siteInfo = new ArrayList<>();
                                                     for (int i = 0; i < siteIdsArray.length; i++) {
-                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i],roleIdsArray[i]);
+                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i],roleIdsArray[i],null,api_hostsArray[i]);
                                                         siteInfo.add(obj);
                                                     }
                                                     if (siteInfo.size() >= 1) {
@@ -407,16 +411,24 @@ public class LoginActivity extends AppCompatActivity {
                                                                 String user_role_id = pref.getString("logged_in_user_role_id", null);
                                                                 if(user_role_id==null){
                                                                     SharedPreferences.Editor myEdit = pref.edit();
-                                                                    myEdit.clear();
-                                                                    myEdit.commit();
                                                                     myEdit.putString("logged_in_user_role_id", str.getRoleId()+"");
                                                                     myEdit.commit();
                                                                 }else if(user_role_id!=null){
                                                                     if(Integer.parseInt(str.getRoleId())!=Integer.parseInt(user_role_id)){
                                                                         SharedPreferences.Editor myEdit = pref.edit();
-                                                                        myEdit.clear();
-                                                                        myEdit.commit();
                                                                         myEdit.putString("logged_in_user_role_id", str.getRoleId()+"");
+                                                                        myEdit.commit();
+                                                                    }
+                                                                }
+                                                                String site_api_host = pref.getString("site_api_host", null);
+                                                                if(site_api_host==null){
+                                                                    SharedPreferences.Editor myEdit = pref.edit();
+                                                                    myEdit.putString("site_api_host", str.getApi_host()+"");
+                                                                    myEdit.commit();
+                                                                }else if(site_api_host!=null){
+                                                                    if(!str.getApi_host().equalsIgnoreCase(site_api_host)){
+                                                                        SharedPreferences.Editor myEdit = pref.edit();
+                                                                        myEdit.putString("site_api_host", str.getApi_host()+"");
                                                                         myEdit.commit();
                                                                     }
                                                                 }
@@ -439,16 +451,24 @@ public class LoginActivity extends AppCompatActivity {
                                                     String user_role_id = pref.getString("logged_in_user_role_id", null);
                                                     if(user_role_id==null){
                                                         SharedPreferences.Editor myEdit = pref.edit();
-                                                        myEdit.clear();
-                                                        myEdit.commit();
                                                         myEdit.putString("logged_in_user_role_id", roleIds+"");
                                                         myEdit.commit();
                                                     }else if(user_role_id!=null){
                                                         if(Integer.parseInt(roleIds)!=Integer.parseInt(user_role_id)){
                                                             SharedPreferences.Editor myEdit = pref.edit();
-                                                            myEdit.clear();
-                                                            myEdit.commit();
                                                             myEdit.putString("logged_in_user_role_id", roleIds+"");
+                                                            myEdit.commit();
+                                                        }
+                                                    }
+                                                    String site_api_host = pref.getString("site_api_host", null);
+                                                    if(site_api_host==null){
+                                                        SharedPreferences.Editor myEdit = pref.edit();
+                                                        myEdit.putString("site_api_host", api_hosts+"");
+                                                        myEdit.commit();
+                                                    }else if(site_api_host!=null){
+                                                        if(!api_hosts.equalsIgnoreCase(site_api_host)){
+                                                            SharedPreferences.Editor myEdit = pref.edit();
+                                                            myEdit.putString("site_api_host", api_hosts+"");
                                                             myEdit.commit();
                                                         }
                                                     }
@@ -630,17 +650,21 @@ public class LoginActivity extends AppCompatActivity {
                                                 String username = response.getString("usernames");
                                                 String uid = response.getString("user_ids");
                                                 String site_names = response.getString("site_names");
+                                                String sso_hosts = response.getString("sso_hosts");
                                                 String roleIds = response.getString("role_ids");
+                                                String api_hosts = response.getString("api_hosts");
                                                 String siteIdsArray[] = siteIds.split(",");
                                                 String siteNamesArray[] = site_names.split(",");
                                                 String userIdsArray[] = uid.split(",");
                                                 String roleIdsArray[] = roleIds.split(",");
+                                                String sso_hostsArray[] = sso_hosts.split(",");
+                                                String api_hostsArray[] = api_hosts.split(",");
                                                 String res = response.toString();
                                                 if (siteIdsArray.length > 1 && siteNamesArray.length > 1) {
                                                     username = username.split(",")[0];
                                                     ArrayList<SiteInfo> siteInfo = new ArrayList<>();
                                                     for (int i = 0; i < siteIdsArray.length; i++) {
-                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i],roleIdsArray[i]);
+                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i],roleIdsArray[i],sso_hostsArray[i],api_hostsArray[i]);
                                                         siteInfo.add(obj);
                                                     }
                                                     if (siteInfo.size() >= 1) {
@@ -668,23 +692,31 @@ public class LoginActivity extends AppCompatActivity {
                                                                 String user_role_id = pref.getString("logged_in_user_role_id", null);
                                                                 if(user_role_id==null){
                                                                     SharedPreferences.Editor myEdit = pref.edit();
-                                                                    myEdit.clear();
-                                                                    myEdit.commit();
                                                                     myEdit.putString("logged_in_user_role_id", str.getRoleId()+"");
                                                                     myEdit.commit();
                                                                 }else if(user_role_id!=null){
                                                                     if(Integer.parseInt(str.getRoleId())!=Integer.parseInt(user_role_id)){
                                                                         SharedPreferences.Editor myEdit = pref.edit();
-                                                                        myEdit.clear();
-                                                                        myEdit.commit();
                                                                         myEdit.putString("logged_in_user_role_id", str.getRoleId()+"");
+                                                                        myEdit.commit();
+                                                                    }
+                                                                }
+                                                                String site_api_host = pref.getString("site_api_host", null);
+                                                                if(site_api_host==null){
+                                                                    SharedPreferences.Editor myEdit = pref.edit();
+                                                                    myEdit.putString("site_api_host", str.getApi_host()+"");
+                                                                    myEdit.commit();
+                                                                }else if(site_api_host!=null){
+                                                                    if(!str.getApi_host().equalsIgnoreCase(site_api_host)){
+                                                                        SharedPreferences.Editor myEdit = pref.edit();
+                                                                        myEdit.putString("site_api_host", str.getApi_host()+"");
                                                                         myEdit.commit();
                                                                     }
                                                                 }
                                                                     if (finalSingleSign) {
                                                                         Uri.Builder builder = new Uri.Builder();
                                                                         builder.scheme("https")
-                                                                                .authority("labcliq.com")
+                                                                                .authority(str.getSso_host())
                                                                                 .appendPath("common")
                                                                                 .appendPath("app_sso_request.cfm")
                                                                                 //.appendPath("appdemo_bypass.cfm")
@@ -713,16 +745,24 @@ public class LoginActivity extends AppCompatActivity {
                                                     String user_role_id = pref.getString("logged_in_user_role_id", null);
                                                     if(user_role_id==null){
                                                         SharedPreferences.Editor myEdit = pref.edit();
-                                                        myEdit.clear();
-                                                        myEdit.commit();
                                                         myEdit.putString("logged_in_user_role_id", roleIds+"");
                                                         myEdit.commit();
                                                     }else if(user_role_id!=null){
                                                         if(Integer.parseInt(roleIds)!=Integer.parseInt(user_role_id)){
                                                             SharedPreferences.Editor myEdit = pref.edit();
-                                                            myEdit.clear();
-                                                            myEdit.commit();
                                                             myEdit.putString("logged_in_user_role_id", roleIds+"");
+                                                            myEdit.commit();
+                                                        }
+                                                    }
+                                                    String site_api_host = pref.getString("site_api_host", null);
+                                                    if(site_api_host==null){
+                                                        SharedPreferences.Editor myEdit = pref.edit();
+                                                        myEdit.putString("site_api_host", api_hosts+"");
+                                                        myEdit.commit();
+                                                    }else if(site_api_host!=null){
+                                                        if(!api_hosts.equalsIgnoreCase(site_api_host)){
+                                                            SharedPreferences.Editor myEdit = pref.edit();
+                                                            myEdit.putString("site_api_host", api_hosts+"");
                                                             myEdit.commit();
                                                         }
                                                     }
@@ -731,7 +771,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                 progress.dismiss();
                                                             Uri.Builder builder = new Uri.Builder();
                                                             builder.scheme("https")
-                                                                    .authority("labcliq.com")
+                                                                    .authority(sso_hosts)
                                                                     .appendPath("common")
                                                                     .appendPath("app_sso_request.cfm")
                                                                     //.appendPath("appdemo_bypass.cfm")

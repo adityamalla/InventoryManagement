@@ -67,6 +67,7 @@ public class HomeActivity extends AppCompatActivity {
     String empName = "";
     TextView badge_notification;
     ProgressDialog progressSynStart = null;
+    String host="";
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +95,8 @@ public class HomeActivity extends AppCompatActivity {
         signOut.setVisibility(View.VISIBLE);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
+        Log.e("Host-->",host);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if(result!=null) {
@@ -339,13 +342,14 @@ public class HomeActivity extends AppCompatActivity {
                 String URL = "";
                 String scan_type = databaseHandler.getScanType(db,jsonList.get(k).getObjectId());
                 if(scan_type.trim().equalsIgnoreCase("barcode")){
-                    URL = ApiConstants.syncbarcodeScannedData;
+                    URL = "https://"+host+ApiConstants.syncbarcodeScannedData;
                 }else if(scan_type.trim().equalsIgnoreCase("bulkupdate")){
-                    URL = ApiConstants.syncbulkbarcodeScannedData;
+                    URL = "https://"+host+ApiConstants.syncbulkbarcodeScannedData;
                 }
                 else{
-                    URL = ApiConstants.syncpostscanneddata;
+                    URL = "https://"+host+ApiConstants.syncpostscanneddata;
                 }
+                Log.e("URL Test>>",URL);
                 JSONObject obj = new JSONObject(jsonList.get(k).getObjectName());
                 String reconc_id = "-4";
                 if (obj.has("reconc_id")) {
@@ -420,7 +424,7 @@ public class HomeActivity extends AppCompatActivity {
     public void getAccessToken() {
         try {
             RequestQueue requestQueue = Volley.newRequestQueue(this);
-            String URL = ApiConstants.accessTokenUrl;
+            String URL = "https://"+host+ApiConstants.accessTokenUrl;
             HashMap<String, String> params = new HashMap<String, String>();
             // params.put("password", ApiConstants.password);
             if (sso.equals("false")) {
@@ -489,7 +493,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
     public void insertDbData(String siteId, String userId, String token) {
-        String url = String.format(ApiConstants.downloadDbUrl, siteId, userId, token);
+        String url = "https://"+host+String.format(ApiConstants.downloadDbUrl, siteId, userId, token);
         RequestQueue requestQueue = Volley.newRequestQueue(HomeActivity.this);
         JsonObjectRequest objectRequest = new JsonObjectRequest(
                 Request.Method.GET, url, null, new Response.Listener<JSONObject>() {

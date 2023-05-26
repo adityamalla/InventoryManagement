@@ -72,6 +72,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
     String selectedConcUnit = "";
     String selectedQuanUnitName = "";
     String selectedQuanUnit = "";
+    String host="";
     String selectedOwnerName = "";
     String selectedOwner = "";
     EditText name;
@@ -116,6 +117,8 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         tv.setTextSize(18);
         tv.setVisibility(View.VISIBLE);
         pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
+        Log.e("Host-->",host);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if(result!=null) {
@@ -856,7 +859,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             RequestQueue requestQueue = Volley.newRequestQueue(ContainerDetailsActivity.this);
             for (int k=0;k<jsonList.size();k++){
                 int finalK = k;
-                String URL = ApiConstants.syncbarcodeScannedData;
+                String URL = "https://"+host+ApiConstants.syncbarcodeScannedData;
                 JSONObject obj = new JSONObject(jsonList.get(k).getObjectName());
                 String reconc_id = "-4";
                 if (obj.has("reconc_id")) {

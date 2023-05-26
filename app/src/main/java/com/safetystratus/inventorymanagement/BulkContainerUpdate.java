@@ -72,6 +72,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
     EditText owner;
     EditText location;
     EditText status;
+    String host="";
     EditText notes;
     EditText comments;
     EditText primaryUser;
@@ -122,6 +123,8 @@ public class BulkContainerUpdate extends AppCompatActivity {
                 connected = false;
             }
         }
+        host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
+        Log.e("Host-->",host);
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
@@ -597,7 +600,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
             RequestQueue requestQueue = Volley.newRequestQueue(BulkContainerUpdate.this);
             for (int k=0;k<jsonList.size();k++){
                 int finalK = k;
-                String URL = ApiConstants.syncbulkbarcodeScannedData;
+                String URL = "https://"+host+ApiConstants.syncbulkbarcodeScannedData;
                 JSONObject obj = new JSONObject(jsonList.get(k).getObjectName());
                 String reconc_id = "-4";
                 if (obj.has("reconc_id")) {

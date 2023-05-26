@@ -65,6 +65,7 @@ public class SyncDBActivity extends AppCompatActivity {
     String selectedRoom = "";
     String empName = "";
     ConstraintLayout header;
+    String host= "";
     ProgressDialog progressSynStart = null;
     @SuppressLint("WrongConstant")
     @Override
@@ -108,6 +109,8 @@ public class SyncDBActivity extends AppCompatActivity {
                 connected = false;
             }
         }
+        host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
+        Log.e("Host-->",host);
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
@@ -288,7 +291,7 @@ public class SyncDBActivity extends AppCompatActivity {
             progressSync.setCancelable(false);
             progressSync.show();
             progressSync.getWindow().setLayout(400, 200);
-            String URL = ApiConstants.syncpostscanneddata;
+            String URL = "https://"+host+ApiConstants.syncpostscanneddata;
             RequestQueue requestQueue = Volley.newRequestQueue(SyncDBActivity.this);
             for (int k=0;k<jsonList.size();k++){
                 int finalK = k;
@@ -345,7 +348,7 @@ public class SyncDBActivity extends AppCompatActivity {
         //});
     }
     public void insertDbData(String siteId, String userId, String token, String selectedFacil) {
-        String url = String.format(ApiConstants.downloadRoomInvDbUrl, siteId, userId, token,selectedFacil);
+        String url = "https://"+host+String.format(ApiConstants.downloadRoomInvDbUrl, siteId, userId, token,selectedFacil);
         RequestQueue requestQueue = Volley.newRequestQueue(SyncDBActivity.this);
         JsonObjectRequest objectRequest = new JsonObjectRequest(
                 Request.Method.GET, url, null, new Response.Listener<JSONObject>() {

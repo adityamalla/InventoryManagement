@@ -74,6 +74,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
     ConstraintLayout header;
     String loggedinUsername = "";
     String loggedinUserSiteId = "";
+    String host="";
     String reconc_id = "";
     String md5Pwd = "";
     String selectedUserId = "";
@@ -149,6 +150,8 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         addtoList = findViewById(R.id.addBarCodeToList);
         backToHome.setVisibility(View.VISIBLE);
         scannedProgressPercentage.setText("0 %");
+        host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
+        Log.e("Host-->",host);
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
@@ -354,7 +357,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     cv.put("reconc_id", reconc_id);
                     databaseHandler.insertScannedInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                     if(connected){
-                        String URL = ApiConstants.syncpostscanneddata;
+                        String URL = "https://"+host+ApiConstants.syncpostscanneddata;
                         String finalJsonString = jsonString;
                         RequestQueue requestQueue = Volley.newRequestQueue(ScanBarcodeReconciliation.this);
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
