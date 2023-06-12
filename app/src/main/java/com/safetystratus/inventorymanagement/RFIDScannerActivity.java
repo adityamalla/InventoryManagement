@@ -262,7 +262,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         }
         if (scannedListfromContinue.size()>0){
             for (int h=0;h<scannedInvList.size();h++) {
-                if(scannedListfromContinue.contains(scannedInvList.get(h).getInv_id())){
+                if(scannedListfromContinue.stream().anyMatch(scannedInvList.get(h).getInv_id()::equalsIgnoreCase)){
                     scannedInvList.get(h).setFlag(true);
                 }
             }
@@ -748,7 +748,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 for (String element : list) {
                     // If this element is not present in newList
                     // then add it
-                    if (!newList.contains(element)) {
+                    if (!newList.stream().anyMatch(element::equalsIgnoreCase)) {
                         newList.add(element);
                         /*if (!flag.contains(element.trim())) {
                             if (rfidTagsExisting.contains(element.trim())) {
@@ -797,7 +797,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             for (int i = 0; i < scannedInvList.size(); i++) {
             if(scannedInvList.get(i).getRfidCode()!=null) {
                 if (scannedInvList.get(i).getRfidCode().trim().length() > 0) {
-                    if (newList.contains(scannedInvList.get(i).getRfidCode())) {
+                    if (newList.stream().anyMatch(scannedInvList.get(i).getRfidCode()::equalsIgnoreCase)) {
                         if (!scannedInvList.get(i).isFlag()) {
                             scannedInvList.get(i).setFlag(true);
                             batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,scannedInvList.get(i).getInv_id(),selectedUserId, "1",reconc_id,""));
@@ -810,7 +810,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         for (int i = 0; i < disposedinvList.size(); i++) {
             if(disposedinvList.get(i).getRfidCode()!=null) {
                 if (disposedinvList.get(i).getRfidCode().trim().length() > 0) {
-                    if (newList.contains(disposedinvList.get(i).getRfidCode())) {
+                    if (newList.stream().anyMatch(disposedinvList.get(i).getRfidCode()::equalsIgnoreCase)) {
                         if (!disposedinvList.get(i).isFlag()) {
                             disposedinvList.get(i).setFlag(true);
                             batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,disposedinvList.get(i).getInv_id(),selectedUserId, "1",reconc_id,""));
@@ -826,7 +826,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         }
 
         for (int k=0;k < newList.size();k++){
-            if (!rfids.contains(newList.get(k))){
+            if (!rfids.stream().anyMatch(newList.get(k)::equalsIgnoreCase)){
                 batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,"-1",selectedUserId, "1",reconc_id,newList.get(k)));
                 scannedInvList.add(new InventoryObject(newList.get(k),"N/A","-1","N/A","1","N/A",true,"0"));
             }

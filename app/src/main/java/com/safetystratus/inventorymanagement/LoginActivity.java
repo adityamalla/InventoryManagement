@@ -379,12 +379,13 @@ public class LoginActivity extends AppCompatActivity {
                                                 String userIdsArray[] = uid.split(",");
                                                 String roleIdsArray[] = roleIds.split(",");
                                                 String api_hostsArray[] = api_hosts.split(",");
+                                                String usernamesArray[] = username.split(",");
                                                 String res = response.toString();
                                                 if (siteIdsArray.length > 1 && siteNamesArray.length > 1) {
-                                                    username = username.split(",")[0];
+                                                    //username = username.split(",")[0];
                                                     ArrayList<SiteInfo> siteInfo = new ArrayList<>();
                                                     for (int i = 0; i < siteIdsArray.length; i++) {
-                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i],roleIdsArray[i],null,api_hostsArray[i]);
+                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i],usernamesArray[i],roleIdsArray[i],null,api_hostsArray[i]);
                                                         siteInfo.add(obj);
                                                     }
                                                     if (siteInfo.size() >= 1) {
@@ -434,7 +435,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                 }
                                                                     Intent myIntent = new Intent(LoginActivity.this,
                                                                             HomeActivity.class);
-                                                                    myIntent.putExtra("username", finalUsername);
+                                                                    myIntent.putExtra("username", str.getUsername());
                                                                     myIntent.putExtra("site_id", str.getSiteId());
                                                                     myIntent.putExtra("site_name", str.getSiteName());
                                                                     myIntent.putExtra("md5pwd", md5pwd);
@@ -659,12 +660,12 @@ public class LoginActivity extends AppCompatActivity {
                                                 String roleIdsArray[] = roleIds.split(",");
                                                 String sso_hostsArray[] = sso_hosts.split(",");
                                                 String api_hostsArray[] = api_hosts.split(",");
+                                                String usernamesArray[] = username.split(",");
                                                 String res = response.toString();
                                                 if (siteIdsArray.length > 1 && siteNamesArray.length > 1) {
-                                                    username = username.split(",")[0];
                                                     ArrayList<SiteInfo> siteInfo = new ArrayList<>();
                                                     for (int i = 0; i < siteIdsArray.length; i++) {
-                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i],roleIdsArray[i],sso_hostsArray[i],api_hostsArray[i]);
+                                                        SiteInfo obj = new SiteInfo(siteIdsArray[i], siteNamesArray[i], userIdsArray[i],usernamesArray[i],roleIdsArray[i],sso_hostsArray[i],api_hostsArray[i]);
                                                         siteInfo.add(obj);
                                                     }
                                                     if (siteInfo.size() >= 1) {
@@ -725,7 +726,7 @@ public class LoginActivity extends AppCompatActivity {
                                                                                 .appendQueryParameter("username", finalUsername);
                                                                         Intent intent = new Intent(LoginActivity.this, WebViewActivity.class);
                                                                         ////Log.e("uri-->", builder.toString());
-                                                                        intent.putExtra("username", finalUsername);
+                                                                        intent.putExtra("username", str.getUsername());
                                                                         intent.putExtra("ssoUrlString", builder.toString());
                                                                         intent.putExtra("selectedSiteId", str.getSiteId());
                                                                         intent.putExtra("selectedUserId", str.getUserId());
