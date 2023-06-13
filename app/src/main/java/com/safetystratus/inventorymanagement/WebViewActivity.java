@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -25,6 +26,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -121,10 +123,12 @@ public class WebViewActivity extends AppCompatActivity {
         //ssWebview.getSettings().setUseWideViewPort(true);
         ssWebview.getSettings().setJavaScriptEnabled(true);
         ssWebview.getSettings().setLoadWithOverviewMode(true);
+        ssWebview.getSettings().setAppCacheEnabled(false);
         ssWebview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         ssWebview.getSettings().setUseWideViewPort(true);
         ssWebview.getSettings().setAllowFileAccess(true);
         ssWebview.getSettings().setAllowContentAccess(true);
+        clearCache(this);
         ssWebview.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         if (authResponse == null) {
             ssWebview.loadUrl(ssoUrlString);
@@ -240,7 +244,16 @@ public class WebViewActivity extends AppCompatActivity {
         //Chrome Client Google
         ssWebview.setWebChromeClient(new MyChromeClient());
     }
-
+    public static void clearCache(Context context) {
+        // Clear cache for the application context
+        if (context != null) {
+            WebView webView = new WebView(context);
+            webView.clearCache(true);
+            webView.clearHistory();
+            CookieManager.getInstance().removeAllCookies(null);
+            CookieManager.getInstance().flush();
+        }
+    }
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // If it wasn't the Back key or there's no web page history, bubble up to the default
