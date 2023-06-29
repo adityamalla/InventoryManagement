@@ -29,9 +29,6 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.safetystratus.inventorymanagement.RFIDLocationHandler.beeperVolume;
-import static com.safetystratus.inventorymanagement.RFIDLocationHandler.toneGenerator;
-
 public class LocateTagActivity extends AppCompatActivity implements RFIDLocationHandler.ResponseHandlerInterface{
     TabLayout tabLayout;
     String singleLocate="";
@@ -49,7 +46,9 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
     TextView rfidStatus;
     TextView tagSearch;
     RangeGraph rangeGraph;
+    private int volumeLevel;
     public Timer locatebeep;
+    public static ToneGenerator toneGenerator;
     private boolean beepONLocate = false;
     private static final int BEEP_DELAY_TIME_MIN = 0;
     private static final int BEEP_DELAY_TIME_MAX = 300;
@@ -63,8 +62,10 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         rangeGraph = (RangeGraph)findViewById(R.id.locationBar);
         rangeGraph.setValue(0);
         rfidHandler = new RFIDLocationHandler();
+        volumeLevel = 0; // Minimum volume level
+        // Initialize the tone generator with the initial volume level
+        beeperSettings(volumeLevel);
         rfidHandler.onCreate(this);
-        beeperSettings(0);
         getSupportActionBar().setDisplayOptions(ActionBar.DISPLAY_SHOW_CUSTOM);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
         getSupportActionBar().setCustomView(R.layout.header);
@@ -154,6 +155,8 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
     }
     public  void startlocatebeeping(int proximity) {
         if(proximity>0){
+            volumeLevel = proximity;
+            increaseVolume();
             beep();
         }else{
             stopbeep();
@@ -171,10 +174,45 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
             toneGenerator.stopTone();
         }
     }
+    public void increaseVolume() {
+        if (volumeLevel < ToneGenerator.MAX_VOLUME) {
+            volumeLevel++; // Increase the volume level
+            // Recreate the tone generator with the new volume level
+            if (toneGenerator!=null)
+            toneGenerator.release();
+            toneGenerator = new ToneGenerator(AudioManager.STREAM_DTMF, volumeLevel);
+        }
+    }
     public void beep() {
         if (toneGenerator != null) {
             int toneType = ToneGenerator.TONE_PROP_BEEP;
             toneGenerator.startTone(toneType);
+        }
+    }
+    private void beeperSettings(int volume) {
+        int streamType = AudioManager.STREAM_DTMF;
+        int percantageVolume = 100;
+        if (volume == 0) {
+            beeperVolume = BEEPER_VOLUME.HIGH_BEEP;
+            percantageVolume = 100;
+        }
+        if (volume == 1) {
+            beeperVolume = BEEPER_VOLUME.MEDIUM_BEEP;
+            percantageVolume = 75;
+        }
+        if (volume == 2) {
+            beeperVolume = BEEPER_VOLUME.LOW_BEEP;
+            percantageVolume = 50;
+        }
+        if (volume == 3) {
+            beeperVolume = BEEPER_VOLUME.QUIET_BEEP;
+            percantageVolume = 0;
+        }
+
+        try {
+            toneGenerator = new ToneGenerator(streamType, percantageVolume);
+        } catch (RuntimeException exception) {
+            toneGenerator = null;
         }
     }
     @Override
@@ -185,11 +223,11 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
                 public void run() {
                     try {
                         String str = tagSearch.getText().toString();
-
                         if(str.length()>0){
                             rangeGraph.setValue(0);
                             rangeGraph.invalidate();
                             rangeGraph.requestLayout();
+                            str = str.toUpperCase();
                             if (str.toUpperCase().contains("LBL ")){
                                 str = str.toUpperCase().replaceAll("LBL\\s+","0000000000000000");
                                 if(!RFIDLocationHandler.isLocatingTag )
@@ -232,30 +270,5 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         rangeGraph.invalidate();
         rangeGraph.requestLayout();
     }
-    private void beeperSettings(int volume) {
-        int streamType = AudioManager.STREAM_DTMF;
-        int percantageVolume = 100;
-        if (volume == 0) {
-            beeperVolume = BEEPER_VOLUME.HIGH_BEEP;
-            percantageVolume = 100;
-        }
-        if (volume == 1) {
-            beeperVolume = BEEPER_VOLUME.MEDIUM_BEEP;
-            percantageVolume = 75;
-        }
-        if (volume == 2) {
-            beeperVolume = BEEPER_VOLUME.LOW_BEEP;
-            percantageVolume = 50;
-        }
-        if (volume == 3) {
-            beeperVolume = BEEPER_VOLUME.QUIET_BEEP;
-            percantageVolume = 0;
-        }
-
-        try {
-            toneGenerator = new ToneGenerator(streamType, percantageVolume);
-        } catch (RuntimeException exception) {
-            toneGenerator = null;
-        }
-    }
+    public static BEEPER_VOLUME beeperVolume = BEEPER_VOLUME.HIGH_BEEP;
 }

@@ -43,7 +43,6 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
     final static String TAG = "RFID_SAMPLE";
     // RFID Reader
     private static Readers readers;
-    public static ToneGenerator toneGenerator;
     private static ArrayList<ReaderDevice> availableRFIDReaderList;
     private static ReaderDevice readerDevice;
     public static RFIDReader reader;
