@@ -251,7 +251,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public ArrayList<MyObject> getBuildingList(SQLiteDatabase sqLiteDatabase){
         ArrayList<MyObject> facil = new ArrayList<>();
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT name,id  \n" +
-                "FROM    fi_facilities where status = 'active'"), null);
+                "FROM    fi_facilities where status = 'active' order by name asc"), null);
 
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
@@ -270,7 +270,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         Cursor cursor = null;
         if(facil_id.trim().length()>0)
              cursor = sqLiteDatabase.rawQuery(String.format("SELECT room,id  \n" +
-                "FROM fi_facil_rooms where status = 'active' and facil_id="+facil_id), null);
+                "FROM fi_facil_rooms where status = 'active' and facil_id="+facil_id+" order by room asc"), null);
         else
             cursor = sqLiteDatabase.rawQuery(String.format("SELECT room,id  \n" +
                     "FROM fi_facil_rooms where status = 'active'"), null);
@@ -981,7 +981,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public MyObject[] getAutoSearchBuildingsData(SQLiteDatabase sqLiteDatabase, String searchTerm) {
         String sql = "SELECT name,id FROM fi_facilities " +
-                "where status = 'active' and name like '%"+searchTerm+"%'";
+                "where status = 'active' and name like '%"+searchTerm+"%' order by name asc";
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();
         MyObject[] ObjectItemData = new MyObject[recCount];
@@ -1004,9 +1004,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public MyObject[] getAutoSearchRoomsData(SQLiteDatabase sqLiteDatabase, String searchTerm,String facil_id) {
         String sql = "";
         if(facil_id.trim().length()>0)
-            sql = "SELECT room,id FROM fi_facil_rooms where status = 'active' and room like '%"+searchTerm+"%' and facil_id="+facil_id;
+            sql = "SELECT room,id FROM fi_facil_rooms where status = 'active' and room like '%"+searchTerm+"%' and facil_id="+facil_id+" order by room asc";
         else
-            sql = "SELECT room,id FROM fi_facil_rooms where status = 'active' and room like '%"+searchTerm+"%' ";
+            sql = "SELECT room,id FROM fi_facil_rooms where status = 'active' and room like '%"+searchTerm+"%' order by room asc ";
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();
         MyObject[] ObjectItemData = new MyObject[recCount];
