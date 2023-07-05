@@ -481,7 +481,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                             }
                         }
                         if (!barcodeScanned) {
-                            scannedInvList.add(new InventoryObject("N/A", "N/A", "-1", enteredbarcode, "1", "N/A", true, "0"));
+                            scannedInvList.add(0,new InventoryObject("N/A", "N/A", "-1", enteredbarcode, "1", "N/A", true, "0"));
                             ContentValues cv = new ContentValues();
                             cv.put("location_id", selectedFacil);
                             cv.put("room_id", selectedRoom);
@@ -515,6 +515,9 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                     count = Integer.parseInt(scannedTotalCount)+1;
                                     scannedTotalCount = String.valueOf(count);
                                     setscancount(String.valueOf(count),String.valueOf(scanned));
+                                    InventoryObject inv = scannedInvList.get(g);
+                                    scannedInvList.remove(g);
+                                    scannedInvList.add(0,inv);
                                 }
                             }
                         }
@@ -851,6 +854,9 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                             count = Integer.parseInt(scannedTotalCount) + 1;
                             scannedTotalCount = String.valueOf(count);
                             setscancount(String.valueOf(count), String.valueOf(scanned));
+                            InventoryObject inv = scannedInvList.get(g);
+                            scannedInvList.remove(g);
+                            scannedInvList.add(0,inv);
                         }
                     }
                 }

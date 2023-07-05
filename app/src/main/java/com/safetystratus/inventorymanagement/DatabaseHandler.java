@@ -693,7 +693,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     public CopyOnWriteArrayList<String> getScannedRFIDCodes(SQLiteDatabase sqLiteDatabase, String room_id, String rec_id){
         CopyOnWriteArrayList<String> invCodes = new CopyOnWriteArrayList<>();
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("select " +
-                "ci.sec_code from chemical_inventory ci \n" +
+                "ci.sec_code,ci.code from chemical_inventory ci \n" +
                 "join scanned_data sc on ci.id = sc.inventory_id \n" +
                 "where ci.room_id = "+room_id+" and sc.reconc_id="+rec_id), null);
         if (cursor.moveToFirst()) {
@@ -701,6 +701,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 if(cursor.getString(cursor.getColumnIndex("sec_code"))!=null) {
                     if (cursor.getString(cursor.getColumnIndex("sec_code")).trim().length() > 0) {
                         invCodes.add(cursor.getString(cursor.getColumnIndex("sec_code")));
+                    }
+                }
+                if(cursor.getString(cursor.getColumnIndex("code"))!=null) {
+                    if (cursor.getString(cursor.getColumnIndex("code")).trim().length() > 0) {
+                        invCodes.add(cursor.getString(cursor.getColumnIndex("code")));
                     }
                 }
                 cursor.moveToNext();
@@ -824,10 +829,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     @SuppressLint("Range")
     public ArrayList<InventoryObject> getALLInventoryList(SQLiteDatabase sqLiteDatabase, String room_id, String rec_id, String scanType){
         ArrayList<InventoryObject> inv = new ArrayList<>();
-        ArrayList<InventoryObject> invListNotFound = getNotFoundInventoryList(sqLiteDatabase,room_id,rec_id,scanType);
-        for (int y = 0;y<invListNotFound.size();y++){
-            inv.add(invListNotFound.get(y));
-        }
+
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("select ci.name,ci.sec_code,ci.code,sc.scanned,ci.id,ci.quantity, ci.quantity_unit_abbreviation,ci.test_frequency from chemical_inventory ci \n" +
                 "left join scanned_data sc on ci.id = sc.inventory_id \n" +
                 "where ci.room_id = "+room_id+" and ci.status_id != 2 and ci.status_id != 5 and sc.reconc_id="+rec_id), null);
@@ -860,7 +862,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     scanned = "0";
                 }
                 String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,vol,flag,test_frequency));
+                inv.add(0,new InventoryObject(rfidCode, product_name,id,code,scanned,vol,flag,test_frequency));
                 cursor.moveToNext();
                 count++;
             }
@@ -888,6 +890,10 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             }
         }
         cursor1.close();
+        ArrayList<InventoryObject> invListNotFound = getNotFoundInventoryList(sqLiteDatabase,room_id,rec_id,scanType);
+        for (int y = 0;y<invListNotFound.size();y++){
+            inv.add(invListNotFound.get(y));
+        }
         return inv;
     }
     @SuppressLint("Range")

@@ -255,19 +255,25 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             scannedProgressPercentage.setText(percent + " %");
             progressVal.setProgress(percent);
         }
+
+
         if (scannedOutOflocationListfromContinue.size()>0){
             for (int h=0;h<scannedOutOflocationListfromContinue.size();h++) {
-                scannedInvList.add(new InventoryObject(scannedOutOflocationListfromContinue.get(h),"N/A","-1","N/A","1","N/A",true,"0"));
+                scannedInvList.add(0,new InventoryObject(scannedOutOflocationListfromContinue.get(h),"N/A","-1","N/A","1","N/A",true,"0"));
             }
         }
         if (scannedListfromContinue.size()>0){
             for (int h=0;h<scannedInvList.size();h++) {
                 if(scannedListfromContinue.stream().anyMatch(scannedInvList.get(h).getInv_id()::equalsIgnoreCase)){
                     scannedInvList.get(h).setFlag(true);
+                    InventoryObject inv = scannedInvList.get(h);
+                    scannedInvList.remove(h);
+                    scannedInvList.add(0,inv);
                 }
             }
         }
-        CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList,model, RFIDScannerActivity.this);
+        ArrayList<InventoryObject> getAllinventoryList = databaseHandler.getALLInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"rfid");
+        CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(getAllinventoryList,model, RFIDScannerActivity.this);
         tagList.setAdapter(adapter);
         found.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -795,18 +801,24 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
             ArrayList<BatchInsertionObject> batchInsertData = new ArrayList<BatchInsertionObject>();
             ArrayList<String> rfids = new ArrayList<String>();
             for (int i = 0; i < scannedInvList.size(); i++) {
-            if(scannedInvList.get(i).getRfidCode()!=null) {
-                if (scannedInvList.get(i).getRfidCode().trim().length() > 0) {
-                    if (newList.stream().anyMatch(scannedInvList.get(i).getRfidCode()::equalsIgnoreCase)) {
-                        if (!scannedInvList.get(i).isFlag()) {
-                            scannedInvList.get(i).setFlag(true);
-                            batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,scannedInvList.get(i).getInv_id(),selectedUserId, "1",reconc_id,""));
+                InventoryObject obj = null;
+                if(scannedInvList.get(i).getRfidCode()!=null) {
+                    if (scannedInvList.get(i).getRfidCode().trim().length() > 0) {
+                        if (newList.stream().anyMatch(scannedInvList.get(i).getRfidCode()::equalsIgnoreCase)) {
+                            if (!scannedInvList.get(i).isFlag()) {
+                                scannedInvList.get(i).setFlag(true);
+                                obj = scannedInvList.get(i);
+                                batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,scannedInvList.get(i).getInv_id(),selectedUserId, "1",reconc_id,""));
+                            }
                         }
                     }
                 }
+                rfids.add(scannedInvList.get(i).getRfidCode());
+                if (obj!=null){
+                    scannedInvList.remove(i);
+                    scannedInvList.add(0,obj);
+                }
             }
-            rfids.add(scannedInvList.get(i).getRfidCode());
-        }
         for (int i = 0; i < disposedinvList.size(); i++) {
             if(disposedinvList.get(i).getRfidCode()!=null) {
                 if (disposedinvList.get(i).getRfidCode().trim().length() > 0) {
@@ -828,7 +840,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         for (int k=0;k < newList.size();k++){
             if (!rfids.stream().anyMatch(newList.get(k)::equalsIgnoreCase)){
                 batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,"-1",selectedUserId, "1",reconc_id,newList.get(k)));
-                scannedInvList.add(new InventoryObject(newList.get(k),"N/A","-1","N/A","1","N/A",true,"0"));
+                scannedInvList.add(0,new InventoryObject(newList.get(k),"N/A","-1","N/A","1","N/A",true,"0"));
             }
         }
         if(batchInsertData!=null)
@@ -853,9 +865,14 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList,model, RFIDScannerActivity.this);
                     tagList.setAdapter(adapter1);
                 }else {
-                    CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList, model, RFIDScannerActivity.this);
-                    tagList.setAdapter(adapter);
-
+                    //CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList, model, RFIDScannerActivity.this);
+                    //tagList.setAdapter(adapter);
+                    CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
+                    tagList.removeAllViewsInLayout();
+                    adp.notifyDataSetChanged();
+                    ArrayList<InventoryObject> invList1 = databaseHandler.getALLInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"rfid");
+                    CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, RFIDScannerActivity.this);
+                    tagList.setAdapter(adapter1);
                 }
                 int scannedCount = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom,selectedUserId,reconc_id);
                 scannedTotalCount = databaseHandler.checkScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom,selectedUserId,reconc_id);
