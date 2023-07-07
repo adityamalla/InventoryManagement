@@ -326,7 +326,9 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
         if (!isReaderConnected())
             return;
         try {
-            reader.Actions.TagLocationing.Perform(tag,null,null);
+            Log.e("----","under perform");
+          //  reader.Actions.TagLocationing.Perform(tag,null,null);
+            reader.Actions.MultiTagLocate.perform();
         } catch (InvalidUsageException e) {
             e.printStackTrace();
         } catch (OperationFailureException e) {
@@ -338,9 +340,11 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
         if (!isReaderConnected())
             return;
         try {
-            reader.Actions.TagLocationing.Stop();
+            //reader.Actions.TagLocationing.Stop();
+            reader.Actions.MultiTagLocate.stop();
             isLocatingTag = false;
             context.handleTriggerPress(false);
+            stopInventory();
         } catch (InvalidUsageException e) {
             e.printStackTrace();
         } catch (OperationFailureException e) {
@@ -367,7 +371,7 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
         // Read Event Notification
         public void eventReadNotify(RfidReadEvents e) {
             // Recommended to use new method getReadTagsEx for better performance in case of large tag population
-            TagData[] myTags = reader.Actions.getReadTags(100);
+            final TagData[] myTags = reader.Actions.getMultiTagLocateTagInfo(100);
             String dist = null;
             if (myTags != null) {
                 for (int index = 0; index < myTags.length; index++) {
@@ -386,6 +390,16 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
                         else
                             isLocatingTag = false;
 
+                    }
+                    if (myTags[index].isContainsMultiTagLocateInfo()) {
+                        //Get correcponding Tag locate info
+                        Log.e("Tag data>>",myTags[index].getTagID() + " " + myTags[index].MultiTagLocateInfo.getRelativeDistance());
+                        dist = String.valueOf(myTags[index].MultiTagLocateInfo.getRelativeDistance());
+                        Log.d(TAG, "Tag relative distance " + dist);
+                        if(Integer.parseInt(dist)>1)
+                            isLocatingTag = true;
+                        else
+                            isLocatingTag = false;
                     }
                 }
                 // possibly if operation was invoked from async task and still busy

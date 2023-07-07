@@ -10,6 +10,7 @@ import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.os.Bundle;
 import android.text.Html;
+import android.util.ArrayMap;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -215,6 +216,7 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
             toneGenerator = null;
         }
     }
+    ArrayMap multiTagLocateTagMap = new ArrayMap();
     @Override
     public void handleTriggerPress(boolean pressed) {
         if (pressed) {
@@ -222,13 +224,29 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
                 @Override
                 public void run() {
                     try {
-                        String str = tagSearch.getText().toString();
-                        if(str.length()>0){
-                            rangeGraph.setValue(0);
-                            rangeGraph.invalidate();
-                            rangeGraph.requestLayout();
-                            str = str.toUpperCase();
-                            if (str.toUpperCase().contains("LBL ")){
+                        if(!RFIDLocationHandler.isLocatingTag ) {
+                            String str = tagSearch.getText().toString();
+                            if (str.length() > 0) {
+                                rangeGraph.setValue(0);
+                                rangeGraph.invalidate();
+                                rangeGraph.requestLayout();
+                                str = str.toUpperCase();
+                                multiTagLocateTagMap.clear();
+                                String flatTypeTagStyle = "0000000000000000" + str;
+                                multiTagLocateTagMap.put(flatTypeTagStyle, "");
+                                StringBuffer sb = new StringBuffer();
+                                //Converting string to character array
+                                char ch[] = str.toCharArray();
+                                for (int i = 0; i < ch.length; i++) {
+                                    String hexString = Integer.toHexString(ch[i]);
+                                    sb.append(hexString);
+                                }
+                                String flagTypeStyle = sb.toString()+"00000000";
+                                multiTagLocateTagMap.put(flagTypeStyle, "");
+                                rfidHandler.reader.Actions.MultiTagLocate.purgeItemList();
+                                rfidHandler.reader.Actions.MultiTagLocate.importItemList(multiTagLocateTagMap);
+                                rfidHandler.performLocateInventory("");
+                            /*if (str.toUpperCase().contains("LBL ")){
                                 str = str.toUpperCase().replaceAll("LBL\\s+","0000000000000000");
                                 if(!RFIDLocationHandler.isLocatingTag )
                                     rfidHandler.performLocateInventory(str);
@@ -240,10 +258,12 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
                                     String hexString = Integer.toHexString(ch[i]);
                                     sb.append(hexString);
                                 }
+                                Log.e("sbbbb",sb.toString());
                                 if(!RFIDLocationHandler.isLocatingTag )
-                                    rfidHandler.performLocateInventory(sb.toString());
-                            }
+                                    rfidHandler.performLocateInventory("4330313435383236");
+                            }*/
 
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
