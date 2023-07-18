@@ -551,7 +551,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if(Integer.parseInt(role)!=4){
             sql = "SELECT id,status FROM inventory_status where id in (1,10)";
         }else if (Integer.parseInt(role)==4){
-            sql = "SELECT id,status FROM inventory_status where id in (1,2,0,10)";
+            sql = "SELECT id,status FROM inventory_status where id in (1,2,10)";
         }
         Cursor cursor = sqLiteDatabase.rawQuery(sql, null);
         if (cursor.moveToFirst()) {
@@ -1037,7 +1037,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         if(Integer.parseInt(role)!=4){
             sql = "SELECT status,id FROM inventory_status where status like '%"+searchTerm+"%' and id in (1,10)";
         }else if (Integer.parseInt(role)==4){
-            sql = "SELECT status,id FROM inventory_status where status like '%"+searchTerm+"%' and id in (1,2,0,10)";
+            sql = "SELECT status,id FROM inventory_status where status like '%"+searchTerm+"%' and id in (1,2,10)";
         }
         Cursor cursor2 = sqLiteDatabase.rawQuery(sql,null);
         int recCount = cursor2.getCount();

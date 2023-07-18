@@ -556,14 +556,14 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
                         tagList.setAdapter(adapter1);
                     }else {
-                        CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
+                        /*CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
                         tagList.removeAllViewsInLayout();
                         adp.notifyDataSetChanged();
                         ArrayList<InventoryObject> invList1 = databaseHandler.getALLInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"barcode");
                         CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
+                        tagList.setAdapter(adapter1);*/
+                        CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(scannedInvList, model, ScanBarcodeReconciliation.this);
                         tagList.setAdapter(adapter1);
-                        //CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(scannedInvList, model, ScanBarcodeReconciliation.this);
-                        //tagList.setAdapter(adapter1);
                     }
                     enteredBarCodeValue.setText("");
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeReconciliation.this);
@@ -821,7 +821,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     }
                 }
                 if(!barcodeScanned) {
-                    scannedInvList.add(new InventoryObject("", "", "-1", decodedData, "1", "", true, "0"));
+                    scannedInvList.add(0,new InventoryObject("N/A", "N/A", "-1", decodedData, "1", "N/A", true, "0"));
                     ContentValues cv = new ContentValues();
                     cv.put("location_id", selectedFacil);
                     cv.put("room_id", selectedRoom);
@@ -896,14 +896,14 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
             tagList.setAdapter(adapter1);
         }else {
-            CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
+            /*CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
             tagList.removeAllViewsInLayout();
             adp.notifyDataSetChanged();
             ArrayList<InventoryObject> invList1 = databaseHandler.getALLInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"barcode");
             CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
+            tagList.setAdapter(adapter1);*/
+            CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(scannedInvList, model, ScanBarcodeReconciliation.this);
             tagList.setAdapter(adapter1);
-            //CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(scannedInvList, model, ScanBarcodeReconciliation.this);
-            //tagList.setAdapter(adapter1);
         }
         //CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList,model, ScanBarcodeReconciliation.this);
         //tagList.setAdapter(adapter);

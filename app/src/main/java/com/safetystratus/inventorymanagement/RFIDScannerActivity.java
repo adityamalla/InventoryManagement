@@ -865,14 +865,14 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList,model, RFIDScannerActivity.this);
                     tagList.setAdapter(adapter1);
                 }else {
-                    //CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList, model, RFIDScannerActivity.this);
-                    //tagList.setAdapter(adapter);
-                    CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
+                    CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList, model, RFIDScannerActivity.this);
+                    tagList.setAdapter(adapter);
+                    /*CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
                     adp.notifyDataSetChanged();
                     ArrayList<InventoryObject> invList1 = databaseHandler.getALLInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"rfid");
                     CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, RFIDScannerActivity.this);
-                    tagList.setAdapter(adapter1);
+                    tagList.setAdapter(adapter1);*/
                 }
                 int scannedCount = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom,selectedUserId,reconc_id);
                 scannedTotalCount = databaseHandler.checkScannedDataFullCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil,selectedRoom,selectedUserId,reconc_id);

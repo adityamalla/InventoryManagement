@@ -41,8 +41,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 
 public class WebViewActivity extends AppCompatActivity {
 
@@ -209,6 +220,59 @@ public class WebViewActivity extends AppCompatActivity {
                     String request_token = req_vales.split("/")[1];
                     String firstname = req_vales.split("/")[2];
                     String lastname = req_vales.split("/")[3];
+                    String host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
+                    /*try {
+                        RequestQueue requestQueue = Volley.newRequestQueue(WebViewActivity.this);
+                        String URL = "https://"+host+ApiConstants.updateSSOAccessTokenDetails;
+                        HashMap<String, String> params = new HashMap<String, String>();
+                        params.put("token", request_token);
+                        params.put("user_id", selectedUserId);
+                        params.put("site_id", selectedSiteId);
+                        params.put("device_id", "test_device_id");
+                        JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(params),
+                                new Response.Listener<JSONObject>() {
+                                    @Override
+                                    public void onResponse(JSONObject response) {
+                                        //Process os success response
+                                        try {
+                                            String res = response.toString();
+                                            if(res.contains("Success")){
+                                                JSONObject jsonObj = new JSONObject(res);
+                                                String expiration_date = jsonObj.get("expiration_date").toString();
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                }, new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError error) {
+                                try {
+                                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(WebViewActivity.this);
+                                    dlgAlert.setTitle("Safety Stratus");
+                                    dlgAlert.setMessage("Error response: Request timed out please check your network and try again");
+                                    dlgAlert.setPositiveButton("Ok",
+                                            new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    return;
+                                                }
+                                            });
+                                    dlgAlert.create().show();
+                                    if (error.networkResponse != null && error.networkResponse.data != null) {
+                                        String jsonError = new String(error.networkResponse.data);
+                                    }
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                        int socketTimeout = 60000;//3 seconds - change to what you want
+                        RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, 2, 2);
+                        request_json.setRetryPolicy(policy);
+                        requestQueue.add(request_json);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }*/
                     Intent intent = new Intent(WebViewActivity.this, HomeActivity.class);
                     intent.putExtra("username", loggedinUsername);
                     intent.putExtra("sso", "true");
