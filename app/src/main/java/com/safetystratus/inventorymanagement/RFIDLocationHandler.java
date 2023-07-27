@@ -326,7 +326,8 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
         if (!isReaderConnected())
             return;
         try {
-            Log.e("----","under perform");
+            //Log.e("----","under perform");
+            isLocatingTag = true;
           //  reader.Actions.TagLocationing.Perform(tag,null,null);
             reader.Actions.MultiTagLocate.perform();
         } catch (InvalidUsageException e) {

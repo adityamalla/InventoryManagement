@@ -21,6 +21,9 @@ import android.widget.TextView;
 import com.google.android.gms.common.util.Hex;
 import com.google.android.material.tabs.TabLayout;
 import com.zebra.rfid.api3.BEEPER_VOLUME;
+import com.zebra.rfid.api3.ENUM_TRIGGER_MODE;
+import com.zebra.rfid.api3.InvalidUsageException;
+import com.zebra.rfid.api3.OperationFailureException;
 import com.zebra.rfid.api3.TagData;
 
 import net.sqlcipher.database.SQLiteDatabase;
@@ -47,6 +50,7 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
     TextView rfidStatus;
     TextView tagSearch;
     RangeGraph rangeGraph;
+    Button locateTagButton;
     private int volumeLevel;
     public Timer locatebeep;
     public static ToneGenerator toneGenerator;
@@ -61,6 +65,7 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         rfidStatus = (TextView) findViewById(R.id.rfidStatusText);
         tagSearch = (TextView) findViewById(R.id.tag);
         rangeGraph = (RangeGraph)findViewById(R.id.locationBar);
+        locateTagButton = (Button) findViewById(R.id.locateTagButton);
         rangeGraph.setValue(0);
         rfidHandler = new RFIDLocationHandler();
         volumeLevel = 0; // Minimum volume level
@@ -99,6 +104,16 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         if (intent.getStringExtra("selectedSearchValue") != null) {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
+        locateTagButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (locateTagButton.getText().equals("Start"))
+                    handleTriggerPress(true);
+                else
+                    handleTriggerPress(false);
+            }
+        });
+
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -218,69 +233,52 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
     }
     ArrayMap multiTagLocateTagMap = new ArrayMap();
     @Override
-    public void handleTriggerPress(boolean pressed) {
+    public synchronized void handleTriggerPress(boolean pressed) {
         if (pressed) {
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        if(!RFIDLocationHandler.isLocatingTag ) {
-                            String str = tagSearch.getText().toString();
-                            if (str.length() > 0) {
-                                rangeGraph.setValue(0);
-                                rangeGraph.invalidate();
-                                rangeGraph.requestLayout();
-                                str = str.toUpperCase();
-                                multiTagLocateTagMap.clear();
-                                String flatTypeTagStyle = "0000000000000000" + str;
-                                multiTagLocateTagMap.put(flatTypeTagStyle, "");
-                                StringBuffer sb = new StringBuffer();
-                                //Converting string to character array
-                                char ch[] = str.toCharArray();
-                                for (int i = 0; i < ch.length; i++) {
-                                    String hexString = Integer.toHexString(ch[i]);
-                                    sb.append(hexString);
-                                }
-                                String flagTypeStyle = sb.toString()+"00000000";
-                                multiTagLocateTagMap.put(flagTypeStyle, "");
-                                rfidHandler.reader.Actions.MultiTagLocate.purgeItemList();
-                                rfidHandler.reader.Actions.MultiTagLocate.importItemList(multiTagLocateTagMap);
-                                rfidHandler.performLocateInventory("");
-                            /*if (str.toUpperCase().contains("LBL ")){
-                                str = str.toUpperCase().replaceAll("LBL\\s+","0000000000000000");
-                                if(!RFIDLocationHandler.isLocatingTag )
-                                    rfidHandler.performLocateInventory(str);
-                            }else{
-                                StringBuffer sb = new StringBuffer();
-                                //Converting string to character array
-                                char ch[] = str.toCharArray();
-                                for(int i = 0; i < ch.length; i++) {
-                                    String hexString = Integer.toHexString(ch[i]);
-                                    sb.append(hexString);
-                                }
-                                Log.e("sbbbb",sb.toString());
-                                if(!RFIDLocationHandler.isLocatingTag )
-                                    rfidHandler.performLocateInventory("4330313435383236");
-                            }*/
-
-                            }
+            try {
+                String str = tagSearch.getText().toString();
+                if (str.length() > 0) {
+                    if (!RFIDLocationHandler.isLocatingTag) {
+                        str = str.toUpperCase();
+                        multiTagLocateTagMap.clear();
+                        String flatTypeTagStyle = "0000000000000000" + str;
+                        multiTagLocateTagMap.put(flatTypeTagStyle, "");
+                        StringBuffer sb = new StringBuffer();
+                        //Converting string to character array
+                        char ch[] = str.toCharArray();
+                        for (int i = 0; i < ch.length; i++) {
+                            String hexString = Integer.toHexString(ch[i]);
+                            sb.append(hexString);
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                        String flagTypeStyle = sb.toString() + "00000000";
+                        multiTagLocateTagMap.put(flagTypeStyle, "");
+                        rfidHandler.reader.Actions.MultiTagLocate.purgeItemList();
+                        rfidHandler.reader.Actions.MultiTagLocate.importItemList(multiTagLocateTagMap);
+                        rfidHandler.performLocateInventory("");
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                locateTagButton.setText("Stop");
+                                resetRangeGraph();
+                            }
+                        });
                     }
                 }
-            });
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         }else{
             triggerReleaseEventRecieved();
         }
     }
-    public void triggerReleaseEventRecieved() {
+    public synchronized void triggerReleaseEventRecieved() {
         if (RFIDLocationHandler.isLocatingTag) {
+            rfidHandler.stopLocateInventory();
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    rfidHandler.stopLocateInventory();
                     resetRangeGraph();
+                    locateTagButton.setText("Start");
                 }
             });
         }

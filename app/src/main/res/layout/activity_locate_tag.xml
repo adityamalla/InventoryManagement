@@ -50,19 +50,17 @@
 
         <TextView
             android:id="@+id/tagData"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
             android:gravity="center"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text="RFID Tag"
-            android:textSize="16dp"
             android:textAlignment="viewStart"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             android:textColor="#000000"
+            android:textSize="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/rfidStatus"
             app:layout_constraintTop_toBottomOf="@+id/rfidStatus"
@@ -73,6 +71,7 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginTop="5dp"
+            android:layout_marginEnd="10dp"
             android:background="@drawable/rounded_corner"
             android:drawableLeft="@drawable/ic_search"
             android:drawablePadding="10dp"
@@ -101,5 +100,23 @@
             app:layout_constraintTop_toBottomOf="@+id/tag"
             tools:ignore="MissingClass" />
 
+        <Button
+            android:id="@+id/locateTagButton"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/sign_out_border"
+            android:text="Start"
+            android:textAllCaps="false"
+            android:textColor="#15BAB6"
+            android:textSize="14dp"
+            app:backgroundTint="@null"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/locationBar"
+            app:layout_constraintStart_toStartOf="@+id/locationBar"
+            app:layout_constraintTop_toBottomOf="@+id/locationBar" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
