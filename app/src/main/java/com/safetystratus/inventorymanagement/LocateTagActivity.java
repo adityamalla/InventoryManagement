@@ -173,7 +173,16 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         if(proximity>0){
             volumeLevel = proximity;
             increaseVolume();
-            beep();
+            if (proximity>0&&proximity<30){
+                BEEP_STOP_TIME = 2000;
+            }else if (proximity>30&&proximity<50){
+                BEEP_STOP_TIME = 1000;
+            }else if (proximity>50&&proximity<70){
+                BEEP_STOP_TIME = 600;
+            }else if (proximity>70){
+                BEEP_STOP_TIME = 20;
+            }
+            startbeepingTimer();
         }else{
             stopbeep();
         }
@@ -196,7 +205,7 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
             // Recreate the tone generator with the new volume level
             if (toneGenerator!=null)
             toneGenerator.release();
-            toneGenerator = new ToneGenerator(AudioManager.STREAM_DTMF, volumeLevel);
+            toneGenerator = new ToneGenerator(AudioManager.STREAM_DTMF, 100);
         }
     }
     public void beep() {
@@ -204,6 +213,39 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
             int toneType = ToneGenerator.TONE_PROP_BEEP;
             toneGenerator.startTone(toneType);
         }
+    }
+
+    private boolean beepON = false;
+    public Timer tbeep;
+    private long BEEP_STOP_TIME = 20;
+
+    public void startbeepingTimer() {
+        if (beeperVolume != BEEPER_VOLUME.QUIET_BEEP) {
+            if (!beepON) {
+                beepON = true;
+                beep();
+                if (tbeep == null) {
+                    TimerTask task = new TimerTask() {
+                        @Override
+                        public void run() {
+                            stopbeepingTimer();
+                            beepON = false;
+                        }
+                    };
+                    tbeep = new Timer();
+                    tbeep.schedule(task, BEEP_STOP_TIME);
+                }
+            }
+        }
+    }
+    public void stopbeepingTimer() {
+        if (tbeep != null) {
+            //if (toneGenerator != null)
+             //   toneGenerator.stopTone();
+            tbeep.cancel();
+            tbeep.purge();
+        }
+        tbeep = null;
     }
     private void beeperSettings(int volume) {
         int streamType = AudioManager.STREAM_DTMF;
