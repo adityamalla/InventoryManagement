@@ -107,10 +107,23 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         locateTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (locateTagButton.getText().equals("Start"))
+                if (locateTagButton.getText().equals("Start")) {
                     handleTriggerPress(true);
-                else
-                    handleTriggerPress(false);
+                }else {
+                 //   handleTriggerPress(false);
+                    if (RFIDLocationHandler.isLocatingTag) {
+                        rfidHandler.stopLocateInventory();
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                rangeGraph.setValue(0);
+                                rangeGraph.invalidate();
+                                //rangeGraph.requestLayout();
+                                locateTagButton.setText("Start");
+                            }
+                        });
+                    }
+                }
             }
         });
 
@@ -161,7 +174,7 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
                 if(Integer.parseInt(per)>0) {
                     rangeGraph.setValue(Integer.parseInt(per));
                     rangeGraph.invalidate();
-                    rangeGraph.requestLayout();
+                    //rangeGraph.requestLayout();
                     startlocatebeeping(Integer.parseInt(per));
                 }else{
                     stopbeep();
@@ -195,7 +208,7 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         if (toneGenerator != null) {
             rangeGraph.setValue(0);
             rangeGraph.invalidate();
-            rangeGraph.requestLayout();
+            //rangeGraph.requestLayout();
             toneGenerator.stopTone();
         }
     }
@@ -301,7 +314,7 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
                             @Override
                             public void run() {
                                 locateTagButton.setText("Stop");
-                                resetRangeGraph();
+                                //resetRangeGraph();
                             }
                         });
                     }
@@ -319,7 +332,9 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    resetRangeGraph();
+                    rangeGraph.setValue(0);
+                    rangeGraph.invalidate();
+                    //rangeGraph.requestLayout();
                     locateTagButton.setText("Start");
                 }
             });
@@ -328,7 +343,7 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
     public void resetRangeGraph(){
         rangeGraph.setValue(0);
         rangeGraph.invalidate();
-        rangeGraph.requestLayout();
+        //rangeGraph.requestLayout();
     }
     public static BEEPER_VOLUME beeperVolume = BEEPER_VOLUME.HIGH_BEEP;
 }
