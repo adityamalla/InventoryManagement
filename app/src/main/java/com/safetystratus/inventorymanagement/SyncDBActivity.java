@@ -38,6 +38,7 @@ import com.android.volley.request.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import net.sqlcipher.database.SQLiteDatabase;
+import net.sqlcipher.database.SQLiteStatement;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -386,21 +387,28 @@ public class SyncDBActivity extends AppCompatActivity {
         objectRequest.setShouldCache(false);
         requestQueue.add(objectRequest);
     }
-
+    CustomProgressDialog progressDialog;
     class SyncDbDialogs extends AsyncTask<String, String, String> {
 
-        private ProgressDialog progressSync = new ProgressDialog(SyncDBActivity.this);
+        //private ProgressDialog progressSync = new ProgressDialog(SyncDBActivity.this);
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(SyncDBActivity.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         @Override
         protected void onPreExecute() {
             // TODO Auto-generated method stub
             // disable dismiss by tapping outside of the dialog
-            progressSync.setTitle("");
+            /*progressSync.setTitle("");
             progressSync.setMessage("Uploading..");
             progressSync.setCancelable(false);
             progressSync.show();
-            progressSync.getWindow().setLayout(450, 200);
+            progressSync.getWindow().setLayout(450, 200);*/
+            /*if (progressSync != null && progressSync.isShowing()){
+                progressSync.dismiss();
+                progressSync = null;
+            }*/
+            progressDialog = new CustomProgressDialog(SyncDBActivity.this, "Loading data...");
+            progressDialog.getWindow().setLayout(450, 200);
+            progressDialog.show();
             super.onPreExecute();
         }
         @SuppressLint("WrongThread")
@@ -424,11 +432,12 @@ public class SyncDBActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             // TODO Auto-generated method stub
             super.onPostExecute(result);
+            progressDialog.dismiss();
             //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
-            if (progressSync != null && progressSync.isShowing()){
+            /*if (progressSync != null && progressSync.isShowing()){
                 progressSync.dismiss();
                 progressSync = null;
-            }
+            }*/
         }
 
     }
@@ -485,59 +494,12 @@ public class SyncDBActivity extends AppCompatActivity {
                             objectInArray.getString("test_frequency"),
                             objectInArray.getString("owner")
                                     ));
-                    /*values.put("id", id);
-                    values.put("opened_date", objectInArray.getString("opened_date"));
-                    values.put("name", objectInArray.getString("name"));
-                    values.put("room_id", objectInArray.getString("room_id"));
-                    values.put("sec_code", objectInArray.getString("sec_code"));
-                    values.put("object_table", objectInArray.getString("object_table"));
-                    values.put("modified_user_id", objectInArray.getString("modified_user_id"));
-                    values.put("modified_date", objectInArray.getString("modified_date"));
-                    values.put("last_test_date", objectInArray.getString("last_test_date"));
-                    values.put("primary_user_id", objectInArray.getString("primary_user_id"));
-                    values.put("lot", objectInArray.getString("lot"));
-                    values.put("create_date", objectInArray.getString("create_date"));
-                    values.put("code", objectInArray.getString("code"));
-                    values.put("expiration_date", objectInArray.getString("expiration_date"));
-                    values.put("create_user_id", objectInArray.getString("create_user_id"));
-                    values.put("object_id", objectInArray.getString("object_id"));
-                    values.put("facil_id", objectInArray.getString("facil_id"));
-                    values.put("room", objectInArray.getString("room"));
-                    values.put("receipt_date", objectInArray.getString("receipt_date"));
-                    values.put("notes", objectInArray.getString("notes"));
-                    values.put("comment", objectInArray.getString("comment"));
-                    values.put("quantity", objectInArray.getString("quantity"));
-                    values.put("concentration", objectInArray.getString("concentration"));
-                    values.put("quantity_unit_abbreviation", objectInArray.getString("quantity_unit_abbreviation"));
-                    values.put("quantity_unit_abbreviation_id", objectInArray.getString("quantity_unit_abbreviation_id"));
-                    values.put("concentration_unit_abbrevation", objectInArray.getString("concentration_unit_abbrevation"));
-                    values.put("concentration_unit_abbrevation_id", objectInArray.getString("concentration_unit_abbrevation_id"));
-                    values.put("cas_number", objectInArray.getString("cas_number"));
-                    values.put("status", objectInArray.getString("status"));
-                    values.put("status_id", objectInArray.getString("status_id"));
-                    values.put("loc", objectInArray.getString("loc"));
-                    values.put("loc_id", objectInArray.getString("loc_id"));
-                    values.put("owner", objectInArray.getString("owner"));
-                    db.insert(QueryConstants.TABLE_NAME_CHEMICAL_INVENTORY, null, values);
-                    Log.e("checkValues0>>",values.toString()+"**");
-                    values.clear();*/
                 }
             }
-            databaseHandler.batchInsertChemInventory(dataList,databaseHandler.getWritableDatabase(PASS_PHRASE));
             for (int i = 0, size = jsonArrayFiFacilRooms.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayFiFacilRooms.getJSONObject(i);
                 String id = objectInArray.getString("id");
                 if (databaseHandler.checkDuplicates(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, "id", id) == 0) {
-                    /*values.put("room", objectInArray.getString("room"));
-                    values.put("area", objectInArray.getString("area"));
-                    values.put("img_src", objectInArray.getString("img_src"));
-                    values.put("type_id", objectInArray.getString("type_id"));
-                    values.put("id", id);
-                    values.put("status", objectInArray.getString("status"));
-                    values.put("notes", objectInArray.getString("notes"));
-                    values.put("facil_id", objectInArray.getString("facil_id"));
-                    db.insert(QueryConstants.TABLE_NAME_FI_FACIL_ROOMS, null, values);
-                    values.clear();*/
                     dataListRooms.add(new BatchInsertRooms(objectInArray.getString("room"),
                             objectInArray.getString("area"),
                             objectInArray.getString("img_src"),
@@ -548,18 +510,193 @@ public class SyncDBActivity extends AppCompatActivity {
                             objectInArray.getString("facil_id")));
                 }
             }
-            databaseHandler.batchInsertRooms(dataListRooms,databaseHandler.getWritableDatabase(PASS_PHRASE));
-
             for (int i = 0, size = jsonArrayPrimaryUsers.length(); i < size; i++) {
                 JSONObject objectInArray = jsonArrayPrimaryUsers.getJSONObject(i);
-                /*values.put("primary_user", objectInArray.getString("primary_user"));
-                values.put("primary_user_id", objectInArray.getString("primary_user_id"));
-                db.insert(QueryConstants.TABLE_NAME_PRIMARY_USERS, null, values);
-                values.clear();*/
                 dataListPUs.add(new BatchInsertPUs(objectInArray.getString("primary_user"),
                         objectInArray.getString("primary_user_id")));
             }
-            databaseHandler.batchInsertPUs(dataListPUs,databaseHandler.getWritableDatabase(PASS_PHRASE));
+            //databaseHandler.batchInsertChemInventory(dataList,databaseHandler.getWritableDatabase(PASS_PHRASE));
+            int count = 0;
+            String INSERT_QUERY_CHEM_INVENTORY = "INSERT INTO chemical_inventory" +
+                    " (id,\n" +
+                    "opened_date,\n" +
+                    "name,\n" +
+                    "room_id,\n" +
+                    "sec_code,\n" +
+                    "object_table,\n" +
+                    "modified_user_id,\n" +
+                    "modified_date,\n" +
+                    "last_test_date,\n" +
+                    "primary_user_id,\n" +
+                    "lot,\n" +
+                    "create_date,\n" +
+                    "code,\n" +
+                    "expiration_date,\n" +
+                    "create_user_id,\n" +
+                    "object_id,\n" +
+                    "facil_id,\n" +
+                    "room,\n" +
+                    "receipt_date,\n" +
+                    "notes,\n" +
+                    "comment,\n" +
+                    "quantity,\n" +
+                    "concentration,\n" +
+                    "quantity_unit_abbreviation,\n" +
+                    "quantity_unit_abbreviation_id,\n" +
+                    "concentration_unit_abbrevation,\n" +
+                    "concentration_unit_abbrevation_id,\n" +
+                    "cas_number,\n" +
+                    "status,\n" +
+                    "status_id,\n" +
+                    "loc,\n" +
+                    "loc_id,test_frequency,\n" +
+                    "owner) VALUES (?, ?, ?,?,?,?,?,?, ?, ?,?,?,?,?,?, ?, ?,?,?,?,?,?, ?, ?,?,?,?,?,?, ?, ?,?,?,?)";
+            SQLiteStatement insertStatement = db.compileStatement(INSERT_QUERY_CHEM_INVENTORY);
+            try {
+                db.beginTransaction();
+                for (BatchInsertionObjectInventory data : dataList) {
+                    insertStatement.bindString(1, data.getId());
+                    insertStatement.bindString(2, data.getOpened_date());
+                    insertStatement.bindString(3, data.getName());
+                    insertStatement.bindString(4, data.getRoom_id());
+                    insertStatement.bindString(5, data.getSec_code());
+                    insertStatement.bindString(6, data.getObject_table());
+                    insertStatement.bindString(7, data.getModified_user_id());
+                    insertStatement.bindString(8, data.getModified_date());
+                    insertStatement.bindString(9, data.getLast_test_date());
+                    insertStatement.bindString(10, data.getPrimary_user_id());
+                    insertStatement.bindString(11, data.getLot());
+                    insertStatement.bindString(12, data.getCreate_date());
+                    insertStatement.bindString(13, data.getCode());
+                    insertStatement.bindString(14, data.getExpiration_date());
+                    insertStatement.bindString(15, data.getCreate_user_id());
+                    insertStatement.bindString(16, data.getObject_id());
+                    insertStatement.bindString(17, data.getFacil_id());
+                    insertStatement.bindString(18, data.getRoom());
+                    insertStatement.bindString(19, data.getReceipt_date());
+                    insertStatement.bindString(20, data.getNotes());
+                    insertStatement.bindString(21, data.getComment());
+                    insertStatement.bindString(22, data.getQuantity());
+                    insertStatement.bindString(23, data.getConcentration());
+                    insertStatement.bindString(24, data.getQuantity_unit_abbreviation());
+                    insertStatement.bindString(25, data.getQuantity_unit_abbreviation_id());
+                    insertStatement.bindString(26, data.getConcentration_unit_abbrevation());
+                    insertStatement.bindString(27, data.getConcentration_unit_abbrevation_id());
+                    insertStatement.bindString(28, data.getCas_number());
+                    insertStatement.bindString(29, data.getStatus());
+                    insertStatement.bindString(30, data.getStatus_id());
+                    insertStatement.bindString(31, data.getLoc());
+                    insertStatement.bindString(32, data.getLoc_id());
+                    insertStatement.bindString(33, data.getTest_frequency());
+                    insertStatement.bindString(34, data.getOwner());
+                    insertStatement.executeInsert();
+                    insertStatement.clearBindings();
+                    count++;
+                    int percent = (count * 100) / dataList.size();
+                    int finalCount = count;
+                    runOnUiThread(new Runnable() {
+                        @SuppressLint("ResourceAsColor")
+                        @Override
+                        public void run() {
+                            progressDialog.setPercentageAndProgress(percent,String.valueOf(finalCount),String.valueOf(dataList.size()),"Uploading Inventory data...");
+                        }}
+                        );
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+                count = 0;
+                runOnUiThread(new Runnable() {
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void run() {
+                        progressDialog.setPercentageAndProgress(0,String.valueOf(0),null,"");
+                    }}
+                );
+                insertStatement = null;
+            }
+            //databaseHandler.batchInsertRooms(dataListRooms,databaseHandler.getWritableDatabase(PASS_PHRASE));
+            String INSERT_QUERY_ROOMS = "INSERT INTO fi_facil_rooms (" +
+                    "room,\n" +
+                    "area, \n" +
+                    "img_src, \n" +
+                    "type_id, \n" +
+                    "id,\n" +
+                    "status,\n" +
+                    "notes,\n" +
+                    "facil_id) VALUES (?, ?, ?,?,?,?,?,?)";
+            insertStatement = db.compileStatement(INSERT_QUERY_ROOMS);
+            try {
+                db.beginTransaction();
+                for (BatchInsertRooms data : dataListRooms) {
+                    insertStatement.bindString(1, data.getRoom());
+                    insertStatement.bindString(2, data.getArea());
+                    insertStatement.bindString(3, data.getImg_src());
+                    insertStatement.bindString(4, data.getType_id());
+                    insertStatement.bindString(5, data.getId());
+                    insertStatement.bindString(6, data.getStatus());
+                    insertStatement.bindString(7, data.getNotes());
+                    insertStatement.bindString(8, data.getFacil_id());
+                    insertStatement.execute();
+                    insertStatement.clearBindings();
+                    count++;
+                    int percent = (count * 100) / dataListRooms.size();
+                    int finalCount = count;
+                    runOnUiThread(new Runnable() {
+                        @SuppressLint("ResourceAsColor")
+                        @Override
+                        public void run() {
+                            progressDialog.setPercentageAndProgress(percent,String.valueOf(finalCount),String.valueOf(dataListRooms.size()),"Uploading Rooms data...");
+                        }}
+                    );
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+                count = 0;
+                runOnUiThread(new Runnable() {
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void run() {
+                        progressDialog.setPercentageAndProgress(0,String.valueOf(0),null,"");
+                    }}
+                );
+                insertStatement = null;
+            }
+            //databaseHandler.batchInsertPUs(dataListPUs,databaseHandler.getWritableDatabase(PASS_PHRASE));
+            String INSERT_QUERY_PRIMARY_USERS = "INSERT INTO primary_users (primary_user, primary_user_id) VALUES (?, ?)";
+            insertStatement = db.compileStatement(INSERT_QUERY_PRIMARY_USERS);
+            try {
+                db.beginTransaction();
+                for (BatchInsertPUs data : dataListPUs) {
+                    insertStatement.bindString(1, data.getPrimary_user());
+                    insertStatement.bindString(2, data.getPrimary_user_id());
+                    insertStatement.execute();
+                    insertStatement.clearBindings();
+                    count++;
+                    int percent = (count * 100) / dataListPUs.size();
+                    int finalCount = count;
+                    runOnUiThread(new Runnable() {
+                        @SuppressLint("ResourceAsColor")
+                        @Override
+                        public void run() {
+                            progressDialog.setPercentageAndProgress(percent,String.valueOf(finalCount),String.valueOf(dataListPUs.size()),"Uploading Primary User data...");
+                        }}
+                    );
+                }
+                db.setTransactionSuccessful();
+            } finally {
+                db.endTransaction();
+                count = 0;
+                runOnUiThread(new Runnable() {
+                    @SuppressLint("ResourceAsColor")
+                    @Override
+                    public void run() {
+                        progressDialog.setPercentageAndProgress(0,String.valueOf(0),null,"");
+                    }}
+                );
+                insertStatement = null;
+            }
             db.setTransactionSuccessful();
 
         } catch (JSONException e) {
