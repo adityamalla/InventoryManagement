@@ -171,13 +171,16 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(Integer.parseInt(per)>0) {
-                    rangeGraph.setValue(Integer.parseInt(per));
-                    rangeGraph.invalidate();
-                    //rangeGraph.requestLayout();
-                    startlocatebeeping(Integer.parseInt(per));
-                }else{
-                    stopbeep();
+                //Log.e("____",per);
+                if (per!=null) {
+                    if (Integer.parseInt(per) > 0) {
+                        rangeGraph.setValue(Integer.parseInt(per));
+                        rangeGraph.invalidate();
+                        //rangeGraph.requestLayout();
+                        startlocatebeeping(Integer.parseInt(per));
+                    } else {
+                        stopbeep();
+                    }
                 }
             }
         });
