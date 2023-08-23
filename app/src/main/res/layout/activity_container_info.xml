@@ -237,15 +237,30 @@
         android:id="@+id/volume"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
         android:fontFamily="@font/roboto_regular"
         android:gravity="bottom"
         android:text="155"
         android:textColor="#1E1E1E"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/labelVol"
         app:layout_constraintStart_toStartOf="@+id/labelVol"
         app:layout_constraintTop_toBottomOf="@+id/labelVol" />
+
+    <Button
+        android:id="@+id/locateScannedTag"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/sign_out_border"
+        android:text="Locate Tag"
+        android:textAllCaps="false"
+        android:textColor="#15BAB6"
+        android:textSize="14dp"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/volume"
+        app:layout_constraintStart_toStartOf="@+id/volume"
+        app:layout_constraintTop_toBottomOf="@+id/volume" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

@@ -5,8 +5,11 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -27,7 +30,21 @@ import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.error.VolleyError;
+import com.android.volley.request.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+
 import net.sqlcipher.database.SQLiteDatabase;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
@@ -44,6 +61,7 @@ public class Container_Info extends AppCompatActivity {
     String token="";
     String empName = "";
     String scannedCode = "";
+    String scannedRFIDCode = "";
     String flag = "";
     String fromReconc = "";
     public String selectedSearchValue="";
@@ -62,6 +80,7 @@ public class Container_Info extends AppCompatActivity {
     TextView notes;
     TextView comments;
     TextView volume;
+    Button locateTag;
     String scannedTotalCount="0";
     //generate list
     ArrayList<String> newList = new ArrayList<String>();
@@ -152,6 +171,9 @@ public class Container_Info extends AppCompatActivity {
         if(intent.getStringExtra("total_inventory")!=null) {
             total_inventory = intent.getStringExtra("total_inventory");
         }
+        if(intent.getStringExtra("scannedRFIDCode")!=null) {
+            scannedRFIDCode = intent.getStringExtra("scannedRFIDCode");
+        }
         scannedInvList = new ArrayList<InventoryObject>();
         if(intent.getSerializableExtra("scannedInvList")!=null)
             scannedInvList = (ArrayList<InventoryObject>) intent.getSerializableExtra("scannedInvList");
@@ -171,6 +193,7 @@ public class Container_Info extends AppCompatActivity {
         notes = findViewById(R.id.notes);
         comments = findViewById(R.id.comm);
         volume = findViewById(R.id.volume);
+        locateTag = findViewById(R.id.locateScannedTag);
         InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,scannedCode,flag);
         if(inv!=null){
             productName.setText(inv.getProductName());
@@ -225,7 +248,27 @@ public class Container_Info extends AppCompatActivity {
             comments.setText("N/A");
             volume.setText("N/A");
         }
-
+        locateTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Intent myIntent = new Intent(Container_Info.this,
+                        LocateTagActivity.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("empName", empName);
+                Log.e("scanned Code>>>",scannedCode+"***");
+                myIntent.putExtra("scannedRFIDCode", scannedRFIDCode);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                startActivity(myIntent);
+            }
+        });
     }
     public static void hideKeyboard(Container_Info activity) {
         try {

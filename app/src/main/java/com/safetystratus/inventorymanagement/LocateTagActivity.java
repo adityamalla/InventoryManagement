@@ -39,6 +39,7 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
     String multiLocate="";
     String loggedinUsername = "";
     String md5Pwd = "";
+    String scannedRFIDCode = "";
     String sso = "";
     String site_name = "";
     String selectedUserId = "";
@@ -103,6 +104,12 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         md5Pwd = intent.getStringExtra("md5pwd");
         if (intent.getStringExtra("selectedSearchValue") != null) {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
+        }
+        if (intent.getStringExtra("scannedRFIDCode") != null) {
+            scannedRFIDCode = intent.getStringExtra("scannedRFIDCode");
+        }
+        if (scannedRFIDCode.length()>0){
+            tagSearch.setText(scannedRFIDCode);
         }
         locateTagButton.setOnClickListener(new View.OnClickListener() {
             @Override
