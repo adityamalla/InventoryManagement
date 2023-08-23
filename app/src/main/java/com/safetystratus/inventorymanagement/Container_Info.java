@@ -62,6 +62,7 @@ public class Container_Info extends AppCompatActivity {
     String empName = "";
     String scannedCode = "";
     String scannedRFIDCode = "";
+    String scannedbarcode = "";
     String flag = "";
     String fromReconc = "";
     public String selectedSearchValue="";
@@ -174,6 +175,9 @@ public class Container_Info extends AppCompatActivity {
         if(intent.getStringExtra("scannedRFIDCode")!=null) {
             scannedRFIDCode = intent.getStringExtra("scannedRFIDCode");
         }
+        if(intent.getStringExtra("scannedbarcode")!=null) {
+            scannedbarcode = intent.getStringExtra("scannedbarcode");
+        }
         scannedInvList = new ArrayList<InventoryObject>();
         if(intent.getSerializableExtra("scannedInvList")!=null)
             scannedInvList = (ArrayList<InventoryObject>) intent.getSerializableExtra("scannedInvList");
@@ -240,13 +244,27 @@ public class Container_Info extends AppCompatActivity {
             }
         }else{
             productName.setText("N/A");
-            barcode.setText("N/A");
-            rfidcode.setText("N/A");
+            if (scannedbarcode.length()>0) {
+                barcode.setText(scannedbarcode);
+            }else{
+                barcode.setText("N/A");
+            }
+            if (scannedRFIDCode.length()>0) {
+                rfidcode.setText(scannedRFIDCode);
+            }else{
+                rfidcode.setText("N/A");
+            }
             owner.setText("N/A");
             primaryUser.setText("N/A");
             notes.setText("N/A");
             comments.setText("N/A");
             volume.setText("N/A");
+        }
+        if (scannedRFIDCode.length()>0){
+            locateTag.setVisibility(View.VISIBLE);
+        }else
+        {
+            locateTag.setVisibility(View.INVISIBLE);
         }
         locateTag.setOnClickListener(new View.OnClickListener() {
             @Override
