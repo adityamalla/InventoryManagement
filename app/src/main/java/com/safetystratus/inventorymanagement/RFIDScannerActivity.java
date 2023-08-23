@@ -554,6 +554,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 myIntent.putExtra("scannedTotalCount", scannedTotalCount+"");
                 myIntent.putExtra("flag","2");
                 myIntent.putExtra("scannedCode", selectedItem.getInv_id()+"");
+                myIntent.putExtra("scannedRFIDCode", selectedItem.getRfidCode()+"");
                 startActivity(myIntent);
             }
         });
