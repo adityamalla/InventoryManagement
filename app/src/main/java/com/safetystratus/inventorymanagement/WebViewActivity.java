@@ -134,7 +134,6 @@ public class WebViewActivity extends AppCompatActivity {
         //ssWebview.getSettings().setUseWideViewPort(true);
         ssWebview.getSettings().setJavaScriptEnabled(true);
         ssWebview.getSettings().setLoadWithOverviewMode(true);
-        ssWebview.getSettings().setAppCacheEnabled(false);
         ssWebview.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
         ssWebview.getSettings().setUseWideViewPort(true);
         ssWebview.getSettings().setAllowFileAccess(true);
