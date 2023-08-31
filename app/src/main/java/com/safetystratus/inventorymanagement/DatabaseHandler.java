@@ -789,7 +789,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true,"0"));
+                InventoryObject obj = null;
+                if (rfidCode!=null&&!rfidCode.equalsIgnoreCase("null")) {
+                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, rfidCode);
+                }else if (code!=null&&!code.equalsIgnoreCase("null")) {
+                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, code);
+                }
+                if (obj == null)
+                    inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true,"0"));
+                else
+                    inv.add(obj);
                 cursor1.moveToNext();
             }
         }
@@ -875,6 +884,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String product_name = "N/A";
                 String rfidCode = cursor1.getString(cursor1.getColumnIndex("rfid_code"));
                 String code = cursor1.getString(cursor1.getColumnIndex("code"));
+                Log.e("codeeeeeee","*"+code+"&*");
                 String scanned="";
                 if(cursor1.getString(cursor1.getColumnIndex("scanned"))!=null) {
                     if (cursor1.getString(cursor1.getColumnIndex("scanned")).trim().length() > 0) {
@@ -885,7 +895,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true,"0"));
+                InventoryObject obj = null;
+                if (rfidCode!=null&&!rfidCode.equalsIgnoreCase("null")) {
+                     obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, rfidCode);
+                }else if (code!=null&&!code.equalsIgnoreCase("null")) {
+                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, code);
+                }
+                if (obj == null)
+                    inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true,"0"));
+                else
+                    inv.add(obj);
                 cursor1.moveToNext();
             }
         }
@@ -1331,5 +1350,32 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             insertStatement = null;
         }
     }
+    @SuppressLint("Range")
+    public InventoryObject checkRFIDCodeExistsInOtherRooms(SQLiteDatabase sqLiteDatabase, String rfidorBarCde){
+        InventoryObject inv = null;
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select " +
+                "ci.name,ci.sec_code,ci.code,ci.id,ci.quantity, ci.quantity_unit_abbreviation,ci.test_frequency from chemical_inventory ci \n" +
+                "where ci.sec_code = '"+rfidorBarCde+"' or ci.code = '"+rfidorBarCde+"'limit 1"), null);
+        if (cursor.moveToFirst()) {
+                String id = cursor.getString(cursor.getColumnIndex("id"));
+                String test_frequency = "";
+                if(cursor.getString(cursor.getColumnIndex("test_frequency")).trim().length()>0){
+                    test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                }else {
+                    test_frequency = "0";
+                }
+                String product_name = "";
+                String code = "";
+                product_name = cursor.getString(cursor.getColumnIndex("name"));
+                String rfidCode = "";
+                rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                code = cursor.getString(cursor.getColumnIndex("code"));
+                String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
+                inv = new InventoryObject(rfidCode, product_name,id,code,"1",vol,true,test_frequency);
+        }
+        cursor.close();
+        return inv;
+    }
+
 }
 
