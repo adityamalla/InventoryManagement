@@ -256,7 +256,7 @@
         android:text="Locate Tag"
         android:textAllCaps="false"
         android:textColor="#15BAB6"
-        android:visibility="invisible"
+        android:visibility="visible"
         android:textSize="14dp"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"

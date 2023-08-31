@@ -80,7 +80,7 @@ public class Container_Info extends AppCompatActivity {
     TextView notes;
     TextView comments;
     TextView volume;
-    //Button locateTag;
+    Button locateTag;
     String scannedTotalCount="0";
     //generate list
     ArrayList<String> newList = new ArrayList<String>();
@@ -193,7 +193,7 @@ public class Container_Info extends AppCompatActivity {
         notes = findViewById(R.id.notes);
         comments = findViewById(R.id.comm);
         volume = findViewById(R.id.volume);
-        //locateTag = findViewById(R.id.locateScannedTag);
+        locateTag = findViewById(R.id.locateScannedTag);
         InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,scannedCode,flag);
         if(inv!=null){
             productName.setText(inv.getProductName());
@@ -248,7 +248,7 @@ public class Container_Info extends AppCompatActivity {
             comments.setText("N/A");
             volume.setText("N/A");
         }
-        /*locateTag.setOnClickListener(new View.OnClickListener() {
+        locateTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final Intent myIntent = new Intent(Container_Info.this,
@@ -268,7 +268,7 @@ public class Container_Info extends AppCompatActivity {
                 myIntent.putExtra("selectedFacil", selectedFacil+"");
                 startActivity(myIntent);
             }
-        });*/
+        });
     }
     public static void hideKeyboard(Container_Info activity) {
         try {
