@@ -280,10 +280,17 @@ public class Container_Info extends AppCompatActivity {
                 myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                 myIntent.putExtra("site_name", site_name);
                 myIntent.putExtra("empName", empName);
-                Log.e("scanned Code>>>",scannedCode+"***");
                 myIntent.putExtra("scannedRFIDCode", scannedRFIDCode);
-                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
                 myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("scannedInvList", scannedInvList);
+                myIntent.putExtra("scannedCode", scannedCode+"");
+                myIntent.putExtra("scannedTotalCount", scannedTotalCount+"");
+                myIntent.putExtra("total_inventory", total_inventory+"");
+                myIntent.putExtra("fromReconciliation", "1");
+                myIntent.putExtra("reconc_id", reconc_id);
                 startActivity(myIntent);
             }
         });

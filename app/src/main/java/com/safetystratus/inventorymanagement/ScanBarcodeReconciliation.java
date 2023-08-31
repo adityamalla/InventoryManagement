@@ -619,6 +619,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                 myIntent.putExtra("flag","3");
                 myIntent.putExtra("scannedCode", selectedItem.getInv_id()+"");
                 myIntent.putExtra("reconc_id", reconc_id+"");
+                myIntent.putExtra("scannedbarcode", selectedItem.getCode()+"");
                 startActivity(myIntent);
             }
         });
