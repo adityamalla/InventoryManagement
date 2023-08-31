@@ -202,6 +202,7 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
                 myIntent.putExtra("flag","2");
                 myIntent.putExtra("scannedCode", scannedCode+"");
                 myIntent.putExtra("scannedRFIDCode", scannedRFIDCode+"");
+                startActivity(myIntent);
             }else {
                 final Intent myIntent = new Intent(LocateTagActivity.this,
                         HomeActivity.class);
