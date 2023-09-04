@@ -481,7 +481,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                             }
                         }
                         if (!barcodeScanned) {
-                            scannedInvList.add(0,new InventoryObject("N/A", "N/A", "-1", enteredbarcode, "1", "N/A", true, "0"));
+                            scannedInvList.add(0,new InventoryObject("N/A", "N/A", "-1", enteredbarcode, "1", "N/A", true, "0",false,false,true));
                             ContentValues cv = new ContentValues();
                             cv.put("location_id", selectedFacil);
                             cv.put("room_id", selectedRoom);
@@ -499,10 +499,15 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         }
                     }
                     else{
+                        boolean checkScannedBarcodeExists = false;
                         for (int g=0;g<scannedInvList.size();g++){
                             if (scannedInvList.get(g).getCode().equalsIgnoreCase(enteredbarcode)){
+                                checkScannedBarcodeExists = true;
                                 if(!scannedInvList.get(g).isFlag()) {
                                     scannedInvList.get(g).setFlag(true);
+                                    scannedInvList.get(g).setBelongsToRoom(true);
+                                    scannedInvList.get(g).setBelongsToNone(false);
+                                    scannedInvList.get(g).setBelongsToOtherRoom(false);
                                     ContentValues cv = new ContentValues();
                                     cv.put("location_id", selectedFacil);
                                     cv.put("room_id", selectedRoom);
@@ -521,11 +526,35 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                 }
                             }
                         }
+                        if(!checkScannedBarcodeExists){
+                            InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),enteredbarcode);
+                            if (inv == null)
+                                scannedInvList.add(0,new InventoryObject("N/A","N/A","-1",enteredbarcode,"1","N/A",true,"0",false,false,true));
+                            else
+                                scannedInvList.add(0,inv);
+                            ContentValues cv = new ContentValues();
+                            cv.put("location_id", selectedFacil);
+                            cv.put("room_id", selectedRoom);
+                            cv.put("inventory_id", -1);
+                            cv.put("scanned_by", selectedUserId);
+                            cv.put("reconc_id", reconc_id);
+                            cv.put("code", enteredbarcode);
+                            cv.put("scanned", 1);
+                            boolean isInserted = databaseHandler.insertScannedInvDataOutofLocationDataBarcode(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                            if (isInserted) {
+                                count = Integer.parseInt(scannedTotalCount) + 1;
+                                scannedTotalCount = String.valueOf(count);
+                                scanCount.setText(scannedTotalCount);
+                            }
+                        }
                         ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
                         for (int i = 0; i < disposedinvList.size(); i++) {
                             if (disposedinvList.get(i).getCode().equalsIgnoreCase(enteredbarcode)){
                                 if (!disposedinvList.get(i).isFlag()) {
                                     disposedinvList.get(i).setFlag(true);
+                                    disposedinvList.get(i).setBelongsToRoom(true);
+                                    disposedinvList.get(i).setBelongsToNone(false);
+                                    disposedinvList.get(i).setBelongsToOtherRoom(false);
                                     ContentValues cv = new ContentValues();
                                     cv.put("location_id", selectedFacil);
                                     cv.put("room_id", selectedRoom);
@@ -822,7 +851,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     }
                 }
                 if(!barcodeScanned) {
-                    scannedInvList.add(0,new InventoryObject("N/A", "N/A", "-1", decodedData, "1", "N/A", true, "0"));
+                    scannedInvList.add(0,new InventoryObject("N/A", "N/A", "-1", decodedData, "1", "N/A", true, "0",false,false,true));
                     ContentValues cv = new ContentValues();
                     cv.put("location_id", selectedFacil);
                     cv.put("room_id", selectedRoom);
@@ -839,10 +868,15 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     }
                 }
             } else {
+                boolean checkScannedBarcodeExists = false;
                 for (int g = 0; g < scannedInvList.size(); g++) {
                     if (scannedInvList.get(g).getCode().equalsIgnoreCase(decodedData)) {
+                        checkScannedBarcodeExists = true;
                         if (!scannedInvList.get(g).isFlag()) {
                             scannedInvList.get(g).setFlag(true);
+                            scannedInvList.get(g).setBelongsToRoom(true);
+                            scannedInvList.get(g).setBelongsToNone(false);
+                            scannedInvList.get(g).setBelongsToOtherRoom(false);
                             ContentValues cv = new ContentValues();
                             cv.put("location_id", selectedFacil);
                             cv.put("room_id", selectedRoom);
@@ -857,15 +891,39 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                             setscancount(String.valueOf(count), String.valueOf(scanned));
                             InventoryObject inv = scannedInvList.get(g);
                             scannedInvList.remove(g);
-                            scannedInvList.add(0,inv);
+                            scannedInvList.add(0, inv);
                         }
                     }
+                }
+                if(!checkScannedBarcodeExists){
+                        InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),decodedData);
+                        if (inv == null)
+                            scannedInvList.add(0,new InventoryObject("N/A","N/A","-1",decodedData,"1","N/A",true,"0",false,false,true));
+                        else
+                            scannedInvList.add(0,inv);
+                        ContentValues cv = new ContentValues();
+                        cv.put("location_id", selectedFacil);
+                        cv.put("room_id", selectedRoom);
+                        cv.put("inventory_id", -1);
+                        cv.put("scanned_by", selectedUserId);
+                        cv.put("reconc_id", reconc_id);
+                        cv.put("code", decodedData);
+                        cv.put("scanned", 1);
+                        boolean isInserted = databaseHandler.insertScannedInvDataOutofLocationDataBarcode(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        if (isInserted) {
+                            count = Integer.parseInt(scannedTotalCount) + 1;
+                            scannedTotalCount = String.valueOf(count);
+                            scanCount.setText(scannedTotalCount);
+                        }
                 }
                 ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
                 for (int i = 0; i < disposedinvList.size(); i++) {
                     if (disposedinvList.get(i).getCode().equalsIgnoreCase(decodedData)) {
                         if (!disposedinvList.get(i).isFlag()) {
                             disposedinvList.get(i).setFlag(true);
+                            disposedinvList.get(i).setBelongsToRoom(true);
+                            disposedinvList.get(i).setBelongsToNone(false);
+                            disposedinvList.get(i).setBelongsToOtherRoom(false);
                             ContentValues cv = new ContentValues();
                             cv.put("location_id", selectedFacil);
                             cv.put("room_id", selectedRoom);

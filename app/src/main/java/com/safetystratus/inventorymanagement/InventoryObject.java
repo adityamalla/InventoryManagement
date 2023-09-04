@@ -11,9 +11,11 @@ public class InventoryObject implements Serializable {
     public String volume;
     public String test_frequency;
     public boolean flag;
-
-
-    public InventoryObject(String rfidCode, String productName, String inv_id, String code, String scanned, String volume, boolean flag, String test_frequency) {
+    public boolean belongsToRoom;
+    public boolean belongsToOtherRoom;
+    public boolean belongsToNone;
+    public InventoryObject(String rfidCode, String productName, String inv_id, String code, String scanned, String volume, boolean flag,
+                           String test_frequency, boolean belongsToRoom, boolean belongsToOtherRoom, boolean belongsToNone) {
         this.rfidCode = rfidCode;
         this.productName = productName;
         this.inv_id = inv_id;
@@ -22,6 +24,33 @@ public class InventoryObject implements Serializable {
         this.volume = volume;
         this.flag = flag;
         this.test_frequency = test_frequency;
+        this.belongsToRoom = belongsToRoom;
+        this.belongsToOtherRoom = belongsToOtherRoom;
+        this.belongsToNone = belongsToNone;
+    }
+
+    public boolean isBelongsToRoom() {
+        return belongsToRoom;
+    }
+
+    public void setBelongsToRoom(boolean belongsToRoom) {
+        this.belongsToRoom = belongsToRoom;
+    }
+
+    public boolean isBelongsToOtherRoom() {
+        return belongsToOtherRoom;
+    }
+
+    public void setBelongsToOtherRoom(boolean belongsToOtherRoom) {
+        this.belongsToOtherRoom = belongsToOtherRoom;
+    }
+
+    public boolean isBelongsToNone() {
+        return belongsToNone;
+    }
+
+    public void setBelongsToNone(boolean belongsToNone) {
+        this.belongsToNone = belongsToNone;
     }
 
     public String getTest_frequency() {
