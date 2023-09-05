@@ -81,6 +81,7 @@ public class Container_Info extends AppCompatActivity {
     TextView notes;
     TextView comments;
     TextView volume;
+    TextView roomInfo;
     Button locateTag;
     String scannedTotalCount="0";
     //generate list
@@ -198,6 +199,7 @@ public class Container_Info extends AppCompatActivity {
         comments = findViewById(R.id.comm);
         volume = findViewById(R.id.volume);
         locateTag = findViewById(R.id.locateScannedTag);
+        roomInfo = findViewById(R.id.roomInfo);
         InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,scannedCode,flag);
         if(inv!=null){
             productName.setText(inv.getProductName());
@@ -242,6 +244,11 @@ public class Container_Info extends AppCompatActivity {
             }else{
                 volume.setText("N/A");
             }
+            if (inv.getRoom().trim().length()>0){
+                roomInfo.setText(inv.getRoom());
+            }else{
+                roomInfo.setText("N/A");
+            }
         }else{
             productName.setText("N/A");
             if (scannedbarcode.length()>0) {
@@ -259,6 +266,7 @@ public class Container_Info extends AppCompatActivity {
             notes.setText("N/A");
             comments.setText("N/A");
             volume.setText("N/A");
+            roomInfo.setText("N/A");
         }
         if (scannedRFIDCode.length()>0){
             locateTag.setVisibility(View.VISIBLE);
