@@ -58,6 +58,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
     Button save;
     String empName = "";
     String note = "";
+    String rfidCde = "";
     String comment="";
     String conc_val="";
     String quan_val="";
@@ -151,6 +152,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         if(intent.getStringExtra("note")!=null) {
             note = intent.getStringExtra("note");
         }
+        if(intent.getStringExtra("rfidCde")!=null) {
+            rfidCde = intent.getStringExtra("rfidCde");
+        }
         if(intent.getStringExtra("comment")!=null) {
             comment = intent.getStringExtra("comment");
         }
@@ -204,6 +208,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         if (intent.getStringExtra("selectedSearchValue") != null) {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
+        if(intent.getStringExtra("rfidCde")!=null) {
+            rfidCde = intent.getStringExtra("rfidCde");
+        }
         uploadData = (Button) findViewById(R.id.uploadToWeb);
         save = (Button) findViewById(R.id.saveLocal);
         name = (EditText)findViewById(R.id.productName);
@@ -239,6 +246,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 rfidCode.setText("");
                 rfidCode.setEnabled(true);
                 rfidCode.setFocusableInTouchMode(true);
+            }
+            if (rfidCde.trim().length() == 0){
+                rfidCde = inv.getRfidCode();
             }
             if(selectedFacil.trim().length()==0){
                 selectedFacil = inv.getFacil_id();
@@ -335,6 +345,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                         myIntent.putExtra("quan_val", quan_val+"");
                         myIntent.putExtra("conc_val", conc_val+"");
                         myIntent.putExtra("note", note+"");
+                        if (rfidCode.isEnabled()) {
+                            myIntent.putExtra("rfidCode", rfidCde + "");
+                        }
                         myIntent.putExtra("comment", comment+"");
                         myIntent.putExtra("empName", empName);
                         startActivity(myIntent);
@@ -396,6 +409,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("empName", empName);
+                    if (rfidCode.isEnabled()) {
+                        myIntent.putExtra("rfidCode", rfidCde + "");
+                    }
                     startActivity(myIntent);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -445,6 +461,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("fromUnit", "yes");
+                    if (rfidCode.isEnabled()) {
+                        myIntent.putExtra("rfidCode", rfidCde + "");
+                    }
                     startActivity(myIntent);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -493,6 +512,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("empName", empName);
+                    if (rfidCode.isEnabled()) {
+                        myIntent.putExtra("rfidCode", rfidCde + "");
+                    }
                     startActivity(myIntent);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -541,6 +563,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("empName", empName);
+                    if (rfidCode.isEnabled()) {
+                        myIntent.putExtra("rfidCode", rfidCde + "");
+                    }
                     startActivity(myIntent);
                 }catch (Exception e){
                     e.printStackTrace();

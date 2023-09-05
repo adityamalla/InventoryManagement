@@ -35,6 +35,7 @@ public class UnitsList extends AppCompatActivity {
     String md5Pwd = "";
     String user_id = "";
     String fromUnit = "";
+    String rfidCde = "";
     String selectedSearchValue = "";
     String lastCompletedInspectionSiteInfo = "";
     String sso = "";
@@ -160,6 +161,9 @@ public class UnitsList extends AppCompatActivity {
         if (intent.getStringExtra("selectedRoomName") != null) {
             selectedRoomName = intent.getStringExtra("selectedRoomName");
         }
+        if(intent.getStringExtra("rfidCde")!=null) {
+            rfidCde = intent.getStringExtra("rfidCde");
+        }
         unitList = new ArrayList<MyObject>();
         if(intent.getSerializableExtra("unitList")!=null)
             unitList = (ArrayList<MyObject>) intent.getSerializableExtra("unitList");
@@ -254,6 +258,7 @@ public class UnitsList extends AppCompatActivity {
                     myIntent.putExtra("conc_val", conc_val+"");
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
+                    myIntent.putExtra("rfidCde", rfidCde+"");
                     startActivity(myIntent);
                 }
             });
@@ -366,6 +371,7 @@ public class UnitsList extends AppCompatActivity {
                             myIntent.putExtra("comment", comment+"");
                             myIntent.putExtra("selectedOwnerName", selectedOwnerName);
                             myIntent.putExtra("selectedOwner", selectedOwner+"");
+                            myIntent.putExtra("rfidCde", rfidCde+"");
                             startActivity(myIntent);
                         }
                     });
@@ -410,6 +416,7 @@ public class UnitsList extends AppCompatActivity {
             myIntent.putExtra("conc_val", conc_val+"");
             myIntent.putExtra("note", note+"");
             myIntent.putExtra("comment", comment+"");
+            myIntent.putExtra("rfidCde", rfidCde+"");
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);

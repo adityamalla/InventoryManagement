@@ -35,6 +35,7 @@ public class RoomList extends AppCompatActivity {
     String loggedinUserSiteId = "";
     String md5Pwd = "";
     String user_id = "";
+    String rfidCde = "";
     String selectedSearchValue = "";
     String lastCompletedInspectionSiteInfo = "";
     String sso = "";
@@ -114,6 +115,9 @@ public class RoomList extends AppCompatActivity {
         }
         if(intent.getStringExtra("fromBulkUpdate")!=null) {
             fromBulkUpdate = intent.getStringExtra("fromBulkUpdate");
+        }
+        if(intent.getStringExtra("rfidCde")!=null) {
+            rfidCde = intent.getStringExtra("rfidCde");
         }
         codelistfromIntent = new ArrayList<String>();
         if(intent.getSerializableExtra("codelistfromIntent")!=null)
@@ -262,6 +266,7 @@ public class RoomList extends AppCompatActivity {
                     myIntent.putExtra("conc_val", conc_val+"");
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
+                    myIntent.putExtra("rfidCde", rfidCde+"");
                     startActivity(myIntent);
                 }
             });
@@ -379,6 +384,7 @@ public class RoomList extends AppCompatActivity {
                                 myIntent.putExtra("conc_val", conc_val + "");
                                 myIntent.putExtra("note", note + "");
                                 myIntent.putExtra("comment", comment + "");
+                                myIntent.putExtra("rfidCde", rfidCde + "");
                                 startActivity(myIntent);
                             }
                         });
@@ -438,6 +444,7 @@ public class RoomList extends AppCompatActivity {
             myIntent.putExtra("note", note+"");
             myIntent.putExtra("comment", comment+"");
             myIntent.putExtra("codelistfromIntent", codelistfromIntent);
+            myIntent.putExtra("rfidCde", rfidCde+"");
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);

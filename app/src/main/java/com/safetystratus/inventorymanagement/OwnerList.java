@@ -34,6 +34,7 @@ public class OwnerList extends AppCompatActivity {
     String loggedinUserSiteId = "";
     String md5Pwd = "";
     String user_id = "";
+    String rfidCde = "";
     String fromUnit = "";
     String selectedSearchValue = "";
     String lastCompletedInspectionSiteInfo = "";
@@ -296,6 +297,7 @@ public class OwnerList extends AppCompatActivity {
                     myIntent.putExtra("conc_val", conc_val+"");
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
+                    myIntent.putExtra("rfidCde", rfidCde+"");
                     startActivity(myIntent);
                 }
             });
@@ -426,6 +428,7 @@ public class OwnerList extends AppCompatActivity {
                                 myIntent.putExtra("conc_val", conc_val + "");
                                 myIntent.putExtra("note", note + "");
                                 myIntent.putExtra("comment", comment + "");
+                                myIntent.putExtra("rfidCde", rfidCde+"");
                                 startActivity(myIntent);
                             }
                         });
@@ -481,6 +484,7 @@ public class OwnerList extends AppCompatActivity {
             myIntent.putExtra("conc_val", conc_val+"");
             myIntent.putExtra("note", note+"");
             myIntent.putExtra("comment", comment+"");
+            myIntent.putExtra("rfidCde", rfidCde+"");
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);
