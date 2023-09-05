@@ -17,6 +17,6 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="invScanSuccess">#D6F7D6</color>
     <color name="invScanNotFound">#EBAAAA</color>
-    <color name="invScanFoundInOtherRoom">#EDF7B2</color>
+    <color name="invScanFoundInOtherRoom">#FFFF71</color>
     <color name="colorAccent">#D81B60</color>
 </resources>
