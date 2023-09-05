@@ -198,32 +198,44 @@ public class ScanBarcodeActivity extends AppCompatActivity {
             decodedData = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_data_legacy));
             decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type_legacy));
         }
-        if(databaseHandler.checkScannedBarcodeDataAvailable(db,decodedData)){
-            unregisterReceiver(myBroadcastReceiver);
-            final Intent myIntent = new Intent(ScanBarcodeActivity.this,
-                    ContainerDetailsActivity.class);
-            myIntent.putExtra("user_id", selectedUserId);
-            myIntent.putExtra("site_id", loggedinUserSiteId);
-            myIntent.putExtra("token", token);
-            myIntent.putExtra("sso", sso);
-            myIntent.putExtra("md5pwd", md5Pwd);
-            myIntent.putExtra("loggedinUsername", loggedinUsername);
-            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-            myIntent.putExtra("site_name", site_name);
-            myIntent.putExtra("decodedData", decodedData);
-            myIntent.putExtra("empName", empName);
-            startActivity(myIntent);
-        }else{
-            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
-            dlgAlert.setTitle("Safety Stratus");
-            dlgAlert.setMessage("Information for the container is not available on this device!");
-            dlgAlert.setPositiveButton("Ok",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            return;
-                        }
-                    });
-            dlgAlert.create().show();
+        if (decodedData.contains("LBL")) {
+            decodedData = decodedData.replaceAll("LBL", "");
+        }
+        decodedData = decodedData.replaceAll("\u0000", "");
+        decodedData =decodedData.trim();
+        boolean validtag = false;
+        String firstLetterTest = decodedData.trim().substring(0, 1);
+        if(firstLetterTest.equalsIgnoreCase("C")){
+            validtag = true;
+        }
+        if (validtag) {
+            if (databaseHandler.checkScannedBarcodeDataAvailable(db, decodedData)) {
+                unregisterReceiver(myBroadcastReceiver);
+                final Intent myIntent = new Intent(ScanBarcodeActivity.this,
+                        ContainerDetailsActivity.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("decodedData", decodedData);
+                myIntent.putExtra("empName", empName);
+                startActivity(myIntent);
+            } else {
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
+                dlgAlert.setTitle("Safety Stratus");
+                dlgAlert.setMessage("Information for the container is not available on this device!");
+                dlgAlert.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        });
+                dlgAlert.create().show();
+            }
         }
 
     }

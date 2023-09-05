@@ -85,6 +85,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
     EditText status;
     EditText notes;
     EditText comments;
+    EditText rfidCode;
     EditText concentration;
     EditText concentrationUnit;
     ConstraintLayout header;
@@ -214,6 +215,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         notes = (EditText)findViewById(R.id.locationNotes);
         location = (EditText)findViewById(R.id.location);
         comments = (EditText)findViewById(R.id.comment);
+        rfidCode = (EditText)findViewById(R.id.rfidCode);
         status = (EditText)findViewById(R.id.status);
         concentration = (EditText)findViewById(R.id.concentration);
         concentrationUnit = (EditText)findViewById(R.id.concUnit);
@@ -231,6 +233,13 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             name.setText(inv.getProductName());
             cas.setText(inv.getCas_number());
             code.setText(inv.getCode());
+            if (inv.getRfidCode().trim().length()>0){
+                rfidCode.setText(inv.getRfidCode());
+            }else{
+                rfidCode.setText("");
+                rfidCode.setEnabled(true);
+                rfidCode.setFocusableInTouchMode(true);
+            }
             if(selectedFacil.trim().length()==0){
                 selectedFacil = inv.getFacil_id();
             }
@@ -272,6 +281,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             name.setText("");
             cas.setText("");
             code.setText("");
+            rfidCode.setText("");
             comments.setText("");
             notes.setText("");
             owner.setText("");
