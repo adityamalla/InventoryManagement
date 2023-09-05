@@ -16,7 +16,7 @@
     <color name="transparent">#80000000</color>
     <color name="colorPrimaryDark">#00574B</color>
     <color name="invScanSuccess">#D6F7D6</color>
-    <color name="invScanNotFound">#EF8381</color>
-    <color name="invScanFoundInOtherRoom">#FFD14E</color>
+    <color name="invScanNotFound">#EBAAAA</color>
+    <color name="invScanFoundInOtherRoom">#EDF7B2</color>
     <color name="colorAccent">#D81B60</color>
 </resources>

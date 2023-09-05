@@ -501,7 +501,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     else{
                         boolean checkScannedBarcodeExists = false;
                         for (int g=0;g<scannedInvList.size();g++){
-                            if (scannedInvList.get(g).getCode().equalsIgnoreCase(enteredbarcode)){
+                            if (scannedInvList.get(g).getRfidCode().equalsIgnoreCase(enteredbarcode)|| scannedInvList.get(g).getCode().equalsIgnoreCase(enteredbarcode)){
                                 checkScannedBarcodeExists = true;
                                 if(!scannedInvList.get(g).isFlag()) {
                                     scannedInvList.get(g).setFlag(true);
@@ -870,7 +870,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             } else {
                 boolean checkScannedBarcodeExists = false;
                 for (int g = 0; g < scannedInvList.size(); g++) {
-                    if (scannedInvList.get(g).getCode().equalsIgnoreCase(decodedData)) {
+                    if (scannedInvList.get(g).getRfidCode().equalsIgnoreCase(decodedData)|| scannedInvList.get(g).getCode().equalsIgnoreCase(decodedData)) {
                         checkScannedBarcodeExists = true;
                         if (!scannedInvList.get(g).isFlag()) {
                             scannedInvList.get(g).setFlag(true);
