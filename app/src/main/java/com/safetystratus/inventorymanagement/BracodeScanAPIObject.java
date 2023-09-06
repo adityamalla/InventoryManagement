@@ -7,6 +7,7 @@ public class BracodeScanAPIObject implements Serializable {
     public String token;
     public String site_id;
     public String code;
+    public String sec_code;
     public String status_id;
     public String room_id;
     public String object_id;
@@ -18,7 +19,7 @@ public class BracodeScanAPIObject implements Serializable {
     public String c_uom_id;
     public String concentration;
 
-    public BracodeScanAPIObject(String user_id, String token, String site_id, String code, String status_id, String room_id, String notes, String comments, String quantity, String uom_id, String c_uom_id, String concentration, String object_id, String object_table) {
+    public BracodeScanAPIObject(String user_id, String token, String site_id, String code, String status_id, String room_id, String notes, String comments, String quantity, String uom_id, String c_uom_id, String concentration, String object_id, String object_table, String sec_code) {
         this.user_id = user_id;
         this.token = token;
         this.site_id = site_id;
@@ -33,6 +34,15 @@ public class BracodeScanAPIObject implements Serializable {
         this.concentration = concentration;
         this.object_id = object_id;
         this.object_table = object_table;
+        this.sec_code = sec_code;
+    }
+
+    public String getSec_code() {
+        return sec_code;
+    }
+
+    public void setSec_code(String sec_code) {
+        this.sec_code = sec_code;
     }
 
     public String getObject_id() {

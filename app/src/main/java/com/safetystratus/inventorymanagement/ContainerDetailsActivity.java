@@ -585,6 +585,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 conc_val = concentration.getText().toString();
                 note = notes.getText().toString();
                 comment = comments.getText().toString();
+                rfidCde = rfidCode.getText().toString();
                 ContentValues cv = new ContentValues();
                 cv.put("code", code.getText().toString());
                 if(selectedRoom.trim().length()==0||selectedRoom==null||selectedRoom=="null"){
@@ -618,6 +619,18 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 }else{
                     cv.put("quantity", -1);
                     quan_val = "-1";
+                }
+                if(rfidCde!=null) {
+                    if (rfidCde.trim().length() > 0 && rfidCde != "null") {
+                        cv.put("sec_code", rfidCde);
+                    }
+                    else {
+                        cv.put("sec_code", "");
+                        rfidCde = "";
+                    }
+                }else{
+                    cv.put("sec_code", "");
+                    rfidCde = "";
                 }
                 if(conc_val!=null) {
                     if (conc_val.trim().length() > 0 && conc_val != "null") {
@@ -653,11 +666,12 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     cv.put("concentration_unit_abbrevation_id", -1);
                     selectedConcUnit = "-1";
                 }
+                Log.e("^^^^^^",rfidCde);
                 databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString(),"");
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(
                         selectedUserId,token,loggedinUserSiteId,code.getText().toString(),
-                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val,selectedOwner,"site_users"
+                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val,selectedOwner,"site_users",rfidCde
                 );
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";
@@ -807,6 +821,18 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     cv.put("quantity", -1);
                     quan_val = "-1";
                 }
+                if(rfidCde!=null) {
+                    if (rfidCde.trim().length() > 0 && rfidCde != "null") {
+                        cv.put("sec_code", rfidCde);
+                    }
+                    else {
+                        cv.put("sec_code", "");
+                        rfidCde = "";
+                    }
+                }else{
+                    cv.put("sec_code", "");
+                    rfidCde = "";
+                }
                 if(conc_val!=null) {
                     if (conc_val.trim().length() > 0 && conc_val != "null") {
                         cv.put("concentration", Integer.parseInt(conc_val));
@@ -845,7 +871,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString(),"");
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(
                         selectedUserId,token,loggedinUserSiteId,code.getText().toString(),
-                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val, selectedOwner,"site_users"
+                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val, selectedOwner,"site_users",rfidCde
                 );
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";
