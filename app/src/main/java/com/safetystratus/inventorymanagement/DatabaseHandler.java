@@ -548,11 +548,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int count = 0;
         ArrayList<MyObject> statusList = new ArrayList<MyObject>();
         String sql = "";
-        if(Integer.parseInt(role)!=4){
+        /*if(Integer.parseInt(role)!=4){
             sql = "SELECT id,status FROM inventory_status where id in (1,10)";
-        }else if (Integer.parseInt(role)==4){
+        }else if (Integer.parseInt(role)==4){*/
             sql = "SELECT id,status FROM inventory_status where id in (1,2,10)";
-        }
+        //}
         Cursor cursor = sqLiteDatabase.rawQuery(sql, null);
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
