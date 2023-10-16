@@ -22,6 +22,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -103,6 +104,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
     IntentModel model;
     Button addtoList;
     String scannedTotalCount="0";
+    String scannedAvailCount="0";
     ProgressDialog progressSynStart= null;
     ArrayList<InventoryObject> scannedInvList = null;
     ArrayList<String> scannedListfromContinue = new ArrayList<String>();
@@ -110,6 +112,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
     final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(ScanBarcodeReconciliation.this);
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
     IntentFilter filter = new IntentFilter();
+    Boolean scanInProgress = false;
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -470,7 +473,9 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
-                    int count = 0;
+                    ManualBarcodeAdd madd = new ManualBarcodeAdd();
+                    madd.execute(enteredbarcode);
+                    /*int count = 0;
                     if(!databaseHandler.checkScannedBarcodeDataAvailable(db,enteredbarcode)) {
                         boolean barcodeScanned = false;
                         for (int g=0;g<scannedInvList.size();g++){
@@ -585,12 +590,6 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
                         tagList.setAdapter(adapter1);
                     }else {
-                        /*CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
-                        tagList.removeAllViewsInLayout();
-                        adp.notifyDataSetChanged();
-                        ArrayList<InventoryObject> invList1 = databaseHandler.getALLInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"barcode");
-                        CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
-                        tagList.setAdapter(adapter1);*/
                         CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(scannedInvList, model, ScanBarcodeReconciliation.this);
                         tagList.setAdapter(adapter1);
                     }
@@ -605,7 +604,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                     return;
                                 }
                             });
-                    dlgAlert.create().show();
+                    dlgAlert.create().show();*/
                     //addtoList.setEnabled(true);
                 }
                 else{
@@ -803,9 +802,10 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             Bundle b = intent.getExtras();
-            if (action.equals(getResources().getString(R.string.activity_intent_filter_action))) {
+            if (action.equals(getResources().getString(R.string.activity_intent_filter_action)) && !scanInProgress) {
                 //  Received a barcode scan
                 try {
+                    scanInProgress = true;
                     CustomisedRFIDScannedList adapter = (CustomisedRFIDScannedList)tagList.getAdapter();
                     tagList.removeAllViewsInLayout();
                     adapter.notifyDataSetChanged();
@@ -819,6 +819,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
 
     private void displayScanResult(Intent initiatingIntent, String howDataReceived)
     {
+
         String decodedSource = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_source));
         String decodedData = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_data));
         String decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type));
@@ -841,7 +842,8 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             validtag = true;
         }
         if(validtag) {
-            if (!databaseHandler.checkScannedBarcodeDataAvailable(db, decodedData)) {
+            Log.e("Testing001","*"+decodedData);
+            /*if (!databaseHandler.checkScannedBarcodeDataAvailable(db, decodedData)) {
                 boolean barcodeScanned = false;
                 for (int g=0;g<scannedInvList.size();g++){
                     InventoryObject obj = scannedInvList.get(g);
@@ -867,7 +869,8 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         scanCount.setText(scannedTotalCount);
                     }
                 }
-            } else {
+            }
+            else {
                 boolean checkScannedBarcodeExists = false;
                 for (int g = 0; g < scannedInvList.size(); g++) {
                     if (scannedInvList.get(g).getRfidCode().equalsIgnoreCase(decodedData)|| scannedInvList.get(g).getCode().equalsIgnoreCase(decodedData)) {
@@ -938,34 +941,10 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         }
                     }
                 }
-            }
+            }*/
+            ScanBarcodeEntry cobj = new ScanBarcodeEntry();
+            cobj.execute(decodedData);
         }
-        if(found.isChecked()){
-            CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
-            tagList.removeAllViewsInLayout();
-            adp.notifyDataSetChanged();
-            ArrayList<InventoryObject> invList1 = databaseHandler.getFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"barcode");
-            CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
-            tagList.setAdapter(adapter1);
-        }else if(notfound.isChecked()){
-            CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
-            tagList.removeAllViewsInLayout();
-            adp.notifyDataSetChanged();
-            ArrayList<InventoryObject> invList1 = databaseHandler.getNotFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"barcode");
-            CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
-            tagList.setAdapter(adapter1);
-        }else {
-            /*CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
-            tagList.removeAllViewsInLayout();
-            adp.notifyDataSetChanged();
-            ArrayList<InventoryObject> invList1 = databaseHandler.getALLInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"barcode");
-            CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
-            tagList.setAdapter(adapter1);*/
-            CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(scannedInvList, model, ScanBarcodeReconciliation.this);
-            tagList.setAdapter(adapter1);
-        }
-        //CustomisedRFIDScannedList adapter = new CustomisedRFIDScannedList(scannedInvList,model, ScanBarcodeReconciliation.this);
-        //tagList.setAdapter(adapter);
     }
     public void setscancount(String total_scan_count, String count){
         if(progressSynStart!=null) {
@@ -987,6 +966,330 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             InputMethodManager inputManager = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
             inputManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
         } catch (Exception e) {
+        }
+    }
+
+    class ScanBarcodeEntry extends AsyncTask<String, String, String> {
+        private ProgressDialog progressSync = new ProgressDialog(ScanBarcodeReconciliation.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(ScanBarcodeReconciliation.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            // disable dismiss by tapping outside of the dialog
+            progressSync.setTitle("");
+            progressSync.setMessage("Scanning in progress..");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(450, 200);
+            super.onPreExecute();
+        }
+        @SuppressLint("WrongThread")
+        @Override
+        protected String doInBackground(String... params) {
+            db.beginTransaction();
+            try {
+                String decodedData = params[0];
+                int count = 0;
+                    if (!databaseHandler.checkScannedBarcodeDataAvailable(db, decodedData)) {
+                        boolean barcodeScanned = false;
+                        for (int g=0;g<scannedInvList.size();g++){
+                            InventoryObject obj = scannedInvList.get(g);
+                            if (obj.getRfidCode().equalsIgnoreCase(decodedData)||obj.getCode().equalsIgnoreCase(decodedData)){
+                                barcodeScanned = true;
+                                break;
+                            }
+                        }
+                        if(!barcodeScanned) {
+                            scannedInvList.add(0,new InventoryObject("N/A", "N/A", "-1", decodedData, "1", "N/A", true, "0",false,false,true));
+                            ContentValues cv = new ContentValues();
+                            cv.put("location_id", selectedFacil);
+                            cv.put("room_id", selectedRoom);
+                            cv.put("inventory_id", -1);
+                            cv.put("scanned_by", selectedUserId);
+                            cv.put("reconc_id", reconc_id);
+                            cv.put("code", decodedData);
+                            cv.put("scanned", 1);
+                            boolean isInserted = databaseHandler.insertScannedInvDataOutofLocationDataBarcode(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                            if (isInserted) {
+                                count = Integer.parseInt(scannedTotalCount) + 1;
+                                scannedTotalCount = String.valueOf(count);
+                            }
+                        }
+                    }
+                    else {
+                        boolean checkScannedBarcodeExists = false;
+                        for (int g = 0; g < scannedInvList.size(); g++) {
+                            if (scannedInvList.get(g).getRfidCode().equalsIgnoreCase(decodedData)|| scannedInvList.get(g).getCode().equalsIgnoreCase(decodedData)) {
+                                checkScannedBarcodeExists = true;
+                                if (!scannedInvList.get(g).isFlag()) {
+                                    scannedInvList.get(g).setFlag(true);
+                                    scannedInvList.get(g).setBelongsToRoom(true);
+                                    scannedInvList.get(g).setBelongsToNone(false);
+                                    scannedInvList.get(g).setBelongsToOtherRoom(false);
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("location_id", selectedFacil);
+                                    cv.put("room_id", selectedRoom);
+                                    cv.put("inventory_id", Integer.parseInt(scannedInvList.get(g).getInv_id()));
+                                    cv.put("scanned_by", selectedUserId);
+                                    cv.put("reconc_id", reconc_id);
+                                    cv.put("scanned", 1);
+                                    databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                    int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom, selectedUserId, reconc_id);
+                                    count = Integer.parseInt(scannedTotalCount) + 1;
+                                    scannedTotalCount = String.valueOf(count);
+                                    scannedAvailCount = String.valueOf(scanned);
+                                    InventoryObject inv = scannedInvList.get(g);
+                                    scannedInvList.remove(g);
+                                    scannedInvList.add(0, inv);
+                                }
+                            }
+                        }
+                        if(!checkScannedBarcodeExists){
+                            InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),decodedData);
+                            if (inv == null)
+                                scannedInvList.add(0,new InventoryObject("N/A","N/A","-1",decodedData,"1","N/A",true,"0",false,false,true));
+                            else
+                                scannedInvList.add(0,inv);
+                            ContentValues cv = new ContentValues();
+                            cv.put("location_id", selectedFacil);
+                            cv.put("room_id", selectedRoom);
+                            cv.put("inventory_id", -1);
+                            cv.put("scanned_by", selectedUserId);
+                            cv.put("reconc_id", reconc_id);
+                            cv.put("code", decodedData);
+                            cv.put("scanned", 1);
+                            boolean isInserted = databaseHandler.insertScannedInvDataOutofLocationDataBarcode(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                            if (isInserted) {
+                                count = Integer.parseInt(scannedTotalCount) + 1;
+                                scannedTotalCount = String.valueOf(count);
+                            }
+                        }
+                        ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
+                        for (int i = 0; i < disposedinvList.size(); i++) {
+                            if (disposedinvList.get(i).getCode().equalsIgnoreCase(decodedData)) {
+                                if (!disposedinvList.get(i).isFlag()) {
+                                    disposedinvList.get(i).setFlag(true);
+                                    disposedinvList.get(i).setBelongsToRoom(true);
+                                    disposedinvList.get(i).setBelongsToNone(false);
+                                    disposedinvList.get(i).setBelongsToOtherRoom(false);
+                                    ContentValues cv = new ContentValues();
+                                    cv.put("location_id", selectedFacil);
+                                    cv.put("room_id", selectedRoom);
+                                    cv.put("inventory_id", Integer.parseInt(disposedinvList.get(i).getInv_id()));
+                                    cv.put("scanned_by", selectedUserId);
+                                    cv.put("scanned", 1);
+                                    cv.put("reconc_id", reconc_id);
+                                    databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                    count = Integer.parseInt(scannedTotalCount) + 1;
+                                    scannedTotalCount = String.valueOf(count);
+                                }
+                            }
+                        }
+                    }
+            } finally {
+                db.endTransaction();
+                // progress.dismiss();
+            }
+            return "completed";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            if(found.isChecked()){
+                CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
+                tagList.removeAllViewsInLayout();
+                adp.notifyDataSetChanged();
+                ArrayList<InventoryObject> invList1 = databaseHandler.getFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"barcode");
+                CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
+                tagList.setAdapter(adapter1);
+            }else if(notfound.isChecked()){
+                CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
+                tagList.removeAllViewsInLayout();
+                adp.notifyDataSetChanged();
+                ArrayList<InventoryObject> invList1 = databaseHandler.getNotFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"barcode");
+                CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
+                tagList.setAdapter(adapter1);
+            }else {
+                CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(scannedInvList, model, ScanBarcodeReconciliation.this);
+                tagList.setAdapter(adapter1);
+            }
+            scanCount.setText(String.valueOf(scannedTotalCount));
+            setscancount(String.valueOf(scannedTotalCount), String.valueOf(scannedAvailCount));
+            if (progressSync != null && progressSync.isShowing()){
+                progressSync.dismiss();
+                progressSync = null;
+                scanInProgress = false;
+            }
+        }
+    }
+    class ManualBarcodeAdd extends AsyncTask<String, String, String> {
+        private ProgressDialog progressSync = new ProgressDialog(ScanBarcodeReconciliation.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(ScanBarcodeReconciliation.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            // disable dismiss by tapping outside of the dialog
+            progressSync.setTitle("");
+            progressSync.setMessage("Scanning in progress..");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(450, 200);
+            super.onPreExecute();
+        }
+        @SuppressLint("WrongThread")
+        @Override
+        protected String doInBackground(String... params) {
+            db.beginTransaction();
+            try {
+                String enteredbarcode = params[0];
+                int count = 0;
+                if(!databaseHandler.checkScannedBarcodeDataAvailable(db,enteredbarcode)) {
+                    boolean barcodeScanned = false;
+                    for (int g=0;g<scannedInvList.size();g++){
+                        InventoryObject obj = scannedInvList.get(g);
+                        if (obj.getRfidCode().equalsIgnoreCase(enteredbarcode)||obj.getCode().equalsIgnoreCase(enteredbarcode)){
+                            barcodeScanned = true;
+                            break;
+                        }
+                    }
+                    if (!barcodeScanned) {
+                        scannedInvList.add(0,new InventoryObject("N/A", "N/A", "-1", enteredbarcode, "1", "N/A", true, "0",false,false,true));
+                        ContentValues cv = new ContentValues();
+                        cv.put("location_id", selectedFacil);
+                        cv.put("room_id", selectedRoom);
+                        cv.put("inventory_id", -1);
+                        cv.put("scanned_by", selectedUserId);
+                        cv.put("code", enteredbarcode);
+                        cv.put("scanned", 1);
+                        cv.put("reconc_id", reconc_id);
+                        boolean isInserted = databaseHandler.insertScannedInvDataOutofLocationDataBarcode(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        if (isInserted) {
+                            count = Integer.parseInt(scannedTotalCount) + 1;
+                            scannedTotalCount = String.valueOf(count);
+                        }
+                    }
+                }
+                else{
+                    boolean checkScannedBarcodeExists = false;
+                    for (int g=0;g<scannedInvList.size();g++){
+                        if (scannedInvList.get(g).getRfidCode().equalsIgnoreCase(enteredbarcode)|| scannedInvList.get(g).getCode().equalsIgnoreCase(enteredbarcode)){
+                            checkScannedBarcodeExists = true;
+                            if(!scannedInvList.get(g).isFlag()) {
+                                scannedInvList.get(g).setFlag(true);
+                                scannedInvList.get(g).setBelongsToRoom(true);
+                                scannedInvList.get(g).setBelongsToNone(false);
+                                scannedInvList.get(g).setBelongsToOtherRoom(false);
+                                ContentValues cv = new ContentValues();
+                                cv.put("location_id", selectedFacil);
+                                cv.put("room_id", selectedRoom);
+                                cv.put("inventory_id", Integer.parseInt(scannedInvList.get(g).getInv_id()));
+                                cv.put("scanned_by", selectedUserId);
+                                cv.put("scanned", 1);
+                                cv.put("reconc_id", reconc_id);
+                                databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                int scanned = databaseHandler.checkScannedDataCount(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedFacil, selectedRoom,selectedUserId,reconc_id);
+                                count = Integer.parseInt(scannedTotalCount)+1;
+                                scannedTotalCount = String.valueOf(count);
+                                scannedAvailCount = String.valueOf(scanned);
+                                InventoryObject inv = scannedInvList.get(g);
+                                scannedInvList.remove(g);
+                                scannedInvList.add(0,inv);
+                            }
+                        }
+                    }
+                    if(!checkScannedBarcodeExists){
+                        InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),enteredbarcode);
+                        if (inv == null)
+                            scannedInvList.add(0,new InventoryObject("N/A","N/A","-1",enteredbarcode,"1","N/A",true,"0",false,false,true));
+                        else
+                            scannedInvList.add(0,inv);
+                        ContentValues cv = new ContentValues();
+                        cv.put("location_id", selectedFacil);
+                        cv.put("room_id", selectedRoom);
+                        cv.put("inventory_id", -1);
+                        cv.put("scanned_by", selectedUserId);
+                        cv.put("reconc_id", reconc_id);
+                        cv.put("code", enteredbarcode);
+                        cv.put("scanned", 1);
+                        boolean isInserted = databaseHandler.insertScannedInvDataOutofLocationDataBarcode(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                        if (isInserted) {
+                            count = Integer.parseInt(scannedTotalCount) + 1;
+                            scannedTotalCount = String.valueOf(count);
+                        }
+                    }
+                    ArrayList<InventoryObject> disposedinvList = databaseHandler.getDisposedInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE), selectedRoom);
+                    for (int i = 0; i < disposedinvList.size(); i++) {
+                        if (disposedinvList.get(i).getCode().equalsIgnoreCase(enteredbarcode)){
+                            if (!disposedinvList.get(i).isFlag()) {
+                                disposedinvList.get(i).setFlag(true);
+                                disposedinvList.get(i).setBelongsToRoom(true);
+                                disposedinvList.get(i).setBelongsToNone(false);
+                                disposedinvList.get(i).setBelongsToOtherRoom(false);
+                                ContentValues cv = new ContentValues();
+                                cv.put("location_id", selectedFacil);
+                                cv.put("room_id", selectedRoom);
+                                cv.put("inventory_id", Integer.parseInt(disposedinvList.get(i).getInv_id()));
+                                cv.put("scanned_by", selectedUserId);
+                                cv.put("scanned", 1);
+                                cv.put("reconc_id", reconc_id);
+                                databaseHandler.insertScannedInvData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                                count = Integer.parseInt(scannedTotalCount)+1;
+                                scannedTotalCount = String.valueOf(count);
+                            }
+                        }
+                    }
+                }
+            } finally {
+                db.endTransaction();
+                // progress.dismiss();
+            }
+            return "completed";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            scanCount.setText(String.valueOf(scannedTotalCount));
+            if(found.isChecked()){
+                CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
+                tagList.removeAllViewsInLayout();
+                adp.notifyDataSetChanged();
+                ArrayList<InventoryObject> invList1 = databaseHandler.getFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"barcode");
+                CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
+                tagList.setAdapter(adapter1);
+            }else if(notfound.isChecked()){
+                CustomisedRFIDScannedList adp = (CustomisedRFIDScannedList)tagList.getAdapter();
+                tagList.removeAllViewsInLayout();
+                adp.notifyDataSetChanged();
+                ArrayList<InventoryObject> invList1 = databaseHandler.getNotFoundInventoryList(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom,reconc_id,"barcode");
+                CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(invList1,model, ScanBarcodeReconciliation.this);
+                tagList.setAdapter(adapter1);
+            }else {
+                CustomisedRFIDScannedList adapter1 = new CustomisedRFIDScannedList(scannedInvList, model, ScanBarcodeReconciliation.this);
+                tagList.setAdapter(adapter1);
+            }
+            enteredBarCodeValue.setText("");
+            setscancount(String.valueOf(scannedTotalCount), String.valueOf(scannedAvailCount));
+            if (progressSync != null && progressSync.isShowing()){
+                progressSync.dismiss();
+                progressSync = null;
+            }
+            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeReconciliation.this);
+            dlgAlert.setTitle("Safety Stratus");
+            dlgAlert.setMessage("Barcode added to the scanned list!!");
+            dlgAlert.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            addtoList.setEnabled(true);
+                            return;
+                        }
+                    });
+            dlgAlert.create().show();
         }
     }
 }
