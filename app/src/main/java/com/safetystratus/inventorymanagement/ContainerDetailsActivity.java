@@ -610,7 +610,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 cv.put("concentration_unit_abbrevation", selectedConcUnitName);
                 if(quan_val!=null) {
                     if (quan_val.trim().length() > 0 && quan_val != "null") {
-                        cv.put("quantity", Integer.parseInt(quan_val));
+                        cv.put("quantity", Float.parseFloat(quan_val));
                     }
                     else {
                         cv.put("quantity", -1);
@@ -634,7 +634,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 }
                 if(conc_val!=null) {
                     if (conc_val.trim().length() > 0 && conc_val != "null") {
-                        cv.put("concentration", Integer.parseInt(conc_val));
+                        cv.put("concentration", Float.parseFloat(conc_val));
                     }
                     else {
                         cv.put("concentration", -1);
@@ -811,7 +811,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 cv.put("concentration_unit_abbrevation", selectedConcUnitName);
                 if(quan_val!=null) {
                     if (quan_val.trim().length() > 0 && quan_val != "null") {
-                        cv.put("quantity", Integer.parseInt(quan_val));
+                        cv.put("quantity", Float.parseFloat(quan_val));
                     }
                     else {
                         cv.put("quantity", -1);
@@ -835,7 +835,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 }
                 if(conc_val!=null) {
                     if (conc_val.trim().length() > 0 && conc_val != "null") {
-                        cv.put("concentration", Integer.parseInt(conc_val));
+                        cv.put("concentration", Float.parseFloat(conc_val));
                     }
                     else {
                         cv.put("concentration", -1);
