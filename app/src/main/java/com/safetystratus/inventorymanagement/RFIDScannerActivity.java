@@ -259,7 +259,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
 
         if (scannedOutOflocationListfromContinue.size()>0){
             for (int h=0;h<scannedOutOflocationListfromContinue.size();h++) {
-                InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),scannedOutOflocationListfromContinue.get(h));
+                InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),scannedOutOflocationListfromContinue.get(h),selectedRoom);
                 if (inv == null)
                     scannedInvList.add(0,new InventoryObject(scannedOutOflocationListfromContinue.get(h),"N/A","-1","N/A","1","N/A",true,"0",false,false,true));
                 else
@@ -815,7 +815,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 InventoryObject obj = null;
                 if(scannedInvList.get(i).getRfidCode()!=null) {
                     if (scannedInvList.get(i).getRfidCode().trim().length() > 0) {
-                        if (newList.stream().anyMatch(scannedInvList.get(i).getRfidCode()::equalsIgnoreCase)) {
+                        if (newList.stream().anyMatch(scannedInvList.get(i).getRfidCode()::equalsIgnoreCase)
+                        ||newList.stream().anyMatch(scannedInvList.get(i).getCode()::equalsIgnoreCase)) {
                             if (!scannedInvList.get(i).isFlag()) {
                                 scannedInvList.get(i).setFlag(true);
                                 scannedInvList.get(i).setBelongsToRoom(true);
@@ -836,7 +837,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         for (int i = 0; i < disposedinvList.size(); i++) {
             if(disposedinvList.get(i).getRfidCode()!=null) {
                 if (disposedinvList.get(i).getRfidCode().trim().length() > 0) {
-                    if (newList.stream().anyMatch(disposedinvList.get(i).getRfidCode()::equalsIgnoreCase)) {
+                    if (newList.stream().anyMatch(disposedinvList.get(i).getRfidCode()::equalsIgnoreCase)||newList.stream().anyMatch(disposedinvList.get(i).getCode()::equalsIgnoreCase)) {
                         if (!disposedinvList.get(i).isFlag()) {
                             disposedinvList.get(i).setFlag(true);
                             disposedinvList.get(i).setBelongsToRoom(true);
@@ -857,7 +858,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         for (int k=0;k < newList.size();k++){
             if (!rfids.stream().anyMatch(newList.get(k)::equalsIgnoreCase)){
                 batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,"-1",selectedUserId, "1",reconc_id,newList.get(k)));
-                InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),newList.get(k));
+                InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),newList.get(k),selectedRoom);
                 if (inv == null)
                     scannedInvList.add(0,new InventoryObject(newList.get(k),"N/A","-1","N/A","1","N/A",true,"0",false,false,true));
                 else

@@ -1046,7 +1046,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                             }
                         }
                         if(!checkScannedBarcodeExists){
-                            InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),decodedData);
+                            InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),decodedData,selectedRoom);
                             if (inv == null)
                                 scannedInvList.add(0,new InventoryObject("N/A","N/A","-1",decodedData,"1","N/A",true,"0",false,false,true));
                             else
@@ -1202,7 +1202,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         }
                     }
                     if(!checkScannedBarcodeExists){
-                        InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),enteredbarcode);
+                        InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),enteredbarcode,selectedRoom);
                         if (inv == null)
                             scannedInvList.add(0,new InventoryObject("N/A","N/A","-1",enteredbarcode,"1","N/A",true,"0",false,false,true));
                         else

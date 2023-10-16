@@ -792,9 +792,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 }
                 InventoryObject obj = null;
                 if (rfidCode!=null&&!rfidCode.equalsIgnoreCase("null")) {
-                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, rfidCode);
+                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, rfidCode,room_id);
                 }else if (code!=null&&!code.equalsIgnoreCase("null")) {
-                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, code);
+                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, code,room_id);
                 }
                 if (obj == null)
                     inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true,"0",false,false,true));
@@ -901,9 +901,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 }
                 InventoryObject obj = null;
                 if (rfidCode!=null&&!rfidCode.equalsIgnoreCase("null")) {
-                     obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, rfidCode);
+                     obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, rfidCode,room_id);
                 }else if (code!=null&&!code.equalsIgnoreCase("null")) {
-                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, code);
+                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, code,room_id);
                 }
                 if (obj == null)
                     inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true,"0",false,false,true));
@@ -1355,14 +1355,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         }
     }
     @SuppressLint("Range")
-    public InventoryObject checkRFIDCodeExistsInOtherRooms(SQLiteDatabase sqLiteDatabase, String rfidorBarCde){
+    public InventoryObject checkRFIDCodeExistsInOtherRooms(SQLiteDatabase sqLiteDatabase, String rfidorBarCde, String room_id){
         InventoryObject inv = null;
         Cursor cursor = sqLiteDatabase.rawQuery(String.format("select " +
                 "ci.name,ci.sec_code,ci.code,ci.id,ci.quantity, ci.quantity_unit_abbreviation,ci.test_frequency from chemical_inventory ci \n" +
-                "where ci.sec_code = '"+rfidorBarCde+"' or ci.code = '"+rfidorBarCde+"' limit 1"), null);
-        Log.e("******03*****",String.format("select " +
-                "ci.name,ci.sec_code,ci.code,ci.id,ci.quantity, ci.quantity_unit_abbreviation,ci.test_frequency from chemical_inventory ci \n" +
-                "where ci.sec_code = '"+rfidorBarCde+"' or ci.code = '"+rfidorBarCde+"' limit 1")+"**");
+                "where (ci.sec_code = '"+rfidorBarCde+"' or ci.code = '"+rfidorBarCde+"') and ci.room_id!="+room_id+" limit 1"), null);
 
         if (cursor.moveToFirst()) {
                 String id = cursor.getString(cursor.getColumnIndex("id"));
