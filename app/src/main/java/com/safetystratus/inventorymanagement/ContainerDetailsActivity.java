@@ -208,9 +208,6 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         if (intent.getStringExtra("selectedSearchValue") != null) {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
-        if(intent.getStringExtra("rfidCde")!=null) {
-            rfidCde = intent.getStringExtra("rfidCde");
-        }
         uploadData = (Button) findViewById(R.id.uploadToWeb);
         save = (Button) findViewById(R.id.saveLocal);
         name = (EditText)findViewById(R.id.productName);
