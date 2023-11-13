@@ -167,6 +167,7 @@ public class RFIDActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 building.setClickable(false);
+                building.setEnabled(false);
                 /*final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
                 final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
                 try {
@@ -205,6 +206,7 @@ public class RFIDActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 room.setClickable(false);
+                room.setEnabled(false);
                 final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
                 final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
                 if(selectedFacil.length()>0){
@@ -248,6 +250,7 @@ public class RFIDActivity extends AppCompatActivity {
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
                                     room.setClickable(true);
+                                    room.setEnabled(true);
                                     dialog.dismiss();
                                 }
                             });
@@ -463,7 +466,7 @@ public class RFIDActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             // TODO Auto-generated method stub
             super.onPostExecute(result);
-            building.setClickable(true);
+            //building.setClickable(true);
             //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
             if (progressSync != null && progressSync.isShowing()){
                 progressSync.dismiss();
@@ -535,7 +538,7 @@ public class RFIDActivity extends AppCompatActivity {
         protected void onPostExecute(String result) {
             // TODO Auto-generated method stub
             super.onPostExecute(result);
-            room.setClickable(true);
+            //room.setClickable(true);
             //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
             if (progressSync != null && progressSync.isShowing()){
                 progressSync.dismiss();
@@ -568,6 +571,8 @@ public class RFIDActivity extends AppCompatActivity {
                 dlgAlert.setPositiveButton("Ok",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int which) {
+                                room.setClickable(true);
+                                room.setEnabled(true);
                                 return;
                             }
                         });
