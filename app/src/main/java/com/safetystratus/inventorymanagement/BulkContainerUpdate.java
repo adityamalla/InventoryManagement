@@ -636,6 +636,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
+                        progressSync.dismiss();
                         AlertDialog.Builder dlgAlert = new AlertDialog.Builder(BulkContainerUpdate.this);
                         dlgAlert.setTitle("Safety Stratus");
                         dlgAlert.setMessage("Error response: Request timed out! Your data is saved offline");

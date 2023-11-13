@@ -328,6 +328,17 @@ public class SyncDBActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
+                        progressSync.dismiss();
+                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
+                        dlgAlert.setTitle("Safety Stratus");
+                        dlgAlert.setMessage("Error response: Request timed out! Your data is saved offline");
+                        dlgAlert.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        return;
+                                    }
+                                });
                     }
                 });
                 int socketTimeout = 60000;//30 seconds - change to what you want
