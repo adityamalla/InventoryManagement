@@ -260,27 +260,28 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         scanRFID.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                unregisterReceiver(myBroadcastReceiver);
                 Intent myIntent = new Intent(ScanBarcodeReconciliation.this,
                         RFIDScannerActivity.class);
-            myIntent.putExtra("user_id", selectedUserId);
-            myIntent.putExtra("site_id", loggedinUserSiteId);
-            myIntent.putExtra("token", token);
-            myIntent.putExtra("sso", sso);
-            myIntent.putExtra("md5pwd", md5Pwd);
-            myIntent.putExtra("loggedinUsername", loggedinUsername);
-            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-            myIntent.putExtra("site_name", site_name);
-            myIntent.putExtra("selectedFacilName", selectedFacilName);
-            myIntent.putExtra("selectedFacil", selectedFacil+"");
-            myIntent.putExtra("selectedRoomName", selectedRoomName);
-            myIntent.putExtra("selectedRoom", selectedRoom+"");
-            myIntent.putExtra("empName", empName);
-            myIntent.putExtra("reconc_id", reconc_id);
-            myIntent.putExtra("total_inventory", total_inventory+"");
-            myIntent.putExtra("pageLoadTemp", "-1");
-            myIntent.putExtra("scannedInvList", scannedInvList);
-            myIntent.putExtra("scannedTotalCount", scannedTotalCount+"");
-            startActivity(myIntent);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("empName", empName);
+                myIntent.putExtra("reconc_id", reconc_id);
+                myIntent.putExtra("total_inventory", total_inventory+"");
+                myIntent.putExtra("pageLoadTemp", "-1");
+                myIntent.putExtra("scannedInvList", scannedInvList);
+                myIntent.putExtra("scannedTotalCount", scannedTotalCount+"");
+                startActivity(myIntent);
             }
         });
         saveScanData.setOnClickListener(new View.OnClickListener() {
@@ -369,6 +370,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                         //Process os success response
                                         String res = response.toString();
                                         databaseHandler.delSavedScanData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedUserId,selectedRoom,reconc_id);
+                                        unregisterReceiver(myBroadcastReceiver);
                                         final Intent myIntent = new Intent(ScanBarcodeReconciliation.this,
                                                 PostSuccess.class);
                                         myIntent.putExtra("user_id", selectedUserId);
@@ -394,6 +396,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                                 dlgAlert.setPositiveButton("Ok",
                                         new DialogInterface.OnClickListener() {
                                             public void onClick(DialogInterface dialog, int which) {
+                                                unregisterReceiver(myBroadcastReceiver);
                                                 final Intent myIntent = new Intent(ScanBarcodeReconciliation.this,
                                                         PostSuccess.class);
                                                 myIntent.putExtra("user_id", selectedUserId);
@@ -426,6 +429,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                         dlgAlert.setPositiveButton("Ok",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
+                                        unregisterReceiver(myBroadcastReceiver);
                                         final Intent myIntent = new Intent(ScanBarcodeReconciliation.this,
                                                 PostSuccess.class);
                                         myIntent.putExtra("user_id", selectedUserId);
@@ -625,6 +629,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 InventoryObject selectedItem = (InventoryObject) parent.getItemAtPosition(position);
+                unregisterReceiver(myBroadcastReceiver);
                 final Intent myIntent = new Intent(ScanBarcodeReconciliation.this,
                         Container_Info.class);
                 myIntent.putExtra("user_id", selectedUserId);

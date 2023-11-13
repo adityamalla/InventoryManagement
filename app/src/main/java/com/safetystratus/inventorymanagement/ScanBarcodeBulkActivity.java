@@ -147,6 +147,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
         scanRFID.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                unregisterReceiver(myBroadcastReceiver);
                 final Intent myIntent = new Intent(ScanBarcodeBulkActivity.this,
                         BulkUpdateActivity.class);
                 myIntent.putExtra("user_id", selectedUserId);
@@ -209,6 +210,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
             @Override
             public void onClick(View view) {
                 if(codelistfromIntent.size()>0){
+                    unregisterReceiver(myBroadcastReceiver);
                     final Intent myIntent = new Intent(ScanBarcodeBulkActivity.this,
                             BulkContainerUpdate.class);
                     myIntent.putExtra("user_id", selectedUserId);
@@ -325,7 +327,7 @@ public class ScanBarcodeBulkActivity extends AppCompatActivity{
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            //unregisterReceiver(myBroadcastReceiver);
+            unregisterReceiver(myBroadcastReceiver);
             final Intent myIntent = new Intent(ScanBarcodeBulkActivity.this,
                     BulkUpdateActivity.class);
             myIntent.putExtra("user_id", selectedUserId);

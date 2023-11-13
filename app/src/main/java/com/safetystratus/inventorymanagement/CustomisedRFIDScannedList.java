@@ -72,13 +72,13 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
             productCode.setText(list.get(position).getCode());
         }
         volumne.setText(list.get(position).getVolume());
-        Log.e("==========================","==");
+       /* Log.e("==========================","==");
         Log.e("rfidcode>>>",list.get(position).getRfidCode()+"*");
         Log.e("code>>>",list.get(position).getCode()+"*");
         Log.e("isBelongsToRoom>>>",list.get(position).isBelongsToRoom()+"**");
         Log.e("isBelongsToOtherRoom>>>",list.get(position).isBelongsToOtherRoom()+"**");
         Log.e("isBelongsToNone>>>",list.get(position).isBelongsToNone()+"**");
-        Log.e("==========================","==");
+        Log.e("==========================","==");*/
         // Check the flag value and set the background color of the view
         view.setBackgroundResource(R.color.white);
 
