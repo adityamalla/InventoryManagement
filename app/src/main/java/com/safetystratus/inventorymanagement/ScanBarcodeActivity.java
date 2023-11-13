@@ -315,8 +315,10 @@ public class ScanBarcodeActivity extends AppCompatActivity {
                 decodedDataScanned = params[0];
                 scannedBarcodeExists = databaseHandler.checkScannedBarcodeDataAvailable(db, decodedDataScanned);
             } finally {
-                //db.endTransaction();
-                // progress.dismiss();
+                db.close();
+                if (databaseHandler != null) {
+                    databaseHandler.close();
+                }
             }
             return "completed";
         }
