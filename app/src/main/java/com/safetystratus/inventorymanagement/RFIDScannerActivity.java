@@ -366,6 +366,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         saveScanData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                saveScanData.setEnabled(false);
                 Gson gson = new Gson();
                 ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),reconc_id);
                 String rfidJson = gson.toJson(rfidScanDataObjs);
@@ -390,6 +391,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
+                                    saveScanData.setEnabled(true);
                                     return;
                                 }
                             });
@@ -403,7 +405,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         completeScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Gson gson = new Gson();
+                completeScan.setEnabled(false);
+                /*Gson gson = new Gson();
                 ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),reconc_id);
                 RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
                         token,loggedinUserSiteId,selectedRoom,gson.toJson(rfidScanDataObjs),reconc_id
@@ -527,7 +530,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     }
                 } catch (JsonProcessingException | JSONException e) {
                     e.printStackTrace();
-                }
+                }*/
+                CompleteRFIDScan obj  = new CompleteRFIDScan();
+                obj.execute();
             }
         });
         backToHome.setOnClickListener(new View.OnClickListener() {
@@ -948,4 +953,182 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         }
         return false; // no non-ASCII characters found
     }
+
+    class CompleteRFIDScan extends AsyncTask<Integer, String, String> {
+        private ProgressDialog progressSync = new ProgressDialog(RFIDScannerActivity.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDScannerActivity.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        String jsonString = "";
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            // disable dismiss by tapping outside of the dialog
+            progressSync.setTitle("");
+            progressSync.setMessage("Reconciliation is currently underway.");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(450, 200);
+            super.onPreExecute();
+        }
+        @SuppressLint("WrongThread")
+        @Override
+        protected String doInBackground(Integer... params) {
+            // db.beginTransaction();
+            try {
+                Gson gson = new Gson();
+                ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),reconc_id);
+                RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
+                        token,loggedinUserSiteId,selectedRoom,gson.toJson(rfidScanDataObjs),reconc_id
+                );
+                ObjectMapper mapper = new ObjectMapper();
+                jsonString = mapper.writeValueAsString(postScanObj);
+                ContentValues cv = new ContentValues();
+                cv.put("json_data", jsonString);
+                cv.put("location_id", selectedFacil);
+                cv.put("room_id", selectedRoom);
+                cv.put("user_id", selectedUserId);
+                cv.put("scan_type", "rfid");
+                cv.put("reconc_id", reconc_id);
+                databaseHandler.insertScannedInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+
+            }catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            finally {
+                db.close();
+                if (databaseHandler != null) {
+                    databaseHandler.close();
+                }
+            }
+            return "completed";
+        }
+        @Override
+        protected void onPostExecute(String res) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(res);
+            //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            boolean connected;
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if(result!=null) {
+                if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                        connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+                    //we are connected to a network
+                    connected = true;
+                } else
+                    connected = false;
+            }else{
+                NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+                if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+                    connected = true;
+                }else{
+                    connected = false;
+                }
+            }
+            try {
+                if (connected) {
+                    String URL = "https://" + host + ApiConstants.syncpostscanneddata;
+                    String finalJsonString = jsonString;
+                    RequestQueue requestQueue = Volley.newRequestQueue(RFIDScannerActivity.this);
+                    JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    //Process os success response
+                                    String res = response.toString();
+                                    if (progressSync != null && progressSync.isShowing()){
+                                        progressSync.dismiss();
+                                        progressSync = null;
+                                    }
+                                    databaseHandler.delSavedScanData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedUserId, selectedRoom, reconc_id);
+                                    final Intent myIntent = new Intent(RFIDScannerActivity.this,
+                                            PostSuccess.class);
+                                    myIntent.putExtra("user_id", selectedUserId);
+                                    myIntent.putExtra("site_id", loggedinUserSiteId);
+                                    myIntent.putExtra("token", token);
+                                    myIntent.putExtra("sso", sso);
+                                    myIntent.putExtra("md5pwd", md5Pwd);
+                                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                    myIntent.putExtra("site_name", site_name);
+                                    myIntent.putExtra("empName", empName);
+                                    myIntent.putExtra("selectedRoom", selectedRoom + "");
+                                    myIntent.putExtra("selectedFacil", selectedFacil + "");
+                                    startActivity(myIntent);
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                            if (progressSync != null && progressSync.isShowing()){
+                                progressSync.dismiss();
+                                progressSync = null;
+                            }
+                            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDScannerActivity.this);
+                            dlgAlert.setTitle("Safety Stratus");
+                            dlgAlert.setMessage("Error response: Request timed out! Your data is saved offline");
+                            dlgAlert.setPositiveButton("Ok",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            final Intent myIntent = new Intent(RFIDScannerActivity.this,
+                                                    PostSuccess.class);
+                                            myIntent.putExtra("user_id", selectedUserId);
+                                            myIntent.putExtra("site_id", loggedinUserSiteId);
+                                            myIntent.putExtra("token", token);
+                                            myIntent.putExtra("sso", sso);
+                                            myIntent.putExtra("md5pwd", md5Pwd);
+                                            myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                            myIntent.putExtra("site_name", site_name);
+                                            myIntent.putExtra("empName", empName);
+                                            myIntent.putExtra("selectedRoom", selectedRoom + "");
+                                            myIntent.putExtra("selectedFacil", selectedFacil + "");
+                                            startActivity(myIntent);
+                                            return;
+                                        }
+                                    });
+                            dlgAlert.create().show();
+                        }
+                    });
+                    int socketTimeout = 60000;//30 seconds - change to what you want
+                    RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, 2, 2);
+                    request_json.setRetryPolicy(policy);
+                    // add the request object to the queue to be executed
+                    requestQueue.add(request_json);
+                } else {
+                    if (progressSync != null && progressSync.isShowing()){
+                        progressSync.dismiss();
+                        progressSync = null;
+                    }
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDScannerActivity.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Your internet connection is not active! Your data is saved offline");
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    final Intent myIntent = new Intent(RFIDScannerActivity.this,
+                                            PostSuccess.class);
+                                    myIntent.putExtra("user_id", selectedUserId);
+                                    myIntent.putExtra("site_id", loggedinUserSiteId);
+                                    myIntent.putExtra("token", token);
+                                    myIntent.putExtra("sso", sso);
+                                    myIntent.putExtra("md5pwd", md5Pwd);
+                                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                    myIntent.putExtra("site_name", site_name);
+                                    myIntent.putExtra("empName", empName);
+                                    myIntent.putExtra("selectedRoom", selectedRoom + "");
+                                    myIntent.putExtra("selectedFacil", selectedFacil + "");
+                                    startActivity(myIntent);
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
+                }
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
