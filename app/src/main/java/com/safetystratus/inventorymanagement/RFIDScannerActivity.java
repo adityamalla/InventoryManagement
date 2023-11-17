@@ -249,12 +249,12 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 e.printStackTrace();
             }
         }
-        if (scannedListfromContinue.size()>0){
+        /*if (scannedListfromContinue.size()>0){
             scannedProgressCount.setText(scannedListfromContinue.size()+"/"+total_inventory);
             int percent = (scannedListfromContinue.size() * 100) / Integer.parseInt(total_inventory);
             scannedProgressPercentage.setText(percent + " %");
             progressVal.setProgress(percent);
-        }
+        }*/
 
 
         if (scannedOutOflocationListfromContinue.size()>0){
