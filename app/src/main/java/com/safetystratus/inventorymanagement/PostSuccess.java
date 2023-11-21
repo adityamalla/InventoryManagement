@@ -233,6 +233,7 @@ public class PostSuccess extends AppCompatActivity {
         postScanData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                postScanData.setEnabled(false);
                 boolean connected;
                 ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                 NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
@@ -252,15 +253,30 @@ public class PostSuccess extends AppCompatActivity {
                     }
                 }
                 if(connected){
-                    try {
-                        ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
-                        //SyncInventory sdb = new SyncInventory();
-                        //sdb.execute(jsonList);
-                        uploadScannedInventoryData(jsonList);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    } finally {
+                    int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedUserId);
+                    if(scannedJsonData > 0) {
+                        try {
+                            ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                            //SyncInventory sdb = new SyncInventory();
+                            //sdb.execute(jsonList);
+                            uploadScannedInventoryData(jsonList);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        } finally {
 
+                        }
+                    }else{
+                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(PostSuccess.this);
+                        dlgAlert.setTitle("Safety Stratus");
+                        dlgAlert.setMessage("There is no saved data to upload to CMS!");
+                        dlgAlert.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        postScanData.setEnabled(true);
+                                        return;
+                                    }
+                                });
+                        dlgAlert.create().show();
                     }
                 }else{
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(PostSuccess.this);
@@ -270,6 +286,7 @@ public class PostSuccess extends AppCompatActivity {
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
+                                    postScanData.setEnabled(true);
                                     return;
                                 }
                             });
@@ -364,6 +381,7 @@ public class PostSuccess extends AppCompatActivity {
                                                                 badge_notification.setVisibility(View.GONE);
                                                                 badge_notification.setText("");
                                                             }
+                                                            postScanData.setEnabled(true);
                                                             return;
                                                         }
                                                     });
@@ -383,6 +401,7 @@ public class PostSuccess extends AppCompatActivity {
 
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
+                                                postScanData.setEnabled(true);
                                                 return;
                                             }
                                         });

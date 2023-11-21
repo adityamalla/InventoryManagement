@@ -278,6 +278,7 @@ public class HomeActivity extends AppCompatActivity {
         postScanData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                postScanData.setEnabled(false);
                 if(connected){
                     int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedUserId);
                     if(scannedJsonData > 0) {
@@ -298,6 +299,7 @@ public class HomeActivity extends AppCompatActivity {
                         dlgAlert.setPositiveButton("Ok",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
+                                        postScanData.setEnabled(true);
                                         return;
                                     }
                                 });
@@ -311,6 +313,7 @@ public class HomeActivity extends AppCompatActivity {
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
+                                    postScanData.setEnabled(true);
                                     return;
                                 }
                             });
@@ -380,6 +383,7 @@ public class HomeActivity extends AppCompatActivity {
                                                         badge_notification.setVisibility(View.GONE);
                                                         badge_notification.setText("");
                                                     }
+                                                    postScanData.setEnabled(true);
                                                     return;
                                                 }
                                             });
@@ -398,6 +402,7 @@ public class HomeActivity extends AppCompatActivity {
                                 new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
+                                        postScanData.setEnabled(true);
                                         return;
                                     }
                                 });
