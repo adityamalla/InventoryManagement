@@ -394,7 +394,7 @@ class RFIDLocationHandler implements Readers.RFIDReaderEventHandler {
                     }
                     if (myTags[index].isContainsMultiTagLocateInfo()) {
                         //Get correcponding Tag locate info
-                        Log.e("Tag data>>",myTags[index].getTagID() + " " + myTags[index].MultiTagLocateInfo.getRelativeDistance());
+                        //Log.e("Tag data>>",myTags[index].getTagID() + " " + myTags[index].MultiTagLocateInfo.getRelativeDistance());
                         dist = String.valueOf(myTags[index].MultiTagLocateInfo.getRelativeDistance());
                         Log.d(TAG, "Tag relative distance " + dist);
                         if(Integer.parseInt(dist)>1)

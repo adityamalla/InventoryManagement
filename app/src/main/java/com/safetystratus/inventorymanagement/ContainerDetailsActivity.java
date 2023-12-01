@@ -121,7 +121,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         tv.setVisibility(View.VISIBLE);
         pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
-        Log.e("Host-->",host);
+        //Log.e("Host-->",host);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if(result!=null) {
@@ -681,7 +681,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     cv.put("concentration_unit_abbrevation_id", -1);
                     selectedConcUnit = "-1";
                 }
-                Log.e("^^^^^^",rfidCde);
+                //Log.e("^^^^^^",rfidCde);
                 databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString(),"");
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(

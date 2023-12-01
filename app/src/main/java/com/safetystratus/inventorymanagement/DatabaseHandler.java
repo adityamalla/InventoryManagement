@@ -710,7 +710,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 cursor.moveToNext();
             }
         }
-        Log.e("------****1",invCodes.size()+"*");
+        //Log.e("------****1",invCodes.size()+"*");
         cursor.close();
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("select rfid_code,scanned,code from scanned_data where room_id = "+room_id+" and inventory_id=-1 and reconc_id="+rec_id), null);
         if (cursor1.moveToFirst()) {
@@ -728,7 +728,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 cursor1.moveToNext();
             }
         }
-        Log.e("------****2",invCodes.size()+"*");
+        //Log.e("------****2",invCodes.size()+"*");
         cursor1.close();
         return invCodes;
     }
@@ -888,7 +888,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String product_name = "N/A";
                 String rfidCode = cursor1.getString(cursor1.getColumnIndex("rfid_code"));
                 String code = cursor1.getString(cursor1.getColumnIndex("code"));
-                Log.e("codeeeeeee","*"+code+"&*");
+                //Log.e("codeeeeeee","*"+code+"&*");
                 String scanned="";
                 if(cursor1.getString(cursor1.getColumnIndex("scanned"))!=null) {
                     if (cursor1.getString(cursor1.getColumnIndex("scanned")).trim().length() > 0) {

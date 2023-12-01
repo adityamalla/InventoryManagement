@@ -105,7 +105,7 @@ public class PostSuccess extends AppCompatActivity {
         gotohome = findViewById(R.id.gotohome);
         startAnotherInv = findViewById(R.id.startAnotherInvScan);
         host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
-        Log.e("Host-->",host);
+        //Log.e("Host-->",host);
         // UI
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");

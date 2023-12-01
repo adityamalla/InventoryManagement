@@ -214,7 +214,7 @@ public class ScanBarcodeActivity extends AppCompatActivity {
                 validtag = true;
             }
             if (validtag) {
-                Log.e("testing000","***");
+                //Log.e("testing000","***");
                 /*if (databaseHandler.checkScannedBarcodeDataAvailable(db, decodedData)) {
                     Log.e("testing0001","***");
                     unregisterReceiver(myBroadcastReceiver);

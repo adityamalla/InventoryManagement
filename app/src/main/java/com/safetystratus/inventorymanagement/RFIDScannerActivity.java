@@ -164,7 +164,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         backToHome.setVisibility(View.VISIBLE);
         scannedProgressPercentage.setText("0 %");
         host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
-        Log.e("Host-->",host);
+        //Log.e("Host-->",host);
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
@@ -337,9 +337,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     e.printStackTrace();
                 }
                 scannedTagList.clear();
-                Log.e("-----**1--",scannedTagList.size()+"**");
+                //Log.e("-----**1--",scannedTagList.size()+"**");
                 scannedTagList = databaseHandler.getScannedRFIDCodes(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedRoom, reconc_id);
-                Log.e("-----**--",scannedTagList.size()+"**");
+                //Log.e("-----**--",scannedTagList.size()+"**");
                 final Intent myIntent = new Intent(RFIDScannerActivity.this,
                         ScanBarcodeReconciliation.class);
                 myIntent.putExtra("user_id", selectedUserId);
