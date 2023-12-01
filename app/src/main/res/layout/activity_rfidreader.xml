@@ -269,7 +269,7 @@
         android:layout_marginEnd="10dp"
         android:layout_marginBottom="10dp"
         android:background="@drawable/sign_out_border"
-        android:text="Scan Barcode"
+        android:text="Scan Barcode on RFID Tag"
         android:textAllCaps="false"
         android:textColor="#15BAB6"
         android:textSize="14dp"
