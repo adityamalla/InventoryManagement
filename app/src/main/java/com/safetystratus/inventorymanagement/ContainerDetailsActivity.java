@@ -2,6 +2,7 @@ package com.safetystratus.inventorymanagement;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -220,6 +221,8 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         location = (EditText)findViewById(R.id.location);
         comments = (EditText)findViewById(R.id.comment);
         rfidCode = (EditText)findViewById(R.id.rfidCode);
+        TextView rfidlabel = (TextView)findViewById(R.id.rfidlabel);
+        TextView barcodelabel = (TextView)findViewById(R.id.barcodelabel);
         status = (EditText)findViewById(R.id.status);
         concentration = (EditText)findViewById(R.id.concentration);
         concentrationUnit = (EditText)findViewById(R.id.concUnit);
@@ -232,6 +235,21 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             badge_notification.setVisibility(View.GONE);
             badge_notification.setText("");
         }
+        code.setVisibility(View.GONE);
+        barcodelabel.setVisibility(View.GONE);
+        ConstraintLayout constraintLayout = findViewById(R.id.containerdetailsactivityupdate);
+        ConstraintSet constraintSet1 = new ConstraintSet();
+        constraintSet1.clone(constraintLayout);
+        constraintSet1.connect(R.id.rfidlabel,ConstraintSet.START,R.id.containerdetailsactivityupdate,ConstraintSet.START,0);
+        constraintSet1.connect(R.id.rfidlabel,ConstraintSet.END,R.id.containerdetailsactivityupdate,ConstraintSet.END,0);
+        constraintSet1.connect(R.id.rfidlabel,ConstraintSet.TOP,R.id.containerdetailsactivityupdate,ConstraintSet.TOP,0);
+        constraintSet1.applyTo(constraintLayout);
+        ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) rfidlabel.getLayoutParams();
+        newLayoutParams1.topMargin = 20;
+        newLayoutParams1.leftMargin = 10;
+        newLayoutParams1.rightMargin = 10;
+        newLayoutParams1.bottomMargin = 0;
+        rfidlabel.setLayoutParams(newLayoutParams1);
         if (decodedData.trim().length()>0){
             InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,decodedData,"");
             name.setText(inv.getProductName());

@@ -10,6 +10,7 @@
     <string name="pref_beeper">BeeperPreference</string>
     <string name="beeper_volume">Beeper Volume</string>
     <string name="hint"><font size="15">Enter Barcode on RFID Tag</font></string>
+    <string name="hintLocate"><font size="15">Please enter tag ID (Starts with C)</font></string>
     <string name="activity_intent_filter_action">com.safetystratus.ACTION</string>
     <string name="datawedge_intent_key_source">com.symbol.datawedge.source</string>
     <string name="datawedge_intent_key_label_type">com.symbol.datawedge.label_type</string>

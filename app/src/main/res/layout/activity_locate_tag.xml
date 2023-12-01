@@ -76,7 +76,7 @@
             android:drawableLeft="@drawable/ic_search"
             android:drawablePadding="10dp"
             android:gravity="center"
-            android:hint="Please enter tag ID (Starts with C)"
+            android:hint="@string/hintLocate"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
             android:text=""
