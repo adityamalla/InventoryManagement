@@ -802,6 +802,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 conc_val = concentration.getText().toString();
                 note = notes.getText().toString();
                 comment = comments.getText().toString();
+                rfidCde = rfidCode.getText().toString();
                 if(selectedRoom.trim().length()==0||selectedRoom==null||selectedRoom=="null"){
                     selectedRoom = "-1";
                 }

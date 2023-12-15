@@ -184,8 +184,8 @@ public class SyncDBActivity extends AppCompatActivity {
         syncData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedUserId);
-                if(scannedJsonData > 0){
+                ArrayList<MyObject> jsonList = databaseHandler.getSavedReconcJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedUserId);
+                if(jsonList.size() > 0){
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
                     dlgAlert.setTitle("SafetyStratus");
                     dlgAlert.setMessage("Reconciliations still pending. Upload to CMS or Cancel to return to the homepage.");
@@ -194,9 +194,6 @@ public class SyncDBActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     if(connected){
                                         try {
-                                            ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
-                                            //SyncInventory sdb = new SyncInventory();
-                                            //sdb.execute(jsonList);
                                             uploadScannedInventoryData(jsonList);
                                         } catch (Exception e) {
                                             e.printStackTrace();
@@ -312,7 +309,7 @@ public class SyncDBActivity extends AppCompatActivity {
                                 //Process os success response
                                 String res = response.toString();
                                 databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId(),finalReconc_id);
-                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedReconcJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedUserId);
                                 if (jsonListModified.size()==0){
                                     progressSync.dismiss();
                                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);

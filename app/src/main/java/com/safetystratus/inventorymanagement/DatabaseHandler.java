@@ -495,15 +495,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.delete("scanned_json_data", "code=?", new String[]{code});
     }
     @SuppressLint("Range")
-    public ArrayList<MyObject> getSavedJsonData(SQLiteDatabase sqLiteDatabase){
+    public ArrayList<MyObject> getSavedJsonData(SQLiteDatabase sqLiteDatabase, String user_id){
         int count = 0;
         ArrayList<MyObject> jsonList = new ArrayList<MyObject>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,json_data FROM scanned_json_data"), null);
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,json_data FROM scanned_json_data where user_id="+user_id), null);
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 jsonList.add(new MyObject(cursor.getString(cursor.getColumnIndex("json_data")).trim(),
                                 cursor.getString(cursor.getColumnIndex("id")))
                         );
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return jsonList;
+    }
+    @SuppressLint("Range")
+    public ArrayList<MyObject> getSavedReconcJsonData(SQLiteDatabase sqLiteDatabase, String user_id){
+        int count = 0;
+        ArrayList<MyObject> jsonList = new ArrayList<MyObject>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,json_data FROM scanned_json_data where user_id="+user_id+" and scan_type = 'rfid'"), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                jsonList.add(new MyObject(cursor.getString(cursor.getColumnIndex("json_data")).trim(),
+                        cursor.getString(cursor.getColumnIndex("id")))
+                );
                 cursor.moveToNext();
             }
         }
