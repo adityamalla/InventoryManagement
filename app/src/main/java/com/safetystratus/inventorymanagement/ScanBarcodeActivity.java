@@ -128,7 +128,7 @@ public class ScanBarcodeActivity extends AppCompatActivity {
                             });
                     dlgAlert.create().show();
                 }else{
-                    if(databaseHandler.checkScannedBarcodeDataAvailable(db,enteredBarcode.getText().toString().trim())){
+                    if(databaseHandler.checkScannedBarcodeDataAvailable(databaseHandler.getWritableDatabase(PASS_PHRASE),enteredBarcode.getText().toString().trim())){
                         unregisterReceiver(myBroadcastReceiver);
                         final Intent myIntent = new Intent(ScanBarcodeActivity.this,
                                 ContainerDetailsActivity.class);

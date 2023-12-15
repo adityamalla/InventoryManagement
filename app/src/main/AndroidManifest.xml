@@ -17,6 +17,7 @@
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:hardwareAccelerated="false"
+        android:largeHeap="true"
         android:icon="@mipmap/ss_icon_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
