@@ -685,7 +685,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     @SuppressLint("Range")
     public boolean checkScannedBarcodeDataAvailable(SQLiteDatabase sqLiteDatabase,  String code){
-        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from chemical_inventory where lower(code)=lower('"+code+"') or lower(sec_code)=lower('"+code+"')"), null);
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from chemical_inventory where lower(sec_code)=lower('"+code+"')"), null);
         int count = cursor1.getCount();
         cursor1.close();
         if(count>0)
