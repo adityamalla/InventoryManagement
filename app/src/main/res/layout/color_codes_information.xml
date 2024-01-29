@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusable="false"
+    android:focusableInTouchMode="true"
+    android:id="@+id/colorCodesLayout">
+
+    <TableLayout
+        android:id="@+id/colorcodestable"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:stretchColumns="1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TableRow>
+
+            <View
+                android:id="@+id/foundcolor"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@color/invScanSuccess" />
+
+            <TextView
+                android:id="@+id/foundcolortext"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:text="Indicates a scanned inventory item found in the reconciliation room."
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="#000000"
+                android:textSize="15sp" />
+        </TableRow>
+
+        <TableRow>
+
+            <View
+                android:id="@+id/notfoundcolor"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@color/invScanNotFound" />
+
+            <TextView
+                android:id="@+id/notfoundcolortext"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:text="Indicates  a scanned inventory item not belonging to any rooms within the building."
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="#000000"
+                android:textSize="15sp" />
+        </TableRow>
+
+        <TableRow>
+
+            <View
+                android:id="@+id/foundinother"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@color/invScanFoundInOtherRoom" />
+
+            <TextView
+                android:id="@+id/foundinothertext"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:text="Indicates a scanned inventory item located in other room in the building, not in the reconciliation room."
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="#000000"
+                android:textSize="15sp" />
+        </TableRow>
+    </TableLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

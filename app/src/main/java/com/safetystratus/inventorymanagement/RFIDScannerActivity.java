@@ -23,14 +23,20 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
+
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -121,6 +127,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     DatabaseHandler databaseHandler =null;
     SQLiteDatabase db = null;
     ArrayList<InventoryObject> disposedinvList=null;
+    private PopupWindow popupWindow;
+    ImageView info;
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,6 +169,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         saveScanData = findViewById(R.id.saveScan);
         backToHome = (Button) findViewById(R.id.backToHome);
         scanBarcode = (Button) findViewById(R.id.scanBarcodeReconc);
+        info = (ImageView) findViewById(R.id.imageIcon) ;
         backToHome.setVisibility(View.VISIBLE);
         scannedProgressPercentage.setText("0 %");
         host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
@@ -573,6 +582,40 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 startActivity(myIntent);
             }
         });
+        // Set click listener on the button
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call the method to show the popup
+                showPopupWindow(v);
+            }
+        });
+    }
+    private void showPopupWindow(View view) {
+        Log.e("testing info click>>","*");
+        // Get a reference to the LayoutInflater service
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        // Inflate the layout for the custom view
+        View customView = inflater.inflate(R.layout.color_codes_information, null);
+        // Create the AlertDialog builder
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        // Set the custom view to the AlertDialog builder
+        alertDialogBuilder.setView(customView);
+
+        // Set positive button (you can customize this according to your needs)
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Handle the positive button click
+                dialog.dismiss();
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
     public void backToHome() {
 
