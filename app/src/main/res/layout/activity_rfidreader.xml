@@ -16,7 +16,6 @@
     android:focusableInTouchMode="true"
     android:id="@+id/rfidLayout"
     tools:context=".RFIDScannerActivity">
-
     <TextView
         android:id="@+id/rfidStatus"
         android:layout_width="wrap_content"
@@ -91,67 +90,57 @@
         app:layout_constraintStart_toStartOf="@+id/scanProgress"
         app:layout_constraintTop_toBottomOf="@+id/scanProgress"
         tools:ignore="RtlCompat" />
-
-    <ImageView
-        android:id="@+id/imageIcon"
-        android:layout_width="20dp"
-        android:layout_height="20dp"
+    <LinearLayout
+        android:id="@+id/radioGroupLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="@+id/scannedProgressPercentage"
         app:layout_constraintTop_toBottomOf="@+id/scannedProgressPercentage"
-        app:srcCompat="@drawable/ic_info_icon_svgrepo_com" />
-
-    <TextView
-        android:id="@+id/infoText"
-        android:layout_width="0dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginTop="2dp"
-        android:paddingLeft="0dp"
-        android:text="Click here to view the color code details"
-        android:textAlignment="viewStart"
-        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
-        android:textColor="#6d6d87"
-        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/scannedProgressPercentage"
-        app:layout_constraintStart_toEndOf="@+id/imageIcon"
-        app:layout_constraintTop_toBottomOf="@+id/scannedProgressPercentage"
-        tools:ignore="RtlCompat" />
-    <RadioGroup
-        android:layout_width="0dp"
-        android:layout_height="55dp"
-        android:weightSum="1"
-        android:orientation="horizontal"
-        android:id="@+id/radioGroup"
-        app:layout_constraintEnd_toEndOf="@+id/infoText"
-        app:layout_constraintStart_toStartOf="@+id/imageIcon"
-        app:layout_constraintTop_toBottomOf="@+id/infoText">
+        android:orientation="horizontal">
+        <RadioGroup
+            android:layout_width="wrap_content"
+            android:layout_height="55dp"
+            android:weightSum="1"
+            android:orientation="horizontal"
+            android:id="@+id/radioGroup"
+            >
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="55dp"
+                android:text="Show All"
+                android:id="@+id/showall"
+                android:layout_gravity="center_horizontal"
+                android:checked="false"
+                android:textSize="14dp" />
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:text="Show All"
-            android:id="@+id/showall"
-            android:layout_gravity="center_horizontal"
-            android:checked="false"
-            android:textSize="16dp" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="55dp"
+                android:text="Found"
+                android:id="@+id/found"
+                android:layout_gravity="center_horizontal"
+                android:checked="false"
+                android:textSize="14dp" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="55dp"
+                android:text="Not Found"
+                android:id="@+id/notfound"
+                android:layout_gravity="center_horizontal"
+                android:checked="false"
+                android:textSize="14dp" />
+        </RadioGroup>
 
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:text="Found"
-            android:id="@+id/found"
-            android:layout_gravity="center_horizontal"
-            android:checked="false"
-            android:textSize="16dp" />
-        <RadioButton
-            android:layout_width="wrap_content"
-            android:layout_height="55dp"
-            android:text="Not Found"
-            android:id="@+id/notfound"
-            android:layout_gravity="center_horizontal"
-            android:checked="false"
-            android:textSize="16dp" />
-    </RadioGroup>
+        <ImageView
+            android:id="@+id/imageIcon"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_marginTop="17dp"
+            android:layout_marginLeft="5dp"
+            app:srcCompat="@drawable/ic_info_icon_svgrepo_com" />
+    </LinearLayout>
+
 
     <!--ProgressBar
         android:id="@+id/progressBar1"
@@ -212,10 +201,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        app:layout_constraintEnd_toEndOf="@+id/radioGroup"
+        app:layout_constraintEnd_toEndOf="@+id/radioGroupLayout"
         app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/radioGroup"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup" />
+        app:layout_constraintStart_toStartOf="@+id/radioGroupLayout"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroupLayout" />
     <TextView
         android:id="@+id/progressbartext"
         android:layout_width="0dp"
@@ -242,9 +231,9 @@
         android:layout_marginEnd="10dp"
         android:divider="#cfcfcf"
         android:dividerHeight="0.5px"
-        app:layout_constraintEnd_toEndOf="@+id/radioGroup"
-        app:layout_constraintStart_toStartOf="@+id/radioGroup"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroup"
+        app:layout_constraintEnd_toEndOf="@+id/radioGroupLayout"
+        app:layout_constraintStart_toStartOf="@+id/radioGroupLayout"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroupLayout"
         />
     <!---ListView
         android:id="@+id/tags_list"
