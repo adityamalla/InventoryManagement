@@ -25,12 +25,14 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -112,6 +114,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
     IntentFilter filter = new IntentFilter();
     Boolean scanInProgress = false;
+    ImageView info;
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,6 +154,7 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
         enteredBarCodeValue = (EditText) findViewById(R.id.enteredbarcodeValue);
         addtoList = findViewById(R.id.addBarCodeToList);
         backToHome.setVisibility(View.VISIBLE);
+        info = (ImageView) findViewById(R.id.imageIconBarcode) ;
         scannedProgressPercentage.setText("0 %");
         host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
         //Log.e("Host-->",host);
@@ -552,6 +556,39 @@ public class ScanBarcodeReconciliation extends AppCompatActivity {
                 startActivity(myIntent);
             }
         });
+        // Set click listener on the button
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call the method to show the popup
+                showPopupWindow(v);
+            }
+        });
+    }
+    private void showPopupWindow(View view) {
+        // Get a reference to the LayoutInflater service
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        // Inflate the layout for the custom view
+        View customView = inflater.inflate(R.layout.color_codes_information, null);
+        // Create the AlertDialog builder
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        // Set the custom view to the AlertDialog builder
+        alertDialogBuilder.setView(customView);
+
+        // Set positive button (you can customize this according to your needs)
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Handle the positive button click
+                dialog.dismiss();
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
     public void backToHome() {
         unregisterReceiver(myBroadcastReceiver);
