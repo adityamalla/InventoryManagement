@@ -2,6 +2,7 @@ package com.safetystratus.inventorymanagement;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.constraintlayout.widget.ConstraintSet;
 
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
@@ -58,6 +59,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
     Button save;
     String empName = "";
     String note = "";
+    String rfidCde = "";
     String comment="";
     String conc_val="";
     String quan_val="";
@@ -85,6 +87,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
     EditText status;
     EditText notes;
     EditText comments;
+    EditText rfidCode;
     EditText concentration;
     EditText concentrationUnit;
     ConstraintLayout header;
@@ -118,7 +121,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         tv.setVisibility(View.VISIBLE);
         pref = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
-        Log.e("Host-->",host);
+        //Log.e("Host-->",host);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if(result!=null) {
@@ -149,6 +152,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         }
         if(intent.getStringExtra("note")!=null) {
             note = intent.getStringExtra("note");
+        }
+        if(intent.getStringExtra("rfidCde")!=null) {
+            rfidCde = intent.getStringExtra("rfidCde");
         }
         if(intent.getStringExtra("comment")!=null) {
             comment = intent.getStringExtra("comment");
@@ -214,6 +220,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
         notes = (EditText)findViewById(R.id.locationNotes);
         location = (EditText)findViewById(R.id.location);
         comments = (EditText)findViewById(R.id.comment);
+        rfidCode = (EditText)findViewById(R.id.rfidCode);
+        TextView rfidlabel = (TextView)findViewById(R.id.rfidlabel);
+        TextView barcodelabel = (TextView)findViewById(R.id.barcodelabel);
         status = (EditText)findViewById(R.id.status);
         concentration = (EditText)findViewById(R.id.concentration);
         concentrationUnit = (EditText)findViewById(R.id.concUnit);
@@ -226,11 +235,36 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             badge_notification.setVisibility(View.GONE);
             badge_notification.setText("");
         }
+        code.setVisibility(View.GONE);
+        barcodelabel.setVisibility(View.GONE);
+        ConstraintLayout constraintLayout = findViewById(R.id.containerdetailsactivityupdate);
+        ConstraintSet constraintSet1 = new ConstraintSet();
+        constraintSet1.clone(constraintLayout);
+        constraintSet1.connect(R.id.rfidlabel,ConstraintSet.START,R.id.containerdetailsactivityupdate,ConstraintSet.START,0);
+        constraintSet1.connect(R.id.rfidlabel,ConstraintSet.END,R.id.containerdetailsactivityupdate,ConstraintSet.END,0);
+        constraintSet1.connect(R.id.rfidlabel,ConstraintSet.TOP,R.id.containerdetailsactivityupdate,ConstraintSet.TOP,0);
+        constraintSet1.applyTo(constraintLayout);
+        ConstraintLayout.LayoutParams newLayoutParams1 = (ConstraintLayout.LayoutParams) rfidlabel.getLayoutParams();
+        newLayoutParams1.topMargin = 20;
+        newLayoutParams1.leftMargin = 10;
+        newLayoutParams1.rightMargin = 10;
+        newLayoutParams1.bottomMargin = 0;
+        rfidlabel.setLayoutParams(newLayoutParams1);
         if (decodedData.trim().length()>0){
             InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,decodedData,"");
             name.setText(inv.getProductName());
             cas.setText(inv.getCas_number());
             code.setText(inv.getCode());
+            if (inv.getRfidCode().trim().length()>0){
+                rfidCode.setText(inv.getRfidCode());
+            }else{
+                rfidCode.setText("");
+                rfidCode.setEnabled(true);
+                rfidCode.setFocusableInTouchMode(true);
+            }
+            if (rfidCde.trim().length() == 0){
+                rfidCde = inv.getRfidCode();
+            }
             if(selectedFacil.trim().length()==0){
                 selectedFacil = inv.getFacil_id();
             }
@@ -272,6 +306,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
             name.setText("");
             cas.setText("");
             code.setText("");
+            rfidCode.setText("");
             comments.setText("");
             notes.setText("");
             owner.setText("");
@@ -325,6 +360,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                         myIntent.putExtra("quan_val", quan_val+"");
                         myIntent.putExtra("conc_val", conc_val+"");
                         myIntent.putExtra("note", note+"");
+                        if (rfidCode.isEnabled()) {
+                            myIntent.putExtra("rfidCode", rfidCde + "");
+                        }
                         myIntent.putExtra("comment", comment+"");
                         myIntent.putExtra("empName", empName);
                         startActivity(myIntent);
@@ -386,6 +424,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("empName", empName);
+                    if (rfidCode.isEnabled()) {
+                        myIntent.putExtra("rfidCode", rfidCde + "");
+                    }
                     startActivity(myIntent);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -435,6 +476,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("fromUnit", "yes");
+                    if (rfidCode.isEnabled()) {
+                        myIntent.putExtra("rfidCode", rfidCde + "");
+                    }
                     startActivity(myIntent);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -483,6 +527,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("empName", empName);
+                    if (rfidCode.isEnabled()) {
+                        myIntent.putExtra("rfidCode", rfidCde + "");
+                    }
                     startActivity(myIntent);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -531,6 +578,9 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     myIntent.putExtra("note", note+"");
                     myIntent.putExtra("comment", comment+"");
                     myIntent.putExtra("empName", empName);
+                    if (rfidCode.isEnabled()) {
+                        myIntent.putExtra("rfidCode", rfidCde + "");
+                    }
                     startActivity(myIntent);
                 }catch (Exception e){
                     e.printStackTrace();
@@ -550,6 +600,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 conc_val = concentration.getText().toString();
                 note = notes.getText().toString();
                 comment = comments.getText().toString();
+                rfidCde = rfidCode.getText().toString();
                 ContentValues cv = new ContentValues();
                 cv.put("code", code.getText().toString());
                 if(selectedRoom.trim().length()==0||selectedRoom==null||selectedRoom=="null"){
@@ -574,7 +625,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 cv.put("concentration_unit_abbrevation", selectedConcUnitName);
                 if(quan_val!=null) {
                     if (quan_val.trim().length() > 0 && quan_val != "null") {
-                        cv.put("quantity", Integer.parseInt(quan_val));
+                        cv.put("quantity", Float.parseFloat(quan_val));
                     }
                     else {
                         cv.put("quantity", -1);
@@ -584,9 +635,21 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     cv.put("quantity", -1);
                     quan_val = "-1";
                 }
+                if(rfidCde!=null) {
+                    if (rfidCde.trim().length() > 0 && rfidCde != "null") {
+                        cv.put("sec_code", rfidCde);
+                    }
+                    else {
+                        cv.put("sec_code", "");
+                        rfidCde = "";
+                    }
+                }else{
+                    cv.put("sec_code", "");
+                    rfidCde = "";
+                }
                 if(conc_val!=null) {
                     if (conc_val.trim().length() > 0 && conc_val != "null") {
-                        cv.put("concentration", Integer.parseInt(conc_val));
+                        cv.put("concentration", Float.parseFloat(conc_val));
                     }
                     else {
                         cv.put("concentration", -1);
@@ -618,11 +681,12 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     cv.put("concentration_unit_abbrevation_id", -1);
                     selectedConcUnit = "-1";
                 }
+                //Log.e("^^^^^^",rfidCde);
                 databaseHandler.updateInventoryDetails(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString(),"");
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(
                         selectedUserId,token,loggedinUserSiteId,code.getText().toString(),
-                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val,selectedOwner,"site_users"
+                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val,selectedOwner,"site_users",rfidCde
                 );
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";
@@ -738,6 +802,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 conc_val = concentration.getText().toString();
                 note = notes.getText().toString();
                 comment = comments.getText().toString();
+                rfidCde = rfidCode.getText().toString();
                 if(selectedRoom.trim().length()==0||selectedRoom==null||selectedRoom=="null"){
                     selectedRoom = "-1";
                 }
@@ -762,7 +827,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 cv.put("concentration_unit_abbrevation", selectedConcUnitName);
                 if(quan_val!=null) {
                     if (quan_val.trim().length() > 0 && quan_val != "null") {
-                        cv.put("quantity", Integer.parseInt(quan_val));
+                        cv.put("quantity", Float.parseFloat(quan_val));
                     }
                     else {
                         cv.put("quantity", -1);
@@ -772,9 +837,21 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     cv.put("quantity", -1);
                     quan_val = "-1";
                 }
+                if(rfidCde!=null) {
+                    if (rfidCde.trim().length() > 0 && rfidCde != "null") {
+                        cv.put("sec_code", rfidCde);
+                    }
+                    else {
+                        cv.put("sec_code", "");
+                        rfidCde = "";
+                    }
+                }else{
+                    cv.put("sec_code", "");
+                    rfidCde = "";
+                }
                 if(conc_val!=null) {
                     if (conc_val.trim().length() > 0 && conc_val != "null") {
-                        cv.put("concentration", Integer.parseInt(conc_val));
+                        cv.put("concentration", Float.parseFloat(conc_val));
                     }
                     else {
                         cv.put("concentration", -1);
@@ -810,7 +887,7 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                 InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,code.getText().toString(),"");
                 BracodeScanAPIObject obj = new BracodeScanAPIObject(
                         selectedUserId,token,loggedinUserSiteId,code.getText().toString(),
-                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val, selectedOwner,"site_users"
+                        selectedStatus,selectedRoom,note,comment, quan_val, selectedQuanUnit, selectedConcUnit, conc_val, selectedOwner,"site_users",rfidCde
                 );
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = "";
@@ -895,12 +972,12 @@ public class ContainerDetailsActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
+                        progressSync.dismiss();
                         AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ContainerDetailsActivity.this);
                         dlgAlert.setTitle("Safety Stratus");
                         dlgAlert.setMessage("Error response: Request timed out! Your data is saved offline");
                         dlgAlert.setPositiveButton("Ok",
                                 new DialogInterface.OnClickListener() {
-
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         return;

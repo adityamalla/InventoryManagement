@@ -96,7 +96,7 @@ public class HomeActivity extends AppCompatActivity {
         final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(HomeActivity.this);
         final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
         host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
-        Log.e("Host-->",host);
+        //Log.e("Host-->",host);
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
         if(result!=null) {
@@ -278,11 +278,12 @@ public class HomeActivity extends AppCompatActivity {
         postScanData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                postScanData.setEnabled(false);
                 if(connected){
                     int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedUserId);
                     if(scannedJsonData > 0) {
                         try {
-                            ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                            ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedUserId);
                             //SyncInventory sdb = new SyncInventory();
                             //sdb.execute(jsonList);
                             uploadScannedInventoryData(jsonList);
@@ -298,6 +299,7 @@ public class HomeActivity extends AppCompatActivity {
                         dlgAlert.setPositiveButton("Ok",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
+                                        postScanData.setEnabled(true);
                                         return;
                                     }
                                 });
@@ -311,6 +313,7 @@ public class HomeActivity extends AppCompatActivity {
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
+                                    postScanData.setEnabled(true);
                                     return;
                                 }
                             });
@@ -349,7 +352,6 @@ public class HomeActivity extends AppCompatActivity {
                 else{
                     URL = "https://"+host+ApiConstants.syncpostscanneddata;
                 }
-                Log.e("URL Test>>",URL);
                 JSONObject obj = new JSONObject(jsonList.get(k).getObjectName());
                 String reconc_id = "-4";
                 if (obj.has("reconc_id")) {
@@ -363,7 +365,7 @@ public class HomeActivity extends AppCompatActivity {
                                 //Process os success response
                                 String res = response.toString();
                                 databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId(), finalReconc_id);
-                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedUserId);
                                 if (jsonListModified.size()==0){
                                     progressSync.dismiss();
                                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(HomeActivity.this);
@@ -380,6 +382,7 @@ public class HomeActivity extends AppCompatActivity {
                                                         badge_notification.setVisibility(View.GONE);
                                                         badge_notification.setText("");
                                                     }
+                                                    postScanData.setEnabled(true);
                                                     return;
                                                 }
                                             });
@@ -390,14 +393,15 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
+                        progressSync.dismiss();
                         AlertDialog.Builder dlgAlert = new AlertDialog.Builder(HomeActivity.this);
                         dlgAlert.setTitle("Safety Stratus");
                         dlgAlert.setMessage("Error response: Request timed out! Your data is saved offline");
                         dlgAlert.setPositiveButton("Ok",
                                 new DialogInterface.OnClickListener() {
-
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
+                                        postScanData.setEnabled(true);
                                         return;
                                     }
                                 });

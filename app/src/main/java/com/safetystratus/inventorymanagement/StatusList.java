@@ -36,6 +36,7 @@ public class StatusList extends AppCompatActivity {
         String loggedinUserSiteId = "";
         String md5Pwd = "";
         String user_id = "";
+        String rfidCde = "";
         String selectedSearchValue = "";
         String lastCompletedInspectionSiteInfo = "";
         String sso = "";
@@ -99,6 +100,9 @@ public class StatusList extends AppCompatActivity {
             }
             if(intent.getStringExtra("empName")!=null) {
                 empName = intent.getStringExtra("empName");
+            }
+            if(intent.getStringExtra("rfidCde")!=null) {
+                rfidCde = intent.getStringExtra("rfidCde");
             }
             if(intent.getStringExtra("decodedData")!=null) {
                 decodedData = intent.getStringExtra("decodedData");
@@ -262,6 +266,7 @@ public class StatusList extends AppCompatActivity {
                         myIntent.putExtra("conc_val", conc_val+"");
                         myIntent.putExtra("note", note+"");
                         myIntent.putExtra("comment", comment+"");
+                        myIntent.putExtra("rfidCde", rfidCde+"");
                         startActivity(myIntent);
                     }
                 });
@@ -370,6 +375,7 @@ public class StatusList extends AppCompatActivity {
                                 myIntent.putExtra("conc_val", conc_val+"");
                                 myIntent.putExtra("note", note+"");
                                 myIntent.putExtra("comment", comment+"");
+                                myIntent.putExtra("rfidCde", rfidCde+"");
                                 startActivity(myIntent);
                             }
                         });
@@ -423,6 +429,7 @@ public class StatusList extends AppCompatActivity {
                 myIntent.putExtra("conc_val", conc_val+"");
                 myIntent.putExtra("note", note+"");
                 myIntent.putExtra("comment", comment+"");
+                myIntent.putExtra("rfidCde", rfidCde+"");
                 startActivity(myIntent);
             }
             return super.onOptionsItemSelected(item);

@@ -124,7 +124,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
             }
         }
         host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
-        Log.e("Host-->",host);
+        //Log.e("Host-->",host);
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
@@ -636,6 +636,7 @@ public class BulkContainerUpdate extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
+                        progressSync.dismiss();
                         AlertDialog.Builder dlgAlert = new AlertDialog.Builder(BulkContainerUpdate.this);
                         dlgAlert.setTitle("Safety Stratus");
                         dlgAlert.setMessage("Error response: Request timed out! Your data is saved offline");

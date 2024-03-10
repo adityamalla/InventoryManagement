@@ -72,12 +72,26 @@ public class CustomisedRFIDScannedList  extends BaseAdapter implements ListAdapt
             productCode.setText(list.get(position).getCode());
         }
         volumne.setText(list.get(position).getVolume());
+       /* Log.e("==========================","==");
+        Log.e("rfidcode>>>",list.get(position).getRfidCode()+"*");
+        Log.e("code>>>",list.get(position).getCode()+"*");
+        Log.e("isBelongsToRoom>>>",list.get(position).isBelongsToRoom()+"**");
+        Log.e("isBelongsToOtherRoom>>>",list.get(position).isBelongsToOtherRoom()+"**");
+        Log.e("isBelongsToNone>>>",list.get(position).isBelongsToNone()+"**");
+        Log.e("==========================","==");*/
         // Check the flag value and set the background color of the view
-        if (list.get(position).isFlag()) {
+        view.setBackgroundResource(R.color.white);
+
+        if (list.get(position).isBelongsToRoom()) {
             view.setBackgroundResource(R.color.invScanSuccess);
-        } else {
-            view.setBackgroundResource(R.color.white);
         }
+        if (list.get(position).isBelongsToOtherRoom()) {
+            view.setBackgroundResource(R.color.invScanFoundInOtherRoom);
+        }
+        if (list.get(position).isBelongsToNone()) {
+            view.setBackgroundResource(R.color.invScanNotFound);
+        }
+
         if (list.get(position).getTest_frequency().trim().length()>0) {
             if (Integer.parseInt(list.get(position).getTest_frequency()) > 0) {
                 timeicon.setVisibility(View.VISIBLE);

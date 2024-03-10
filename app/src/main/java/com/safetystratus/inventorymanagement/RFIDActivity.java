@@ -166,7 +166,9 @@ public class RFIDActivity extends AppCompatActivity {
         building.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
+                building.setClickable(false);
+                building.setEnabled(false);
+                /*final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
                 final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
                 try {
                     ArrayList<MyObject> facillist = databaseHandler.getBuildingList(databaseHandler.getWritableDatabase(PASS_PHRASE));
@@ -195,16 +197,20 @@ public class RFIDActivity extends AppCompatActivity {
                     if (databaseHandler != null) {
                         databaseHandler.close();
                     }
-                }
+                }*/
+                LoadBuildingList cobj = new LoadBuildingList();
+                cobj.execute();
             }
         });
         room.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                room.setClickable(false);
+                room.setEnabled(false);
                 final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
                 final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
                 if(selectedFacil.length()>0){
-                    try {
+                    /*try {
                         ArrayList<MyObject> roomlist = databaseHandler.getRoomList(db,selectedFacil);
                         final Intent myIntent = new Intent(RFIDActivity.this,
                                 RoomList.class);
@@ -233,7 +239,9 @@ public class RFIDActivity extends AppCompatActivity {
                         if (databaseHandler != null) {
                             databaseHandler.close();
                         }
-                    }
+                    }*/
+                    LoadRoomList cobj = new LoadRoomList();
+                    cobj.execute();
                 }else{
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDActivity.this);
                     dlgAlert.setTitle("SafetyStratus");
@@ -241,6 +249,8 @@ public class RFIDActivity extends AppCompatActivity {
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
+                                    room.setClickable(true);
+                                    room.setEnabled(true);
                                     dialog.dismiss();
                                 }
                             });
@@ -253,7 +263,8 @@ public class RFIDActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(selectedRoom.length()>0){
-                    final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
+                    scanRFID.setEnabled(false);
+                    /*final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
                     final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
                     try {
                         int rec_id = databaseHandler.checkReconciliationStarted(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedFacil,selectedRoom,selectedUserId);
@@ -372,14 +383,18 @@ public class RFIDActivity extends AppCompatActivity {
                         if (databaseHandler != null) {
                             databaseHandler.close();
                         }
-                    }
-                }else{
+                    }*/
+                    StartReconciliation cobj = new StartReconciliation();
+                    cobj.execute();
+                }
+                else{
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDActivity.this);
                     dlgAlert.setTitle("SafetyStratus");
                     dlgAlert.setMessage("Seems like you haven't downloaded rooms for the building '"+selectedFacilName+"'. Please go to home page and download the rooms or you haven't selected any room!");
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
+                                    scanRFID.setEnabled(true);
                                     dialog.dismiss();
                                 }
                             });
@@ -417,5 +432,356 @@ public class RFIDActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+    class LoadBuildingList extends AsyncTask<String, String, String> {
+        private ProgressDialog progressSync = new ProgressDialog(RFIDActivity.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        ArrayList<MyObject> facillist = new ArrayList<>();
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            // disable dismiss by tapping outside of the dialog
+            progressSync.setTitle("");
+            progressSync.setMessage("Loading building data..");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(450, 200);
+            super.onPreExecute();
+        }
+        @SuppressLint("WrongThread")
+        @Override
+        protected String doInBackground(String... params) {
+            // db.beginTransaction();
+            try {
+                facillist = databaseHandler.getBuildingList(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            } finally {
+                db.close();
+                if (databaseHandler != null) {
+                    databaseHandler.close();
+                }
+            }
+            return "completed";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            //building.setClickable(true);
+            //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            if (progressSync != null && progressSync.isShowing()){
+                progressSync.dismiss();
+                progressSync = null;
+            }
+            if (facillist.size()>0){
+                final Intent myIntent = new Intent(RFIDActivity.this,
+                        BuildingList.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("facillist",facillist);
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("empName", empName);
+                startActivity(myIntent);
+            } else {
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDActivity.this);
+                dlgAlert.setTitle("Safety Stratus");
+                dlgAlert.setMessage("Building information is not available on this device! Please contact administrator");
+                dlgAlert.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        });
+                dlgAlert.create().show();
+            }
+        }
+    }
+    class LoadRoomList extends AsyncTask<String, String, String> {
+        private ProgressDialog progressSync = new ProgressDialog(RFIDActivity.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        ArrayList<MyObject> roomlist = new ArrayList<>();
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            // disable dismiss by tapping outside of the dialog
+            progressSync.setTitle("");
+            progressSync.setMessage("Loading room list..");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(450, 200);
+            super.onPreExecute();
+        }
+        @SuppressLint("WrongThread")
+        @Override
+        protected String doInBackground(String... params) {
+            // db.beginTransaction();
+            try {
+                roomlist = databaseHandler.getRoomList(db,selectedFacil);
+            } finally {
+                db.close();
+                if (databaseHandler != null) {
+                    databaseHandler.close();
+                }
+            }
+            return "completed";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            //room.setClickable(true);
+            //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            if (progressSync != null && progressSync.isShowing()){
+                progressSync.dismiss();
+                progressSync = null;
+            }
+            if (roomlist.size()>0){
+                final Intent myIntent = new Intent(RFIDActivity.this,
+                        RoomList.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("roomlist",roomlist);
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("empName", empName);
+                startActivity(myIntent);
+            } else {
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDActivity.this);
+                dlgAlert.setTitle("Safety Stratus");
+                dlgAlert.setMessage("It appears that the building data you have chosen has not been downloaded. Kindly download the data and attempt the task again!");
+                dlgAlert.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                room.setClickable(true);
+                                room.setEnabled(true);
+                                return;
+                            }
+                        });
+                dlgAlert.create().show();
+            }
+        }
+    }
+    public int inventoryCount = 0;
+    class StartReconciliation extends AsyncTask<String, String, String> {
+        private ProgressDialog progressSync = new ProgressDialog(RFIDActivity.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        Boolean reconc_initiated = false;
+        int rec_id = 0;
+        int new_rec_id = 0;
+        ScanInfo sc = null;
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            // disable dismiss by tapping outside of the dialog
+            progressSync.setTitle("");
+            progressSync.setMessage("Commencing the reconciliation process..");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(450, 200);
+            super.onPreExecute();
+        }
+        @SuppressLint("WrongThread")
+        @Override
+        protected String doInBackground(String... params) {
+            // db.beginTransaction();
+            try {
+                rec_id = databaseHandler.checkReconciliationStarted(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedFacil,selectedRoom,selectedUserId);
+                inventoryCount = databaseHandler.checkCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedRoom);
+                if (rec_id > 0){
+                    reconc_initiated = true;
+                    sc = databaseHandler.getPendingReconcScans(databaseHandler.getWritableDatabase(PASS_PHRASE),String.valueOf(rec_id));
+                }else{
+                    reconc_initiated = false;
+                    ContentValues cv = new ContentValues();
+                    cv.put("location_id", selectedFacil);
+                    cv.put("user_id", selectedUserId);
+                    cv.put("room_id", selectedRoom);
+                    new_rec_id = databaseHandler.insertReconciliaionData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+                }
+            } finally {
+                db.close();
+                if (databaseHandler != null) {
+                    databaseHandler.close();
+                }
+            }
+            return "completed";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            if (reconc_initiated) {
+                if (progressSync != null && progressSync.isShowing()){
+                    progressSync.dismiss();
+                    progressSync = null;
+                }
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDActivity.this);
+                dlgAlert.setTitle("SafetyStratus");
+                dlgAlert.setMessage("Reconciliation has already been initiated for this location '" + selectedRoomName + "'. Would you like to proceed with the reconciliation?");
+                dlgAlert.setPositiveButton("Continue",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                final Intent myIntent = new Intent(RFIDActivity.this,
+                                        RFIDScannerActivity.class);
+                                myIntent.putExtra("user_id", selectedUserId);
+                                myIntent.putExtra("site_id", loggedinUserSiteId);
+                                myIntent.putExtra("token", token);
+                                myIntent.putExtra("sso", sso);
+                                myIntent.putExtra("md5pwd", md5Pwd);
+                                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                myIntent.putExtra("site_name", site_name);
+                                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                                myIntent.putExtra("selectedFacil", selectedFacil + "");
+                                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                                myIntent.putExtra("selectedRoom", selectedRoom + "");
+                                myIntent.putExtra("fromContinueInsp", "true");
+                                myIntent.putExtra("empName", empName);
+                                myIntent.putExtra("json_data_from_continue", sc.getJson_data());
+                                myIntent.putExtra("reconc_id", rec_id + "");
+                                myIntent.putExtra("total_inventory", inventoryCount + "");
+                                startActivity(myIntent);
+                            }
+                        });
+                dlgAlert.setNegativeButton("New",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDActivity.this);
+                                dlgAlert.setTitle("SafetyStratus");
+                                dlgAlert.setMessage("Are you sure you want to proceed? This action will result in the complete erasure of the previously saved reconciliation.");
+                                dlgAlert.setPositiveButton("Yes",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                ErasePreviousAndCreateNew obj = new ErasePreviousAndCreateNew();
+                                                obj.execute(rec_id);
+                                            }
+                                        });
+                                dlgAlert.setNegativeButton("No",
+                                        new DialogInterface.OnClickListener() {
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                scanRFID.setEnabled(true);
+                                                return;
+                                            }
+                                        });
+                                dlgAlert.create().show();
+                            }
+                        });
+                dlgAlert.create().show();
+            }
+            else {
+                if (progressSync != null && progressSync.isShowing()){
+                    progressSync.dismiss();
+                    progressSync = null;
+                }
+                final Intent myIntent = new Intent(RFIDActivity.this,
+                        RFIDScannerActivity.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil + "");
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil + "");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom + "");
+                myIntent.putExtra("reconc_id", new_rec_id + "");
+                myIntent.putExtra("empName", empName);
+                myIntent.putExtra("total_inventory", inventoryCount + "");
+                startActivity(myIntent);
+            }
+        }
+    }
+    class ErasePreviousAndCreateNew extends AsyncTask<Integer, String, String> {
+        private ProgressDialog progressSync = new ProgressDialog(RFIDActivity.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDActivity.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        int new_rec_id = 0;
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            // disable dismiss by tapping outside of the dialog
+            progressSync.setTitle("");
+            progressSync.setMessage("Initiating a fresh reconciliation procedure by eliminating the current one...");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(450, 200);
+            super.onPreExecute();
+        }
+        @SuppressLint("WrongThread")
+        @Override
+        protected String doInBackground(Integer... params) {
+            // db.beginTransaction();
+            try {
+                ContentValues cv = new ContentValues();
+                cv.put("location_id", selectedFacil);
+                cv.put("user_id", selectedUserId);
+                cv.put("room_id", selectedRoom);
+                databaseHandler.deletePendingScanByReconc_id(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), String.valueOf(params[0]));
+                new_rec_id = databaseHandler.insertReconciliaionData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+            } finally {
+                db.close();
+                if (databaseHandler != null) {
+                    databaseHandler.close();
+                }
+            }
+            return "completed";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            if (progressSync != null && progressSync.isShowing()){
+                progressSync.dismiss();
+                progressSync = null;
+            }
+            final Intent myIntent = new Intent(RFIDActivity.this,
+                    RFIDScannerActivity.class);
+            myIntent.putExtra("user_id", selectedUserId);
+            myIntent.putExtra("site_id", loggedinUserSiteId);
+            myIntent.putExtra("token", token);
+            myIntent.putExtra("sso", sso);
+            myIntent.putExtra("md5pwd", md5Pwd);
+            myIntent.putExtra("loggedinUsername", loggedinUsername);
+            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+            myIntent.putExtra("site_name", site_name);
+            myIntent.putExtra("selectedFacilName", selectedFacilName);
+            myIntent.putExtra("selectedFacil", selectedFacil + "");
+            myIntent.putExtra("selectedFacilName", selectedFacilName);
+            myIntent.putExtra("selectedFacil", selectedFacil + "");
+            myIntent.putExtra("selectedRoomName", selectedRoomName);
+            myIntent.putExtra("selectedRoom", selectedRoom + "");
+            myIntent.putExtra("reconc_id", new_rec_id + "");
+            myIntent.putExtra("empName", empName);
+            myIntent.putExtra("total_inventory", inventoryCount + "");
+            startActivity(myIntent);
+        }
+    }
+
 
 }

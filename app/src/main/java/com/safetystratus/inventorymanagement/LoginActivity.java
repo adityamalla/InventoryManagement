@@ -343,13 +343,13 @@ public class LoginActivity extends AppCompatActivity {
                         params.put("email", uname);
                         params.put("sso", singleSignOn);
                         final boolean finalSingleSign = singleSign;
-                        Log.e("----",URL);
+                        //Log.e("----",URL);
                         JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(params),
                                 new Response.Listener<JSONObject>() {
                                     @Override
                                     public void onResponse(JSONObject response) {
                                         //Process os success response
-                                        Log.e("----",response.toString());
+                                        //Log.e("----",response.toString());
                                         try {
                                             if (response.getString("Message").contains("Success")) {
                                                 if (errorText.isShown()) {

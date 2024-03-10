@@ -111,7 +111,7 @@ public class SyncDBActivity extends AppCompatActivity {
             }
         }
         host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
-        Log.e("Host-->",host);
+        //Log.e("Host-->",host);
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
@@ -154,35 +154,38 @@ public class SyncDBActivity extends AppCompatActivity {
         building.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(SyncDBActivity.this);
+                building.setClickable(false);
+                building.setEnabled(false);
+                /*final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(SyncDBActivity.this);
                 final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
                 ArrayList<MyObject> facillist = databaseHandler.getBuildingList(databaseHandler.getWritableDatabase(PASS_PHRASE));
-                    final Intent myIntent = new Intent(SyncDBActivity.this,
-                            BuildingList.class);
-
+                final Intent myIntent = new Intent(SyncDBActivity.this,
+                        BuildingList.class);
                 myIntent.putExtra("user_id", selectedUserId);
-                    myIntent.putExtra("site_id", loggedinUserSiteId);
-                    myIntent.putExtra("token", token);
-                    myIntent.putExtra("sso", sso);
-                    myIntent.putExtra("md5pwd", md5Pwd);
-                    myIntent.putExtra("loggedinUsername", loggedinUsername);
-                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-                    myIntent.putExtra("site_name", site_name);
-                    myIntent.putExtra("facillist",facillist);
-                    myIntent.putExtra("selectedFacilName", selectedFacilName);
-                    myIntent.putExtra("selectedFacil", selectedFacil+"");
-                    myIntent.putExtra("selectedRoomName", selectedRoomName);
-                    myIntent.putExtra("selectedRoom", selectedRoom+"");
-                    myIntent.putExtra("empName", empName);
-                    myIntent.putExtra("fromSync", "fromSync");
-                    startActivity(myIntent);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("facillist",facillist);
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("empName", empName);
+                myIntent.putExtra("fromSync", "fromSync");
+                startActivity(myIntent);*/
+                LoadBuildingList cobj = new LoadBuildingList();
+                cobj.execute();
             }
         });
         syncData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int scannedJsonData = databaseHandler.getSavedDataCount(databaseHandler.getWritableDatabase(PASS_PHRASE),selectedUserId);
-                if(scannedJsonData > 0){
+                ArrayList<MyObject> jsonList = databaseHandler.getSavedReconcJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedUserId);
+                if(jsonList.size() > 0){
                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
                     dlgAlert.setTitle("SafetyStratus");
                     dlgAlert.setMessage("Reconciliations still pending. Upload to CMS or Cancel to return to the homepage.");
@@ -191,9 +194,6 @@ public class SyncDBActivity extends AppCompatActivity {
                                 public void onClick(DialogInterface dialog, int which) {
                                     if(connected){
                                         try {
-                                            ArrayList<MyObject> jsonList = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
-                                            //SyncInventory sdb = new SyncInventory();
-                                            //sdb.execute(jsonList);
                                             uploadScannedInventoryData(jsonList);
                                         } catch (Exception e) {
                                             e.printStackTrace();
@@ -309,7 +309,7 @@ public class SyncDBActivity extends AppCompatActivity {
                                 //Process os success response
                                 String res = response.toString();
                                 databaseHandler.delSavedScanDatabyId(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), jsonList.get(finalK).getObjectId(),finalReconc_id);
-                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE));
+                                ArrayList<MyObject> jsonListModified = databaseHandler.getSavedReconcJsonData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedUserId);
                                 if (jsonListModified.size()==0){
                                     progressSync.dismiss();
                                     AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
@@ -328,6 +328,17 @@ public class SyncDBActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         error.printStackTrace();
+                        progressSync.dismiss();
+                        AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
+                        dlgAlert.setTitle("Safety Stratus");
+                        dlgAlert.setMessage("Error response: Request timed out! Your data is saved offline");
+                        dlgAlert.setPositiveButton("Ok",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        return;
+                                    }
+                                });
                     }
                 });
                 int socketTimeout = 60000;//30 seconds - change to what you want
@@ -722,5 +733,76 @@ public class SyncDBActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
+    class LoadBuildingList extends AsyncTask<String, String, String> {
+        private ProgressDialog progressSync = new ProgressDialog(SyncDBActivity.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(SyncDBActivity.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        ArrayList<MyObject> facillist = new ArrayList<>();
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            // disable dismiss by tapping outside of the dialog
+            progressSync.setTitle("");
+            progressSync.setMessage("Loading building data..");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(450, 200);
+            super.onPreExecute();
+        }
+        @SuppressLint("WrongThread")
+        @Override
+        protected String doInBackground(String... params) {
+            // db.beginTransaction();
+            try {
+                facillist = databaseHandler.getBuildingList(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            } finally {
+                db.close();
+                if (databaseHandler != null) {
+                    databaseHandler.close();
+                }
+            }
+            return "completed";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            if (progressSync != null && progressSync.isShowing()){
+                progressSync.dismiss();
+                progressSync = null;
+            }
+            if (facillist.size()>0){
+                final Intent myIntent = new Intent(SyncDBActivity.this,
+                        BuildingList.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("facillist",facillist);
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("empName", empName);
+                myIntent.putExtra("fromSync", "fromSync");
+                startActivity(myIntent);
+            } else {
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(SyncDBActivity.this);
+                dlgAlert.setTitle("Safety Stratus");
+                dlgAlert.setMessage("Building information is not available on this device! Please contact administrator");
+                dlgAlert.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        });
+                dlgAlert.create().show();
+            }
+        }
+    }
 }

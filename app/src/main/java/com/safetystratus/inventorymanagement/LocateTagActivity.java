@@ -43,15 +43,25 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
     String sso = "";
     String site_name = "";
     String selectedUserId = "";
+    String fromReconciliation = "";
     String token="";
     String empName="";
     String loggedinUserSiteId = "";
+    String scannedCode = "";
+    String reconc_id = "";
     String selectedSearchValue="";
+    public String selectedFacilName="";
+    public String selectedFacil="";
+    public String selectedRoomName="";
+    public String selectedRoom="";
+    ArrayList<InventoryObject> scannedInvList =null;
     RFIDLocationHandler rfidHandler;
     TextView rfidStatus;
     TextView tagSearch;
     RangeGraph rangeGraph;
     Button locateTagButton;
+    public String total_inventory="";
+    String scannedTotalCount="0";
     private int volumeLevel;
     public Timer locatebeep;
     public static ToneGenerator toneGenerator;
@@ -105,9 +115,39 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
         if (intent.getStringExtra("selectedSearchValue") != null) {
             selectedSearchValue = intent.getStringExtra("selectedSearchValue");
         }
+        if (intent.getStringExtra("reconc_id") != null) {
+            reconc_id = intent.getStringExtra("reconc_id");
+        }
         if (intent.getStringExtra("scannedRFIDCode") != null) {
             scannedRFIDCode = intent.getStringExtra("scannedRFIDCode");
         }
+        if (intent.getStringExtra("fromReconciliation") != null) {
+            fromReconciliation = intent.getStringExtra("fromReconciliation");
+        }
+        if(intent.getStringExtra("selectedFacilName")!=null) {
+            selectedFacilName = intent.getStringExtra("selectedFacilName");
+        }
+        if(intent.getStringExtra("selectedFacil")!=null) {
+            selectedFacil = intent.getStringExtra("selectedFacil");
+        }
+        if(intent.getStringExtra("selectedRoomName")!=null) {
+            selectedRoomName = intent.getStringExtra("selectedRoomName");
+        }
+        if(intent.getStringExtra("selectedRoom")!=null) {
+            selectedRoom = intent.getStringExtra("selectedRoom");
+        }
+        if(intent.getStringExtra("total_inventory")!=null) {
+            total_inventory = intent.getStringExtra("total_inventory");
+        }
+        if(intent.getStringExtra("scannedTotalCount")!=null) {
+            scannedTotalCount = intent.getStringExtra("scannedTotalCount");
+        }
+        if(intent.getStringExtra("scannedCode")!=null) {
+            scannedCode = intent.getStringExtra("scannedCode");
+        }
+        scannedInvList = new ArrayList<InventoryObject>();
+        if(intent.getSerializableExtra("scannedInvList")!=null)
+            scannedInvList = (ArrayList<InventoryObject>) intent.getSerializableExtra("scannedInvList");
         if (scannedRFIDCode.length()>0){
             tagSearch.setText(scannedRFIDCode);
         }
@@ -139,18 +179,44 @@ public class LocateTagActivity extends AppCompatActivity implements RFIDLocation
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            final Intent myIntent = new Intent(LocateTagActivity.this,
-                    HomeActivity.class);
-            myIntent.putExtra("user_id", selectedUserId);
-            myIntent.putExtra("site_id", loggedinUserSiteId);
-            myIntent.putExtra("token", token);
-            myIntent.putExtra("sso", sso);
-            myIntent.putExtra("md5pwd", md5Pwd);
-            myIntent.putExtra("loggedinUsername", loggedinUsername);
-            myIntent.putExtra("site_name", site_name);
-            myIntent.putExtra("pageLoadTemp", "-1");
-            myIntent.putExtra("empName", empName);
-            startActivity(myIntent);
+            if (fromReconciliation.trim().length()>0){
+                Intent myIntent = new Intent(LocateTagActivity.this,
+                            Container_Info.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("reconc_id", reconc_id+"");
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("empName",empName);
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
+                myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("scannedInvList", scannedInvList);
+                myIntent.putExtra("total_inventory", total_inventory+"");
+                myIntent.putExtra("scannedTotalCount", scannedTotalCount+"");
+                myIntent.putExtra("flag","2");
+                myIntent.putExtra("scannedCode", scannedCode+"");
+                myIntent.putExtra("scannedRFIDCode", scannedRFIDCode+"");
+                startActivity(myIntent);
+            }else {
+                final Intent myIntent = new Intent(LocateTagActivity.this,
+                        HomeActivity.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("pageLoadTemp", "-1");
+                myIntent.putExtra("empName", empName);
+                startActivity(myIntent);
+            }
         }
         return super.onOptionsItemSelected(item);
     }

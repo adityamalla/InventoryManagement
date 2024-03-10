@@ -355,7 +355,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     test_frequency = "0";
                 }
                 String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,false,test_frequency));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,false,test_frequency,false,false,false));
                 cursor.moveToNext();
                 count++;
             }
@@ -386,7 +386,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     test_frequency = "0";
                 }
                 String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,false,test_frequency));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,false,test_frequency,false,false,false));
                 cursor.moveToNext();
                 count++;
             }
@@ -495,15 +495,31 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         sqLiteDatabase.delete("scanned_json_data", "code=?", new String[]{code});
     }
     @SuppressLint("Range")
-    public ArrayList<MyObject> getSavedJsonData(SQLiteDatabase sqLiteDatabase){
+    public ArrayList<MyObject> getSavedJsonData(SQLiteDatabase sqLiteDatabase, String user_id){
         int count = 0;
         ArrayList<MyObject> jsonList = new ArrayList<MyObject>();
-        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,json_data FROM scanned_json_data"), null);
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,json_data FROM scanned_json_data where user_id="+user_id), null);
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
                 jsonList.add(new MyObject(cursor.getString(cursor.getColumnIndex("json_data")).trim(),
                                 cursor.getString(cursor.getColumnIndex("id")))
                         );
+                cursor.moveToNext();
+            }
+        }
+        cursor.close();
+        return jsonList;
+    }
+    @SuppressLint("Range")
+    public ArrayList<MyObject> getSavedReconcJsonData(SQLiteDatabase sqLiteDatabase, String user_id){
+        int count = 0;
+        ArrayList<MyObject> jsonList = new ArrayList<MyObject>();
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("SELECT id,json_data FROM scanned_json_data where user_id="+user_id+" and scan_type = 'rfid'"), null);
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast()) {
+                jsonList.add(new MyObject(cursor.getString(cursor.getColumnIndex("json_data")).trim(),
+                        cursor.getString(cursor.getColumnIndex("id")))
+                );
                 cursor.moveToNext();
             }
         }
@@ -548,11 +564,11 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         int count = 0;
         ArrayList<MyObject> statusList = new ArrayList<MyObject>();
         String sql = "";
-        if(Integer.parseInt(role)!=4){
+        /*if(Integer.parseInt(role)!=4){
             sql = "SELECT id,status FROM inventory_status where id in (1,10)";
-        }else if (Integer.parseInt(role)==4){
+        }else if (Integer.parseInt(role)==4){*/
             sql = "SELECT id,status FROM inventory_status where id in (1,2,10)";
-        }
+        //}
         Cursor cursor = sqLiteDatabase.rawQuery(sql, null);
         if (cursor.moveToFirst()) {
             while (!cursor.isAfterLast()) {
@@ -669,7 +685,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
     }
     @SuppressLint("Range")
     public boolean checkScannedBarcodeDataAvailable(SQLiteDatabase sqLiteDatabase,  String code){
-        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from chemical_inventory where lower(code)=lower('"+code+"')"), null);
+        Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("SELECT * from chemical_inventory where lower(sec_code)=lower('"+code+"')"), null);
         int count = cursor1.getCount();
         cursor1.close();
         if(count>0)
@@ -702,8 +718,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     if (cursor.getString(cursor.getColumnIndex("sec_code")).trim().length() > 0) {
                         invCodes.add(cursor.getString(cursor.getColumnIndex("sec_code")));
                     }
-                }
-                if(cursor.getString(cursor.getColumnIndex("code"))!=null) {
+                }else if(cursor.getString(cursor.getColumnIndex("code"))!=null) {
                     if (cursor.getString(cursor.getColumnIndex("code")).trim().length() > 0) {
                         invCodes.add(cursor.getString(cursor.getColumnIndex("code")));
                     }
@@ -711,6 +726,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 cursor.moveToNext();
             }
         }
+        //Log.e("------****1",invCodes.size()+"*");
         cursor.close();
         Cursor cursor1 = sqLiteDatabase.rawQuery(String.format("select rfid_code,scanned,code from scanned_data where room_id = "+room_id+" and inventory_id=-1 and reconc_id="+rec_id), null);
         if (cursor1.moveToFirst()) {
@@ -728,6 +744,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 cursor1.moveToNext();
             }
         }
+        //Log.e("------****2",invCodes.size()+"*");
         cursor1.close();
         return invCodes;
     }
@@ -767,7 +784,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     scanned = "0";
                 }
                 String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,vol,true,test_frequency));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,vol,true,test_frequency,true,false,false));
                 cursor.moveToNext();
             }
         }
@@ -789,7 +806,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true,"0"));
+                InventoryObject obj = null;
+                if (rfidCode!=null&&!rfidCode.equalsIgnoreCase("null")) {
+                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, rfidCode,room_id);
+                }else if (code!=null&&!code.equalsIgnoreCase("null")) {
+                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, code,room_id);
+                }
+                if (obj == null)
+                    inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true,"0",false,false,true));
+                else
+                    inv.add(obj);
                 cursor1.moveToNext();
             }
         }
@@ -818,7 +844,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
                 code = cursor.getString(cursor.getColumnIndex("code"));
                 String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,false,test_frequency));
+                inv.add(new InventoryObject(rfidCode, product_name,id,code,null,vol,false,test_frequency,false,false,false));
                 cursor.moveToNext();
                 count++;
             }
@@ -851,10 +877,13 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
                 code = cursor.getString(cursor.getColumnIndex("code"));
                 boolean flag = false;
+                boolean belongsToRoom = false;
+
                 if(cursor.getString(cursor.getColumnIndex("scanned"))!=null) {
                     if (cursor.getString(cursor.getColumnIndex("scanned")).trim().length() > 0) {
                         scanned = cursor.getString(cursor.getColumnIndex("scanned"));
                         flag = true;
+                        belongsToRoom = true;
                     } else {
                         scanned = "0";
                     }
@@ -862,7 +891,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                     scanned = "0";
                 }
                 String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
-                inv.add(0,new InventoryObject(rfidCode, product_name,id,code,scanned,vol,flag,test_frequency));
+                inv.add(0,new InventoryObject(rfidCode, product_name,id,code,scanned,vol,flag,test_frequency,belongsToRoom,false,false));
                 cursor.moveToNext();
                 count++;
             }
@@ -875,6 +904,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 String product_name = "N/A";
                 String rfidCode = cursor1.getString(cursor1.getColumnIndex("rfid_code"));
                 String code = cursor1.getString(cursor1.getColumnIndex("code"));
+                //Log.e("codeeeeeee","*"+code+"&*");
                 String scanned="";
                 if(cursor1.getString(cursor1.getColumnIndex("scanned"))!=null) {
                     if (cursor1.getString(cursor1.getColumnIndex("scanned")).trim().length() > 0) {
@@ -885,7 +915,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
                 } else {
                     scanned = "0";
                 }
-                inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true,"0"));
+                InventoryObject obj = null;
+                if (rfidCode!=null&&!rfidCode.equalsIgnoreCase("null")) {
+                     obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, rfidCode,room_id);
+                }else if (code!=null&&!code.equalsIgnoreCase("null")) {
+                    obj = checkRFIDCodeExistsInOtherRooms(sqLiteDatabase, code,room_id);
+                }
+                if (obj == null)
+                    inv.add(new InventoryObject(rfidCode, product_name,id,code,scanned,"N/A",true,"0",false,false,true));
+                else
+                    inv.add(obj);
                 cursor1.moveToNext();
             }
         }
@@ -1331,5 +1370,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
             insertStatement = null;
         }
     }
+    @SuppressLint("Range")
+    public InventoryObject checkRFIDCodeExistsInOtherRooms(SQLiteDatabase sqLiteDatabase, String rfidorBarCde, String room_id){
+        InventoryObject inv = null;
+        Cursor cursor = sqLiteDatabase.rawQuery(String.format("select " +
+                "ci.name,ci.sec_code,ci.code,ci.id,ci.quantity, ci.quantity_unit_abbreviation,ci.test_frequency from chemical_inventory ci \n" +
+                "where (ci.sec_code = '"+rfidorBarCde+"' or ci.code = '"+rfidorBarCde+"') and ci.room_id!="+room_id+" limit 1"), null);
+
+        if (cursor.moveToFirst()) {
+                String id = cursor.getString(cursor.getColumnIndex("id"));
+                String test_frequency = "";
+                if(cursor.getString(cursor.getColumnIndex("test_frequency")).trim().length()>0){
+                    test_frequency = cursor.getString(cursor.getColumnIndex("test_frequency"));
+                }else {
+                    test_frequency = "0";
+                }
+                String product_name = "";
+                String code = "";
+                product_name = cursor.getString(cursor.getColumnIndex("name"));
+                String rfidCode = "";
+                rfidCode = cursor.getString(cursor.getColumnIndex("sec_code"));
+                code = cursor.getString(cursor.getColumnIndex("code"));
+                String vol = cursor.getString(cursor.getColumnIndex("quantity"))+" "+cursor.getString(cursor.getColumnIndex("quantity_unit_abbreviation"));
+                inv = new InventoryObject(rfidCode, product_name,id,code,"1",vol,true,test_frequency,false,true,false);
+        }
+        cursor.close();
+        return inv;
+    }
+
 }
 

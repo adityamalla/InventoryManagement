@@ -62,6 +62,7 @@ public class Container_Info extends AppCompatActivity {
     String empName = "";
     String scannedCode = "";
     String scannedRFIDCode = "";
+    String scannedbarcode = "";
     String flag = "";
     String fromReconc = "";
     public String selectedSearchValue="";
@@ -80,7 +81,8 @@ public class Container_Info extends AppCompatActivity {
     TextView notes;
     TextView comments;
     TextView volume;
-    //Button locateTag;
+    TextView roomInfo;
+    Button locateTag;
     String scannedTotalCount="0";
     //generate list
     ArrayList<String> newList = new ArrayList<String>();
@@ -174,6 +176,9 @@ public class Container_Info extends AppCompatActivity {
         if(intent.getStringExtra("scannedRFIDCode")!=null) {
             scannedRFIDCode = intent.getStringExtra("scannedRFIDCode");
         }
+        if(intent.getStringExtra("scannedbarcode")!=null) {
+            scannedbarcode = intent.getStringExtra("scannedbarcode");
+        }
         scannedInvList = new ArrayList<InventoryObject>();
         if(intent.getSerializableExtra("scannedInvList")!=null)
             scannedInvList = (ArrayList<InventoryObject>) intent.getSerializableExtra("scannedInvList");
@@ -193,7 +198,8 @@ public class Container_Info extends AppCompatActivity {
         notes = findViewById(R.id.notes);
         comments = findViewById(R.id.comm);
         volume = findViewById(R.id.volume);
-        //locateTag = findViewById(R.id.locateScannedTag);
+        locateTag = findViewById(R.id.locateScannedTag);
+        roomInfo = findViewById(R.id.roomInfo);
         InventoryModel inv = databaseHandler.getScannedInventoryDetails(db,scannedCode,flag);
         if(inv!=null){
             productName.setText(inv.getProductName());
@@ -238,17 +244,37 @@ public class Container_Info extends AppCompatActivity {
             }else{
                 volume.setText("N/A");
             }
+            if (inv.getRoom().trim().length()>0){
+                roomInfo.setText(inv.getRoom());
+            }else{
+                roomInfo.setText("N/A");
+            }
         }else{
             productName.setText("N/A");
-            barcode.setText("N/A");
-            rfidcode.setText("N/A");
+            if (scannedbarcode.length()>0) {
+                barcode.setText(scannedbarcode);
+            }else{
+                barcode.setText("N/A");
+            }
+            if (scannedRFIDCode.length()>0) {
+                rfidcode.setText(scannedRFIDCode);
+            }else{
+                rfidcode.setText("N/A");
+            }
             owner.setText("N/A");
             primaryUser.setText("N/A");
             notes.setText("N/A");
             comments.setText("N/A");
             volume.setText("N/A");
+            roomInfo.setText("N/A");
         }
-        /*locateTag.setOnClickListener(new View.OnClickListener() {
+        if (scannedRFIDCode.length()>0){
+            locateTag.setVisibility(View.VISIBLE);
+        }else
+        {
+            locateTag.setVisibility(View.INVISIBLE);
+        }
+        locateTag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final Intent myIntent = new Intent(Container_Info.this,
@@ -262,13 +288,20 @@ public class Container_Info extends AppCompatActivity {
                 myIntent.putExtra("selectedSearchValue", selectedSearchValue);
                 myIntent.putExtra("site_name", site_name);
                 myIntent.putExtra("empName", empName);
-                Log.e("scanned Code>>>",scannedCode+"***");
                 myIntent.putExtra("scannedRFIDCode", scannedRFIDCode);
-                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("selectedFacilName", selectedFacilName);
                 myIntent.putExtra("selectedFacil", selectedFacil+"");
+                myIntent.putExtra("selectedRoomName", selectedRoomName);
+                myIntent.putExtra("selectedRoom", selectedRoom+"");
+                myIntent.putExtra("scannedInvList", scannedInvList);
+                myIntent.putExtra("scannedCode", scannedCode+"");
+                myIntent.putExtra("scannedTotalCount", scannedTotalCount+"");
+                myIntent.putExtra("total_inventory", total_inventory+"");
+                myIntent.putExtra("fromReconciliation", "1");
+                myIntent.putExtra("reconc_id", reconc_id);
                 startActivity(myIntent);
             }
-        });*/
+        });
     }
     public static void hideKeyboard(Container_Info activity) {
         try {

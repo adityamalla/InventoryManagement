@@ -23,14 +23,20 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import java.lang.ref.WeakReference;
 import java.nio.charset.StandardCharsets;
+
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -121,6 +127,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
     DatabaseHandler databaseHandler =null;
     SQLiteDatabase db = null;
     ArrayList<InventoryObject> disposedinvList=null;
+    private PopupWindow popupWindow;
+    ImageView info;
     @SuppressLint("WrongConstant")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,10 +169,11 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         saveScanData = findViewById(R.id.saveScan);
         backToHome = (Button) findViewById(R.id.backToHome);
         scanBarcode = (Button) findViewById(R.id.scanBarcodeReconc);
+        info = (ImageView) findViewById(R.id.imageIcon) ;
         backToHome.setVisibility(View.VISIBLE);
         scannedProgressPercentage.setText("0 %");
         host = getSharedPreferences("MyPrefsFile", MODE_PRIVATE).getString("site_api_host", "services.labcliq.com");
-        Log.e("Host-->",host);
+        //Log.e("Host-->",host);
         Intent intent = getIntent();
         sso = intent.getStringExtra("sso");
         if (intent.getStringExtra("token") != null) {
@@ -249,23 +258,30 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 e.printStackTrace();
             }
         }
-        if (scannedListfromContinue.size()>0){
+        /*if (scannedListfromContinue.size()>0){
             scannedProgressCount.setText(scannedListfromContinue.size()+"/"+total_inventory);
             int percent = (scannedListfromContinue.size() * 100) / Integer.parseInt(total_inventory);
             scannedProgressPercentage.setText(percent + " %");
             progressVal.setProgress(percent);
-        }
+        }*/
 
 
         if (scannedOutOflocationListfromContinue.size()>0){
             for (int h=0;h<scannedOutOflocationListfromContinue.size();h++) {
-                scannedInvList.add(0,new InventoryObject(scannedOutOflocationListfromContinue.get(h),"N/A","-1","N/A","1","N/A",true,"0"));
+                InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),scannedOutOflocationListfromContinue.get(h),selectedRoom);
+                if (inv == null)
+                    scannedInvList.add(0,new InventoryObject(scannedOutOflocationListfromContinue.get(h),"N/A","-1","N/A","1","N/A",true,"0",false,false,true));
+                else
+                    scannedInvList.add(0,inv);
             }
         }
         if (scannedListfromContinue.size()>0){
             for (int h=0;h<scannedInvList.size();h++) {
                 if(scannedListfromContinue.stream().anyMatch(scannedInvList.get(h).getInv_id()::equalsIgnoreCase)){
                     scannedInvList.get(h).setFlag(true);
+                    scannedInvList.get(h).setBelongsToRoom(true);
+                    scannedInvList.get(h).setBelongsToNone(false);
+                    scannedInvList.get(h).setBelongsToOtherRoom(false);
                     InventoryObject inv = scannedInvList.get(h);
                     scannedInvList.remove(h);
                     scannedInvList.add(0,inv);
@@ -329,7 +345,10 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 } catch (OperationFailureException e) {
                     e.printStackTrace();
                 }
+                scannedTagList.clear();
+                //Log.e("-----**1--",scannedTagList.size()+"**");
                 scannedTagList = databaseHandler.getScannedRFIDCodes(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),selectedRoom, reconc_id);
+                //Log.e("-----**--",scannedTagList.size()+"**");
                 final Intent myIntent = new Intent(RFIDScannerActivity.this,
                         ScanBarcodeReconciliation.class);
                 myIntent.putExtra("user_id", selectedUserId);
@@ -356,6 +375,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         saveScanData.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                saveScanData.setEnabled(false);
                 Gson gson = new Gson();
                 ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),reconc_id);
                 String rfidJson = gson.toJson(rfidScanDataObjs);
@@ -380,6 +400,7 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     dlgAlert.setPositiveButton("Ok",
                             new DialogInterface.OnClickListener() {
                                 public void onClick(DialogInterface dialog, int which) {
+                                    saveScanData.setEnabled(true);
                                     return;
                                 }
                             });
@@ -393,7 +414,8 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         completeScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Gson gson = new Gson();
+                completeScan.setEnabled(false);
+                /*Gson gson = new Gson();
                 ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),reconc_id);
                 RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
                         token,loggedinUserSiteId,selectedRoom,gson.toJson(rfidScanDataObjs),reconc_id
@@ -517,7 +539,9 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                     }
                 } catch (JsonProcessingException | JSONException e) {
                     e.printStackTrace();
-                }
+                }*/
+                CompleteRFIDScan obj  = new CompleteRFIDScan();
+                obj.execute();
             }
         });
         backToHome.setOnClickListener(new View.OnClickListener() {
@@ -558,6 +582,40 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 startActivity(myIntent);
             }
         });
+        // Set click listener on the button
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Call the method to show the popup
+                showPopupWindow(v);
+            }
+        });
+    }
+    private void showPopupWindow(View view) {
+        Log.e("testing info click>>","*");
+        // Get a reference to the LayoutInflater service
+        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        // Inflate the layout for the custom view
+        View customView = inflater.inflate(R.layout.color_codes_information, null);
+        // Create the AlertDialog builder
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+
+        // Set the custom view to the AlertDialog builder
+        alertDialogBuilder.setView(customView);
+
+        // Set positive button (you can customize this according to your needs)
+        alertDialogBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Handle the positive button click
+                dialog.dismiss();
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
     }
     public void backToHome() {
 
@@ -805,9 +863,13 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
                 InventoryObject obj = null;
                 if(scannedInvList.get(i).getRfidCode()!=null) {
                     if (scannedInvList.get(i).getRfidCode().trim().length() > 0) {
-                        if (newList.stream().anyMatch(scannedInvList.get(i).getRfidCode()::equalsIgnoreCase)) {
+                        if (newList.stream().anyMatch(scannedInvList.get(i).getRfidCode()::equalsIgnoreCase)
+                        ||newList.stream().anyMatch(scannedInvList.get(i).getCode()::equalsIgnoreCase)) {
                             if (!scannedInvList.get(i).isFlag()) {
                                 scannedInvList.get(i).setFlag(true);
+                                scannedInvList.get(i).setBelongsToRoom(true);
+                                scannedInvList.get(i).setBelongsToNone(false);
+                                scannedInvList.get(i).setBelongsToOtherRoom(false);
                                 obj = scannedInvList.get(i);
                                 batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,scannedInvList.get(i).getInv_id(),selectedUserId, "1",reconc_id,""));
                             }
@@ -823,9 +885,12 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         for (int i = 0; i < disposedinvList.size(); i++) {
             if(disposedinvList.get(i).getRfidCode()!=null) {
                 if (disposedinvList.get(i).getRfidCode().trim().length() > 0) {
-                    if (newList.stream().anyMatch(disposedinvList.get(i).getRfidCode()::equalsIgnoreCase)) {
+                    if (newList.stream().anyMatch(disposedinvList.get(i).getRfidCode()::equalsIgnoreCase)||newList.stream().anyMatch(disposedinvList.get(i).getCode()::equalsIgnoreCase)) {
                         if (!disposedinvList.get(i).isFlag()) {
                             disposedinvList.get(i).setFlag(true);
+                            disposedinvList.get(i).setBelongsToRoom(true);
+                            disposedinvList.get(i).setBelongsToNone(false);
+                            disposedinvList.get(i).setBelongsToOtherRoom(false);
                             batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,disposedinvList.get(i).getInv_id(),selectedUserId, "1",reconc_id,""));
                         }
                     }
@@ -841,7 +906,11 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         for (int k=0;k < newList.size();k++){
             if (!rfids.stream().anyMatch(newList.get(k)::equalsIgnoreCase)){
                 batchInsertData.add(new BatchInsertionObject(selectedFacil,selectedRoom,"-1",selectedUserId, "1",reconc_id,newList.get(k)));
-                scannedInvList.add(0,new InventoryObject(newList.get(k),"N/A","-1","N/A","1","N/A",true,"0"));
+                InventoryObject inv  = databaseHandler.checkRFIDCodeExistsInOtherRooms(databaseHandler.getWritableDatabase(PASS_PHRASE),newList.get(k),selectedRoom);
+                if (inv == null)
+                    scannedInvList.add(0,new InventoryObject(newList.get(k),"N/A","-1","N/A","1","N/A",true,"0",false,false,true));
+                else
+                    scannedInvList.add(0,inv);
             }
         }
         if(batchInsertData!=null)
@@ -927,4 +996,182 @@ public class RFIDScannerActivity extends AppCompatActivity implements RFIDHandle
         }
         return false; // no non-ASCII characters found
     }
+
+    class CompleteRFIDScan extends AsyncTask<Integer, String, String> {
+        private ProgressDialog progressSync = new ProgressDialog(RFIDScannerActivity.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(RFIDScannerActivity.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        String jsonString = "";
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            // disable dismiss by tapping outside of the dialog
+            progressSync.setTitle("");
+            progressSync.setMessage("Reconciliation is currently underway.");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(450, 200);
+            super.onPreExecute();
+        }
+        @SuppressLint("WrongThread")
+        @Override
+        protected String doInBackground(Integer... params) {
+            // db.beginTransaction();
+            try {
+                Gson gson = new Gson();
+                ArrayList<RFIDScanDataObj> rfidScanDataObjs = databaseHandler.getALLInventoryScannedList(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE),reconc_id);
+                RFIDPostScanObj postScanObj = new RFIDPostScanObj(selectedUserId,
+                        token,loggedinUserSiteId,selectedRoom,gson.toJson(rfidScanDataObjs),reconc_id
+                );
+                ObjectMapper mapper = new ObjectMapper();
+                jsonString = mapper.writeValueAsString(postScanObj);
+                ContentValues cv = new ContentValues();
+                cv.put("json_data", jsonString);
+                cv.put("location_id", selectedFacil);
+                cv.put("room_id", selectedRoom);
+                cv.put("user_id", selectedUserId);
+                cv.put("scan_type", "rfid");
+                cv.put("reconc_id", reconc_id);
+                databaseHandler.insertScannedInvJSONData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), cv);
+
+            }catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+            finally {
+                db.close();
+                if (databaseHandler != null) {
+                    databaseHandler.close();
+                }
+            }
+            return "completed";
+        }
+        @Override
+        protected void onPostExecute(String res) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(res);
+            //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            boolean connected;
+            ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo result = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+            if(result!=null) {
+                if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                        connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+                    //we are connected to a network
+                    connected = true;
+                } else
+                    connected = false;
+            }else{
+                NetworkInfo netInfo = connectivityManager.getActiveNetworkInfo();
+                if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+                    connected = true;
+                }else{
+                    connected = false;
+                }
+            }
+            try {
+                if (connected) {
+                    String URL = "https://" + host + ApiConstants.syncpostscanneddata;
+                    String finalJsonString = jsonString;
+                    RequestQueue requestQueue = Volley.newRequestQueue(RFIDScannerActivity.this);
+                    JsonObjectRequest request_json = new JsonObjectRequest(URL, new JSONObject(jsonString),
+                            new Response.Listener<JSONObject>() {
+                                @Override
+                                public void onResponse(JSONObject response) {
+                                    //Process os success response
+                                    String res = response.toString();
+                                    if (progressSync != null && progressSync.isShowing()){
+                                        progressSync.dismiss();
+                                        progressSync = null;
+                                    }
+                                    databaseHandler.delSavedScanData(databaseHandler.getWritableDatabase(DatabaseConstants.PASS_PHRASE), selectedUserId, selectedRoom, reconc_id);
+                                    final Intent myIntent = new Intent(RFIDScannerActivity.this,
+                                            PostSuccess.class);
+                                    myIntent.putExtra("user_id", selectedUserId);
+                                    myIntent.putExtra("site_id", loggedinUserSiteId);
+                                    myIntent.putExtra("token", token);
+                                    myIntent.putExtra("sso", sso);
+                                    myIntent.putExtra("md5pwd", md5Pwd);
+                                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                    myIntent.putExtra("site_name", site_name);
+                                    myIntent.putExtra("empName", empName);
+                                    myIntent.putExtra("selectedRoom", selectedRoom + "");
+                                    myIntent.putExtra("selectedFacil", selectedFacil + "");
+                                    startActivity(myIntent);
+                                }
+                            }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                            if (progressSync != null && progressSync.isShowing()){
+                                progressSync.dismiss();
+                                progressSync = null;
+                            }
+                            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDScannerActivity.this);
+                            dlgAlert.setTitle("Safety Stratus");
+                            dlgAlert.setMessage("Error response: Request timed out! Your data is saved offline");
+                            dlgAlert.setPositiveButton("Ok",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            final Intent myIntent = new Intent(RFIDScannerActivity.this,
+                                                    PostSuccess.class);
+                                            myIntent.putExtra("user_id", selectedUserId);
+                                            myIntent.putExtra("site_id", loggedinUserSiteId);
+                                            myIntent.putExtra("token", token);
+                                            myIntent.putExtra("sso", sso);
+                                            myIntent.putExtra("md5pwd", md5Pwd);
+                                            myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                            myIntent.putExtra("site_name", site_name);
+                                            myIntent.putExtra("empName", empName);
+                                            myIntent.putExtra("selectedRoom", selectedRoom + "");
+                                            myIntent.putExtra("selectedFacil", selectedFacil + "");
+                                            startActivity(myIntent);
+                                            return;
+                                        }
+                                    });
+                            dlgAlert.create().show();
+                        }
+                    });
+                    int socketTimeout = 60000;//30 seconds - change to what you want
+                    RetryPolicy policy = new DefaultRetryPolicy(socketTimeout, 2, 2);
+                    request_json.setRetryPolicy(policy);
+                    // add the request object to the queue to be executed
+                    requestQueue.add(request_json);
+                } else {
+                    if (progressSync != null && progressSync.isShowing()){
+                        progressSync.dismiss();
+                        progressSync = null;
+                    }
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(RFIDScannerActivity.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Your internet connection is not active! Your data is saved offline");
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    final Intent myIntent = new Intent(RFIDScannerActivity.this,
+                                            PostSuccess.class);
+                                    myIntent.putExtra("user_id", selectedUserId);
+                                    myIntent.putExtra("site_id", loggedinUserSiteId);
+                                    myIntent.putExtra("token", token);
+                                    myIntent.putExtra("sso", sso);
+                                    myIntent.putExtra("md5pwd", md5Pwd);
+                                    myIntent.putExtra("loggedinUsername", loggedinUsername);
+                                    myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                                    myIntent.putExtra("site_name", site_name);
+                                    myIntent.putExtra("empName", empName);
+                                    myIntent.putExtra("selectedRoom", selectedRoom + "");
+                                    myIntent.putExtra("selectedFacil", selectedFacil + "");
+                                    startActivity(myIntent);
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
+                }
+            }catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
 }

@@ -6,6 +6,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -19,6 +20,7 @@ import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.RectShape;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -29,6 +31,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import net.sqlcipher.database.SQLiteDatabase;
+
+import java.util.ArrayList;
 
 public class ScanBarcodeActivity extends AppCompatActivity {
     public static final String PASS_PHRASE = DatabaseConstants.PASS_PHRASE;
@@ -112,37 +116,20 @@ public class ScanBarcodeActivity extends AppCompatActivity {
         viewBarcodeDetails.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(enteredBarcode.getText().toString().trim().length()==0){
-                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
-                    dlgAlert.setTitle("Safety Stratus");
-                    dlgAlert.setMessage("Please enter barcode details and click on view button or scan the barcode directly to view the details!");
-                    dlgAlert.setPositiveButton("Ok",
-                            new DialogInterface.OnClickListener() {
-                                public void onClick(DialogInterface dialog, int which) {
-                                    return;
-                                }
-                            });
-                    dlgAlert.create().show();
-                }else{
-                    if(databaseHandler.checkScannedBarcodeDataAvailable(db,enteredBarcode.getText().toString().trim())){
-                        unregisterReceiver(myBroadcastReceiver);
-                        final Intent myIntent = new Intent(ScanBarcodeActivity.this,
-                                ContainerDetailsActivity.class);
-                        myIntent.putExtra("user_id", selectedUserId);
-                        myIntent.putExtra("site_id", loggedinUserSiteId);
-                        myIntent.putExtra("token", token);
-                        myIntent.putExtra("sso", sso);
-                        myIntent.putExtra("md5pwd", md5Pwd);
-                        myIntent.putExtra("loggedinUsername", loggedinUsername);
-                        myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-                        myIntent.putExtra("site_name", site_name);
-                        myIntent.putExtra("decodedData", enteredBarcode.getText().toString().trim());
-                        myIntent.putExtra("empName", empName);
-                        startActivity(myIntent);
-                    }else{
+                boolean validtag = false;
+                String firstLetterTest = enteredBarcode.getText().toString().trim().substring(0, 1);
+                String firstTwoLetterTest = enteredBarcode.getText().toString().trim().substring(0, 2);
+                if (firstLetterTest.equalsIgnoreCase("C")) {
+                    validtag = true;
+                }
+                if (firstTwoLetterTest.equalsIgnoreCase("CH")) {
+                    validtag = false;
+                }
+                if(validtag) {
+                    if (enteredBarcode.getText().toString().trim().length() == 0) {
                         AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
                         dlgAlert.setTitle("Safety Stratus");
-                        dlgAlert.setMessage("Information for the container is not available on this device!");
+                        dlgAlert.setMessage("Please enter barcode details and click on view button or scan the barcode directly to view the details!");
                         dlgAlert.setPositiveButton("Ok",
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
@@ -151,6 +138,47 @@ public class ScanBarcodeActivity extends AppCompatActivity {
                                 });
                         dlgAlert.create().show();
                     }
+                    else {
+                        if (databaseHandler.checkScannedBarcodeDataAvailable(databaseHandler.getWritableDatabase(PASS_PHRASE), enteredBarcode.getText().toString().trim())) {
+                            unregisterReceiver(myBroadcastReceiver);
+                            final Intent myIntent = new Intent(ScanBarcodeActivity.this,
+                                    ContainerDetailsActivity.class);
+                            myIntent.putExtra("user_id", selectedUserId);
+                            myIntent.putExtra("site_id", loggedinUserSiteId);
+                            myIntent.putExtra("token", token);
+                            myIntent.putExtra("sso", sso);
+                            myIntent.putExtra("md5pwd", md5Pwd);
+                            myIntent.putExtra("loggedinUsername", loggedinUsername);
+                            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                            myIntent.putExtra("site_name", site_name);
+                            myIntent.putExtra("decodedData", enteredBarcode.getText().toString().trim());
+                            myIntent.putExtra("empName", empName);
+                            startActivity(myIntent);
+                        } else {
+                            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
+                            dlgAlert.setTitle("Safety Stratus");
+                            dlgAlert.setMessage("Information for the container is not available on this device!");
+                            dlgAlert.setPositiveButton("Ok",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            return;
+                                        }
+                                    });
+                            dlgAlert.create().show();
+                        }
+                    }
+                }
+                else{
+                    AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
+                    dlgAlert.setTitle("Safety Stratus");
+                    dlgAlert.setMessage("Entered code does not match a valid RFID code.");
+                    dlgAlert.setPositiveButton("Ok",
+                            new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    return;
+                                }
+                            });
+                    dlgAlert.create().show();
                 }
                 enteredBarcode.setText("");
             }
@@ -188,42 +216,47 @@ public class ScanBarcodeActivity extends AppCompatActivity {
 
     private void displayScanResult(Intent initiatingIntent, String howDataReceived)
     {
-        String decodedSource = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_source));
-        String decodedData = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_data));
-        String decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type));
+        if(!scanInProgress) {
+            scanInProgress = true;
+            String decodedSource = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_source));
+            String decodedData = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_data));
+            String decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type));
 
-        if (null == decodedSource)
-        {
-            decodedSource = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_source_legacy));
-            decodedData = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_data_legacy));
-            decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type_legacy));
-        }
-        if(databaseHandler.checkScannedBarcodeDataAvailable(db,decodedData)){
-            unregisterReceiver(myBroadcastReceiver);
-            final Intent myIntent = new Intent(ScanBarcodeActivity.this,
-                    ContainerDetailsActivity.class);
-            myIntent.putExtra("user_id", selectedUserId);
-            myIntent.putExtra("site_id", loggedinUserSiteId);
-            myIntent.putExtra("token", token);
-            myIntent.putExtra("sso", sso);
-            myIntent.putExtra("md5pwd", md5Pwd);
-            myIntent.putExtra("loggedinUsername", loggedinUsername);
-            myIntent.putExtra("selectedSearchValue", selectedSearchValue);
-            myIntent.putExtra("site_name", site_name);
-            myIntent.putExtra("decodedData", decodedData);
-            myIntent.putExtra("empName", empName);
-            startActivity(myIntent);
-        }else{
-            AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
-            dlgAlert.setTitle("Safety Stratus");
-            dlgAlert.setMessage("Information for the container is not available on this device!");
-            dlgAlert.setPositiveButton("Ok",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            return;
-                        }
-                    });
-            dlgAlert.create().show();
+            if (null == decodedSource) {
+                decodedSource = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_source_legacy));
+                decodedData = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_data_legacy));
+                decodedLabelType = initiatingIntent.getStringExtra(getResources().getString(R.string.datawedge_intent_key_label_type_legacy));
+            }
+            if (decodedData.contains("LBL")) {
+                decodedData = decodedData.replaceAll("LBL", "");
+            }
+            decodedData = decodedData.replaceAll("\u0000", "");
+            decodedData = decodedData.trim();
+            boolean validtag = false;
+            String firstLetterTest = decodedData.trim().substring(0, 1);
+            String firstTwoLetterTest = decodedData.trim().substring(0, 2);
+            if (firstLetterTest.equalsIgnoreCase("C")) {
+                validtag = true;
+            }
+            if (firstTwoLetterTest.equalsIgnoreCase("CH")) {
+                validtag = false;
+            }
+            if (validtag) {
+                Showinprogressmessage cobj = new Showinprogressmessage();
+                cobj.execute(decodedData);
+            } else {
+                scanInProgress = false;
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
+                dlgAlert.setTitle("Safety Stratus");
+                dlgAlert.setMessage("The scanned code does not match a valid RFID code.");
+                dlgAlert.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        });
+                dlgAlert.create().show();
+            }
         }
 
     }
@@ -253,5 +286,81 @@ public class ScanBarcodeActivity extends AppCompatActivity {
             startActivity(myIntent);
         }
         return super.onOptionsItemSelected(item);
+    }
+    Boolean scanInProgress = false;
+    boolean scannedBarcodeExists = false;
+    class Showinprogressmessage extends AsyncTask<String, String, String> {
+        private ProgressDialog progressSync = new ProgressDialog(ScanBarcodeActivity.this);
+        final DatabaseHandler databaseHandler = DatabaseHandler.getInstance(ScanBarcodeActivity.this);
+        final SQLiteDatabase db = databaseHandler.getWritableDatabase(PASS_PHRASE);
+        String decodedDataScanned = "";
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            // disable dismiss by tapping outside of the dialog
+            progressSync.setTitle("");
+            progressSync.setMessage("Scanning in progress..");
+            progressSync.setCancelable(false);
+            progressSync.show();
+            progressSync.getWindow().setLayout(450, 200);
+            super.onPreExecute();
+        }
+        @SuppressLint("WrongThread")
+        @Override
+        protected String doInBackground(String... params) {
+            // db.beginTransaction();
+            try {
+                decodedDataScanned = params[0];
+                scannedBarcodeExists = databaseHandler.checkScannedBarcodeDataAvailable(db, decodedDataScanned);
+            } finally {
+                db.close();
+                if (databaseHandler != null) {
+                    databaseHandler.close();
+                }
+            }
+            return "completed";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            //HashMap<String, String> settings = databaseHandler.getPermissionDetails(databaseHandler.getWritableDatabase(PASS_PHRASE));
+            scanInProgress = false;
+            if (scannedBarcodeExists){
+                unregisterReceiver(myBroadcastReceiver);
+                if (progressSync != null && progressSync.isShowing()){
+                    progressSync.dismiss();
+                    progressSync = null;
+                }
+                final Intent myIntent = new Intent(ScanBarcodeActivity.this,
+                        ContainerDetailsActivity.class);
+                myIntent.putExtra("user_id", selectedUserId);
+                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("token", token);
+                myIntent.putExtra("sso", sso);
+                myIntent.putExtra("md5pwd", md5Pwd);
+                myIntent.putExtra("loggedinUsername", loggedinUsername);
+                myIntent.putExtra("selectedSearchValue", selectedSearchValue);
+                myIntent.putExtra("site_name", site_name);
+                myIntent.putExtra("decodedData", decodedDataScanned);
+                myIntent.putExtra("empName", empName);
+                startActivity(myIntent);
+            } else {
+                if (progressSync != null && progressSync.isShowing()){
+                    progressSync.dismiss();
+                    progressSync = null;
+                }
+                AlertDialog.Builder dlgAlert = new AlertDialog.Builder(ScanBarcodeActivity.this);
+                dlgAlert.setTitle("Safety Stratus");
+                dlgAlert.setMessage("Information for the container is not available on this device!");
+                dlgAlert.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                return;
+                            }
+                        });
+                dlgAlert.create().show();
+            }
+        }
     }
 }

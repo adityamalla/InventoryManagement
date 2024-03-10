@@ -13,9 +13,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/containerInfo">
-
     <TextView
-        android:id="@+id/labelProductName"
+        android:id="@+id/labelRoomName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_column="0"
@@ -24,7 +23,7 @@
         android:layout_marginEnd="10dp"
         android:fontFamily="@font/roboto_regular"
         android:gravity="bottom"
-        android:text="Name"
+        android:text="Room Info"
         android:textColor="#000000"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -32,19 +31,49 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/productName"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_column="1"
-                android:fontFamily="@font/roboto_regular"
-                android:gravity="bottom"
-                android:text="TextViewValueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
-                android:textColor="#1E1E1E"
-                android:textSize="16sp"
-                app:layout_constraintEnd_toEndOf="@+id/labelProductName"
-                app:layout_constraintStart_toStartOf="@+id/labelProductName"
-                app:layout_constraintTop_toBottomOf="@+id/labelProductName"/>
+    <TextView
+        android:id="@+id/roomInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:fontFamily="@font/roboto_regular"
+        android:gravity="bottom"
+        android:text="TextViewValueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        android:textColor="#1E1E1E"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/labelRoomName"
+        app:layout_constraintStart_toStartOf="@+id/labelRoomName"
+        app:layout_constraintTop_toBottomOf="@+id/labelRoomName"/>
+
+    <TextView
+        android:id="@+id/labelProductName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_column="0"
+        android:layout_marginTop="10dp"
+        android:fontFamily="@font/roboto_regular"
+        android:gravity="bottom"
+        android:text="Name"
+        android:textColor="#000000"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="@+id/roomInfo"
+        app:layout_constraintStart_toStartOf="@+id/roomInfo"
+        app:layout_constraintTop_toBottomOf="@+id/roomInfo" />
+
+    <TextView
+        android:id="@+id/productName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_column="1"
+        android:fontFamily="@font/roboto_regular"
+        android:gravity="bottom"
+        android:text="TextViewValueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+        android:textColor="#1E1E1E"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@+id/labelProductName"
+        app:layout_constraintStart_toStartOf="@+id/labelProductName"
+        app:layout_constraintTop_toBottomOf="@+id/labelProductName"/>
 
     <TextView
         android:id="@+id/labelBarCode"
@@ -256,7 +285,7 @@
         android:text="Locate Tag"
         android:textAllCaps="false"
         android:textColor="#15BAB6"
-        android:visibility="invisible"
+        android:visibility="visible"
         android:textSize="14dp"
         app:backgroundTint="@null"
         app:layout_constraintBottom_toBottomOf="parent"
