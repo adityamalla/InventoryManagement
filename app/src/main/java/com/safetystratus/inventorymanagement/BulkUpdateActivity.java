@@ -200,7 +200,7 @@ public class BulkUpdateActivity extends AppCompatActivity implements RFIDHandler
                 final Intent myIntent = new Intent(BulkUpdateActivity.this,
                         ScanBarcodeBulkActivity.class);
                 myIntent.putExtra("user_id", selectedUserId);
-                myIntent.putExtra("site_id", loggedinUserSiteId);
+                myIntent.putExtra("sfite_id", loggedinUserSiteId);
                 myIntent.putExtra("token", token);
                 myIntent.putExtra("sso", sso);
                 myIntent.putExtra("md5pwd", md5Pwd);
