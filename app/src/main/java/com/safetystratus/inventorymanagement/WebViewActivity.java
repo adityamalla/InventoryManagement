@@ -204,6 +204,7 @@ public class WebViewActivity extends AppCompatActivity {
             public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
                 view.loadUrl("about:blank");
                 webviewProgressBar.setVisibility(View.GONE);
+                Log.e("testing webview-->",failingUrl+"**");
                 if (failingUrl.contains("VALID")) {
                     String req_vales = failingUrl.split("//")[1];
                     String request_token = req_vales.split("/")[1];
