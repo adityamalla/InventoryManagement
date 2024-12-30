@@ -21,6 +21,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -239,7 +240,7 @@ public class LoginActivity extends AppCompatActivity {
                         .putString(PREF_SSO, singleSignOn)
                         .commit();
                 if (!singleSign) {
-                    if (!validateInputField(uname)) {
+                    if (!validateInputField(uname,true,false)) {
                         errorUnameText.setVisibility(View.VISIBLE);
                         ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
                         ConstraintSet constraintSet = new ConstraintSet();
@@ -271,7 +272,7 @@ public class LoginActivity extends AppCompatActivity {
                         }
                         progress.dismiss();
                     }
-                    else if (!validateInputField(pwd)) {
+                    else if (!validateInputField(pwd,false,true)) {
                         ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
                         if (errorUnameText.isShown()) {
                             errorUnameText.setVisibility(View.GONE);
@@ -553,7 +554,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 }
                 else {
-                    if (!validateInputField(uname)) {
+                    if (!validateInputField(uname, true, false)) {
                         errorUnameText.setVisibility(View.VISIBLE);
                         ConstraintLayout constraintLayout = findViewById(R.id.loginActivityLayout);
                         ConstraintSet constraintSet = new ConstraintSet();
@@ -715,18 +716,23 @@ public class LoginActivity extends AppCompatActivity {
                                                                     }
                                                                 }
                                                                     if (finalSingleSign) {
+                                                                        Log.e("testing sso-->",str.getSso_host()+"**");
+                                                                        Log.e("testing site_id-->",str.getSiteId()+"**");
+                                                                        Log.e("testing username-->",str.getUsername()+"**");
+                                                                        Log.e("testing username-->",uname+"**");
+
                                                                         Uri.Builder builder = new Uri.Builder();
                                                                         builder.scheme("https")
                                                                                 .authority(str.getSso_host())
                                                                                 .appendPath("common")
-                                                                                .appendPath("app_sso_request.cfm")
+                                                                                .appendPath("app_sso_request_v2.cfm")
                                                                                 //.appendPath("appdemo_bypass.cfm")
                                                                                 .appendQueryParameter("request_token", UUID.randomUUID().toString())
                                                                                 .appendQueryParameter("site_id", str.getSiteId())
-                                                                                .appendQueryParameter("username", finalUsername);
+                                                                                .appendQueryParameter("username", uname);
                                                                         Intent intent = new Intent(LoginActivity.this, WebViewActivity.class);
                                                                         ////Log.e("uri-->", builder.toString());
-                                                                        intent.putExtra("username", str.getUsername());
+                                                                        intent.putExtra("username", uname);
                                                                         intent.putExtra("ssoUrlString", builder.toString());
                                                                         intent.putExtra("selectedSiteId", str.getSiteId());
                                                                         intent.putExtra("selectedUserId", str.getUserId());
@@ -774,13 +780,13 @@ public class LoginActivity extends AppCompatActivity {
                                                             builder.scheme("https")
                                                                     .authority(sso_hosts)
                                                                     .appendPath("common")
-                                                                    .appendPath("app_sso_request.cfm")
+                                                                    .appendPath("app_sso_request_v3.cfm")
                                                                     //.appendPath("appdemo_bypass.cfm")
                                                                     .appendQueryParameter("request_token", UUID.randomUUID().toString())
                                                                     .appendQueryParameter("site_id", siteIds)
-                                                                    .appendQueryParameter("username", username);
+                                                                    .appendQueryParameter("username", uname);
                                                             Intent intent = new Intent(LoginActivity.this, WebViewActivity.class);
-                                                            intent.putExtra("username", username);
+                                                            intent.putExtra("username", uname);
                                                             intent.putExtra("ssoUrlString", builder.toString());
                                                             intent.putExtra("selectedSiteId", siteIds);
                                                             intent.putExtra("selectedUserId", uid);
@@ -864,13 +870,13 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private boolean validateInputField(String fieldValue) {
-
-        if (fieldValue.length() == 0) {
+    private boolean validateInputField(String fieldValue, boolean username, boolean password) {
+        if(username && !Patterns.EMAIL_ADDRESS.matcher(fieldValue).matches()){
             return false;
-        }
+        }else if (password && fieldValue.isEmpty()) {
+            return false;
+        }else
         return true;
-
     }
 
     public static final String md5(final String s) {
